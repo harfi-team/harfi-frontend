@@ -36,12 +36,13 @@
 | Layer | Technology |
 |---|---|
 | Framework | Angular 21 — Standalone Components (no NgModules) |
-| Styling | CSS + Bootstrap 5 |
-| i18n | `@ngx-translate/core` — Arabic default, English fallback |
+| Styling | CSS + Bootstrap 5 RTL |
+| i18n | `@ngx-translate/core` v17 — Arabic default, English fallback (`fallbackLang`) |
 | Real-time | `@microsoft/signalr` — Chat Hub + Notification Hub |
 | HTTP | Angular `HttpClient` with functional interceptors |
-| Auth | JWT stored in `localStorage`, auto-refresh on 401 |
+| Auth | JWT stored in `localStorage`, auto-refresh on 401, 30s expiry buffer |
 | Routing | Angular Router — all feature modules **lazy loaded** |
+| Path Aliases | `@core`, `@shared`, `@features`, `@env` via `tsconfig.json` paths |
 
 ---
 
@@ -232,157 +233,216 @@ harfi-frontend/
 
 ## 5. Team — Who Works Where
 
-> Each person works **inside their feature folder** only.
+> Each person works **inside their assigned folders only**.  
 > Never touch another person's feature folder directly — use a PR.
 
----
+### 👥 Team & Assignments
 
-### 🟢 Esraa — Phase 1: Foundation (Days 1–3)
-
-**What she built:** The entire project foundation that everyone else builds on.
-
-| Task | Files |
-|---|---|
-| Angular project setup | `angular.json`, `app.config.ts`, `main.ts` |
-| RTL + i18n configuration | `styles.css`, `src/assets/i18n/ar.json`, `src/assets/i18n/en.json` |
-| Global providers | `app.config.ts` — router, HTTP client, translate |
-| Root routing (lazy) | `app.routes.ts` |
-| JWT interceptors | `core/interceptors/auth.interceptor.ts`, `refresh.interceptor.ts` |
-| Auth guards | `core/guards/auth.guard.ts`, `role.guard.ts`, `guest.guard.ts` |
-| Core services | `core/services/` — auth, token, theme, language, error-handler |
-| Shared layouts | `shared/layouts/main-layout/`, `shared/layouts/auth-layout/` |
-| Shared components | `shared/components/navbar/`, `spinner/`, `toast/` |
-| Login screen | `features/auth/login/` — reactive form → `POST /api/auth/login` |
-| Register screen | `features/auth/register/` — reactive form → `POST /api/auth/register` |
-
-> ⭐ **Everyone depends on Esraa's work.** The interceptors, guards, and language service must be done before other phases start connecting to the API.
+| Name | Role | Assignment |
+|------|------|------------|
+| Esraa | Frontend Lead | Project Structure + Foundation + Auth |
+| Hadeer | Frontend | Craftsman Discovery, Search & Profiles |
+| Habiba | Frontend | Booking System & Job Lifecycle |
+| Mazen | Frontend | AI Assistant & Reviews |
+| Ibrahim | Frontend | Real-time Chat & Notifications |
 
 ---
 
-### 🔵 Hadeer — Phase 2: Discovery Engine (Days 4–7)
-
-**What she builds:** How users discover and view craftsmen.
-
-| Task | Files |
-|---|---|
-| Craftsman registration form | `features/craftsman/register/craftsman-register.component.*` |
-| Search page with filters | `features/craftsman/search/craftsman-search.component.*` |
-| Craftsman profile page | `features/craftsman/profile/craftsman-profile.component.*` |
-| Craftsman HTTP service | `features/craftsman/craftsman.service.ts` |
-| Craftsman routes | `features/craftsman/craftsman.routes.ts` |
-
-**Backend endpoints she connects to:**
+### 🟢 Esraa — Project Structure + Foundation + Auth ✅
 
 ```
-POST /api/Craftsmen/register      → create craftsman profile
-GET  /api/Craftsmen/search        → search with ?serviceType=&city=&minRating=
-GET  /api/Craftsmen/{id}          → view full profile + portfolio
-GET  /api/reviews/craftsman/{id}  → show reviews on profile
-```
-
-**Shared components she uses from Esraa's work:**
-- `star-rating` component in the profile and search results
-- `spinner` while data loads
-- `toast` for error/success messages
-- `translate` pipe for Arabic/English labels
-
----
-
-### 🟡 Habiba — Phase 3: Lifecycle Management (Days 8–10)
-
-**What she builds:** The booking and job management flow.
-
-| Task | Files |
-|---|---|
-| Booking form | `features/jobs/job-create/job-create.component.*` |
-| Job status tracker | `features/jobs/job-list/job-list.component.*` |
-| Craftsman dashboard | Extends `features/jobs/` + `features/craftsman/` |
-| Jobs HTTP service | `features/jobs/jobs.service.ts` |
-| Jobs routes | `features/jobs/jobs.routes.ts` |
-
-**Backend endpoints she connects to:**
-
-```
-POST /api/jobs                → customer creates a new job
-GET  /api/jobs/customer/{id}  → customer sees their jobs
-GET  /api/jobs/craftsman/{id} → craftsman sees assigned jobs
-PUT  /api/jobs/{id}/accept    → craftsman accepts
-PUT  /api/jobs/{id}/complete  → craftsman marks done
-PUT  /api/jobs/{id}/cancel    → either party cancels
-```
-
-**Job status flow she must handle in the UI:**
-
-```
-Open → InProgress → Completed
-              ↘ Cancelled
+src/
+├── app.ts
+├── app.config.ts
+├── app.routes.ts
+├── styles.css
+├── assets/i18n/
+│   ├── ar.json
+│   └── en.json
+├── environments/
+│   ├── environment.ts
+│   └── environment.prod.ts
+└── app/
+    ├── core/
+    │   ├── interceptors/
+    │   │   ├── auth.interceptor.ts
+    │   │   └── refresh.interceptor.ts
+    │   ├── guards/
+    │   │   ├── auth.guard.ts
+    │   │   ├── role.guard.ts
+    │   │   └── guest.guard.ts
+    │   ├── services/
+    │   │   ├── auth.service.ts
+    │   │   ├── token.service.ts
+    │   │   ├── theme.service.ts
+    │   │   ├── language.service.ts
+    │   │   └── error-handler.service.ts
+    │   └── models/
+    │       ├── auth.models.ts
+    │       └── api-error.models.ts
+    ├── shared/
+    │   ├── components/
+    │   │   ├── navbar/
+    │   │   ├── spinner/
+    │   │   └── toast/
+    │   ├── layouts/
+    │   │   ├── auth-layout/
+    │   │   └── main-layout/
+    │   ├── directives/
+    │   │   └── rtl-form.directive.ts
+    │   └── pipes/
+    │       ├── translate.pipe.ts
+    │       └── relative-time.pipe.ts
+    └── features/auth/
+        ├── auth.routes.ts
+        ├── auth.service.ts
+        ├── login/
+        ├── register/
+        ├── verify-email/
+        └── verify-phone/
 ```
 
 ---
 
-### 🟠 Mazen — Phase 4: AI & Reviews (Days 11–14)
-
-**What he builds:** The AI self-fix guide and the review/rating system.
-
-| Task | Files |
-|---|---|
-| AI chat screen (streaming) | `features/ai/ai-chat/ai-chat.component.*` |
-| AI service | `features/ai/ai.service.ts` |
-| Review form | `features/reviews/review-form/review-form.component.*` |
-| Reviews service | `features/reviews/reviews.service.ts` |
-
-**Backend endpoints he connects to:**
+### 🔵 Hadeer — Craftsman Discovery, Search & Profiles
 
 ```
-GET  /api/AI/welcome          → load welcome message on page open
-POST /api/AI/chat3            → send message, receive streamed response
-POST /api/reviews             → customer submits review after job complete
-GET  /api/reviews/craftsman/{id} → display reviews on profile
+src/app/features/craftsman/
+├── craftsman.routes.ts
+├── craftsman.service.ts
+├── search/
+│   └── craftsman-search.component.*
+├── profile/
+│   └── craftsman-profile.component.*
+└── register/
+    └── craftsman-register.component.*
+
+src/app/core/models/
+└── craftsman.models.ts
 ```
 
-**Important — Streaming:**
-The AI endpoint returns a **Server-Sent Events stream**. He must use `EventSource` or Angular's `HttpClient` with `responseType: 'text'` and `observe: 'events'` to read chunks as they arrive, not wait for the full response.
+Backend endpoints:
+```
+POST /api/Craftsmen/register
+GET  /api/Craftsmen/{id}
+PUT  /api/Craftsmen/{id}
+GET  /api/Craftsmen/search?ServiceType=&City=&MinRating=&MinExperience=
+GET  /api/Admin/pending-craftsmen
+PUT  /api/Admin/approve/{id}
+DELETE /api/Admin/reject/{id}
+```
 
 ---
 
-### 🔴 Ibrahim — Phase 5: Real-Time (Days 15–17)
-
-**What he builds:** Live chat and image-to-form AI auto-fill.
-
-| Task | Files |
-|---|---|
-| Chat list | `features/chat/chat-list/chat-list.component.*` |
-| Chat window (real-time) | `features/chat/chat-detail/chat-detail.component.*` |
-| Image upload + vision | `features/user/profile/user-profile.component.*` (upload section) |
-| Chat service (REST) | `features/chat/chat.service.ts` |
-| Chat Hub (SignalR) | `core/hubs/chat.hub.service.ts` |
-| Notification Hub | `core/hubs/notification.hub.service.ts` |
-
-**Backend endpoints he connects to:**
+### 🟡 Habiba — Booking System & Job Lifecycle
 
 ```
-GET  /api/Conversations            → list all conversations
-GET  /api/Conversations/{id}/messages → load message history
-POST /api/Conversations/start      → start conversation with craftsman
-POST /api/Conversations/{id}/messages → send a message (REST fallback)
+src/app/features/jobs/
+├── jobs.routes.ts
+├── jobs.service.ts
+├── job-list/
+│   └── job-list.component.*
+└── job-create/
+    └── job-create.component.*
+
+src/app/core/models/
+└── job.models.ts
+```
+
+Backend endpoints:
+```
+POST /api/jobs
+PUT  /api/jobs/{id}/accept
+PUT  /api/jobs/{id}/reject
+PUT  /api/jobs/{id}/complete
+GET  /api/jobs/customer/{id}
+GET  /api/jobs/craftsman/{id}
+```
+
+---
+
+### 🟠 Mazen — AI Assistant & Reviews
+
+```
+src/app/features/ai/
+├── ai.routes.ts
+├── ai.service.ts
+└── ai-chat/
+    └── ai-chat.component.*
+
+src/app/features/reviews/
+├── reviews.routes.ts
+├── reviews.service.ts
+└── review-form/
+    └── review-form.component.*
+
+src/app/core/models/
+└── review.models.ts
+```
+
+Backend endpoints:
+```
+GET  /api/AI/welcome
+POST /api/AI/chat3
+POST /api/reviews
+GET  /api/reviews/craftsman/{craftsmanId}
+POST /api/reviews/rag-feedback
+```
+
+---
+
+### 🔴 Ibrahim — Real-time Chat & Notifications
+
+```
+src/app/features/chat/
+├── chat.routes.ts
+├── chat.service.ts
+├── chat-list/
+│   └── chat-list.component.*
+└── chat-detail/
+    └── chat-detail.component.*
+
+src/app/features/notifications/
+├── notifications.routes.ts
+├── notifications.service.ts
+└── notification-list/
+    └── notification-list.component.*
+
+src/app/features/user/
+├── user.routes.ts
+├── user.service.ts
+└── profile/
+    └── user-profile.component.*
+
+src/app/core/
+├── models/
+│   ├── chat.models.ts
+│   └── notification.models.ts
+└── hubs/
+    ├── chat.hub.service.ts
+    └── notification.hub.service.ts
+```
+
+Backend endpoints:
+```
+POST /api/Conversations
+GET  /api/Conversations
+GET  /api/Conversations/{id}
+GET  /api/Conversations/{id}/messages
+PUT  /api/Conversations/{id}/read
+GET  /api/Notifications
+GET  /api/Notifications/unread-count
+PUT  /api/Notifications/{id}/read
+PUT  /api/Notifications/read-all
+GET  /api/Users/profile/{id}
+PUT  /api/Users/profile/{id}
 
 SignalR /hubs/chat
-  → SendMessage(conversationId, content)    (client → server)
-  ← ReceiveMessage(MessageDto)              (server → client)
+  → SendMessage(conversationId, content)
+  ← ReceiveMessage(MessageDto)
 
-POST /api/AI/analyze-image         → upload photo, get auto-filled fields
-```
-
-**SignalR connection pattern he must follow:**
-
-```typescript
-// from core/hubs/chat.hub.service.ts
-const connection = new HubConnectionBuilder()
-  .withUrl('/hubs/chat', {
-    accessTokenFactory: () => tokenService.getAccessToken()
-  })
-  .withAutomaticReconnect()
-  .build();
+SignalR /hubs/notifications
+  ← ReceiveNotification(NotificationDto)
 ```
 
 ---
@@ -394,7 +454,7 @@ const connection = new HubConnectionBuilder()
 ```bash
 node -v   # must be >= 18
 npm -v    # must be >= 9
-ng version --skip-confirmation  # must be Angular CLI 17+
+ng version --skip-confirmation  # must be Angular CLI 21+
 ```
 
 ### Installation
@@ -413,13 +473,13 @@ ng serve
 # Open: http://localhost:4200
 ```
 
-> Make sure the backend is running on `http://localhost:5000` before testing API calls.
+> Make sure the backend is running on `http://localhost:5108` before testing API calls.
 
 ### Environment files
 
 | File | Purpose |
 |---|---|
-| `src/environments/environment.ts` | Dev — points to `localhost:5000` |
+| `src/environments/environment.ts` | Dev — points to `localhost:5108` |
 | `src/environments/environment.prod.ts` | Prod — points to deployed API |
 
 ---
@@ -429,12 +489,10 @@ ng serve
 ### Every component must be standalone
 
 ```typescript
-@Component({
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
-  ...
-})
-export class LoginComponent { }
+@Component({ standalone: true, imports: [...] })
+export class LoginComponent {
+  private auth = inject(AuthService);  // ✅ inject() not constructor
+}
 ```
 
 ### All forms use Reactive Forms (no Template-driven)
@@ -473,6 +531,17 @@ background: var(--bg-secondary);
 
 /* ❌ Wrong — breaks dark mode */
 color: #212529;
+```
+
+### Use path aliases for imports
+
+```typescript
+// ✅ Correct
+import { AuthService } from '@core/services/auth.service';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+
+// ❌ Wrong — brittle relative paths
+import { AuthService } from '../../../core/services/auth.service';
 ```
 
 ---
