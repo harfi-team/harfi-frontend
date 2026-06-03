@@ -13,6 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor, refreshInterceptor])),
     provideTranslateService({
       lang: 'ar',
+      fallbackLang: 'en',
     }),
     provideTranslateHttpLoader({
       prefix: '/assets/i18n/',

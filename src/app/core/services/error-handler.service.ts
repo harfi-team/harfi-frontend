@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { ToastMessage } from '../models/api-error.models';
 
@@ -18,9 +19,10 @@ export class ErrorHandlerService {
     this.toast$.next({ type: 'info', message });
   }
 
-  handle(httpError: any): void {
+  handle(httpError: HttpErrorResponse | Error): void {
     const fallback = 'حدث خطأ، حاول مرة أخرى';
-    const message = httpError?.error?.message || httpError?.message || fallback;
+    const err = httpError instanceof HttpErrorResponse ? httpError.error?.message : httpError.message;
+    const message = err ?? fallback;
     this.toast$.next({ type: 'error', message });
   }
 }
