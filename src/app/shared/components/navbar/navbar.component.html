@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg" dir="auto">
+  <div class="container">
+    <a class="navbar-brand fw-bold" routerLink="/">{{ 'APP_NAME' | translate }}</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/craftsmen/search">{{ 'SEARCH' | translate }}</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="icon-btn" (click)="theme.toggle()" [attr.aria-label]="(theme.current() === 'dark' ? 'THEME_LIGHT' : 'THEME_DARK') | translate">
+          @if (theme.current() === 'dark') {
+            <span>☀️</span>
+          } @else {
+            <span>🌙</span>
+          }
+        </button>
+
+        <button class="icon-btn" (click)="language.toggle()">
+          {{ language.current() === 'ar' ? 'EN' : 'AR' }}
+        </button>
+
+        @if (auth.isLoggedIn()) {
+          <span class="nav-user-name">{{ auth.getUserName() }}</span>
+          <button class="btn btn-outline btn-sm" (click)="auth.logout()">{{ 'LOGOUT' | translate }}</button>
+        } @else {
+          <a class="btn btn-primary btn-sm" routerLink="/auth/login">{{ 'LOGIN' | translate }}</a>
+          <a class="btn btn-outline btn-sm" routerLink="/auth/register">{{ 'REGISTER' | translate }}</a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

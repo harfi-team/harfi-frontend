@@ -1,0 +1,27 @@
+<div class="auth-wrapper">
+  <div class="auth-brand">
+    <div class="auth-brand-content">
+      <div class="auth-logo">🔨</div>
+      <h1 class="auth-brand-title">{{ 'APP_NAME' | translate }}</h1>
+      <p class="auth-brand-tagline">{{ 'APP_TAGLINE' | translate }}</p>
+      <div class="auth-pattern" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="auth-form-panel">
+    <div class="auth-floating-controls">
+      <button class="auth-floating-btn" (click)="theme.toggle()">
+        {{ theme.current() === 'dark' ? '☀️' : '🌙' }}
+      </button>
+      <button class="auth-floating-btn" (click)="language.toggle()">
+        {{ language.current() === 'ar' ? 'EN' : 'AR' }}
+      </button>
+    </div>
+
+    <div class="auth-card-wrapper">
+      <div class="auth-card">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+</div>

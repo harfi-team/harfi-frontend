@@ -1,0 +1,36 @@
+<h2 class="auth-form-title">{{ 'LOGIN' | translate }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-field">
+    <label for="email">{{ 'EMAIL' | translate }}</label>
+    <input id="email" type="email" formControlName="email" class="auth-input" autocomplete="email" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <span class="error-text">{{ 'VALIDATION_EMAIL_REQUIRED' | translate }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="password">{{ 'PASSWORD' | translate }}</label>
+    <div class="password-wrapper">
+      <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="auth-input" autocomplete="current-password" />
+      <button type="button" class="password-toggle" (click)="togglePassword()">
+        {{ showPassword ? '🙈' : '👁️' }}
+      </button>
+    </div>
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <span class="error-text">{{ 'VALIDATION_PASSWORD_MIN' | translate }}</span>
+    }
+  </div>
+
+  <button type="submit" class="btn-primary w-100 mt-3" [disabled]="form.invalid || loading">
+    @if (loading) {
+      <app-spinner [visible]="true" [fullPage]="false" />
+    }
+    {{ 'LOGIN' | translate }}
+  </button>
+</form>
+
+<p class="auth-switch mt-4 text-center">
+  {{ 'NO_ACCOUNT' | translate }}
+  <a routerLink="/auth/register" class="auth-link">{{ 'REGISTER' | translate }}</a>
+</p>

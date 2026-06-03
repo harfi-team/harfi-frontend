@@ -1,0 +1,64 @@
+@if (step === 'phone') {
+  <h2 class="auth-form-title">{{ 'VERIFY_PHONE' | translate }}</h2>
+  <p class="auth-form-desc">{{ 'VERIFY_PHONE_DESC' | translate }}</p>
+
+  <form [formGroup]="phoneForm" (ngSubmit)="sendCode()">
+    <div class="form-field">
+      <label for="phoneNumber">{{ 'PHONE' | translate }}</label>
+      <input id="phoneNumber" type="tel" formControlName="phoneNumber" class="auth-input" autocomplete="tel" />
+      @if (phoneForm.controls.phoneNumber.touched && phoneForm.controls.phoneNumber.invalid) {
+        <span class="error-text">{{ 'VALIDATION_PHONE' | translate }}</span>
+      }
+    </div>
+
+    <button type="submit" class="btn-primary w-100 mt-3" [disabled]="phoneForm.invalid || loading">
+      @if (loading) {
+        <app-spinner [visible]="true" [fullPage]="false" />
+      }
+      {{ 'SEND_CODE' | translate }}
+    </button>
+  </form>
+} @else {
+  <h2 class="auth-form-title">{{ 'VERIFY_PHONE' | translate }}</h2>
+  <p class="auth-form-desc">{{ 'VERIFY_PHONE_CODE_DESC' | translate: {phone: phoneNumber} }}</p>
+
+  <form [formGroup]="codeForm" (ngSubmit)="verifyCode()">
+    <div class="otp-field">
+      <label for="code" class="sr-only">{{ 'VERIFICATION_CODE' | translate }}</label>
+      <input
+        id="code"
+        type="text"
+        inputmode="numeric"
+        formControlName="code"
+        class="otp-input"
+        placeholder="000000"
+        maxlength="6"
+        (input)="onCodeInput($event)"
+      />
+      @if (codeForm.controls.code.touched && codeForm.controls.code.invalid) {
+        <span class="error-text">{{ 'VALIDATION_CODE' | translate }}</span>
+      }
+    </div>
+
+    <button type="submit" class="btn-primary w-100 mt-3" [disabled]="codeForm.invalid || loading">
+      @if (loading) {
+        <app-spinner [visible]="true" [fullPage]="false" />
+      }
+      {{ 'CONFIRM' | translate }}
+    </button>
+  </form>
+
+  <div class="resend-section mt-3 text-center">
+    @if (countdown > 0) {
+      <span class="resend-countdown">{{ 'RESEND_IN' | translate: {seconds: countdown} }}</span>
+    } @else {
+      <button class="btn-link" (click)="resendCode()" [disabled]="resendLoading">
+        @if (resendLoading) {
+          {{ 'LOADING' | translate }}
+        } @else {
+          {{ 'RESEND_CODE' | translate }}
+        }
+      </button>
+    }
+  </div>
+}
