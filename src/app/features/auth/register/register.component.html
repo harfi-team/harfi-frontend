@@ -1,0 +1,77 @@
+<h2 class="auth-form-title">{{ 'REGISTER' | translate }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-field">
+    <label for="name">{{ 'NAME' | translate }}</label>
+    <input id="name" type="text" formControlName="name" class="auth-input" autocomplete="name" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <span class="error-text">{{ 'VALIDATION_NAME_REQUIRED' | translate }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="email">{{ 'EMAIL' | translate }}</label>
+    <input id="email" type="email" formControlName="email" class="auth-input" autocomplete="email" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <span class="error-text">{{ 'VALIDATION_EMAIL_REQUIRED' | translate }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="phone">{{ 'PHONE' | translate }} <span class="optional">{{ 'OPTIONAL' | translate }}</span></label>
+    <input id="phone" type="tel" formControlName="phone" class="auth-input" autocomplete="tel" />
+    @if (form.controls.phone.touched && form.controls.phone.invalid) {
+      <span class="error-text">{{ 'VALIDATION_PHONE' | translate }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label>{{ 'ROLE' | translate }}</label>
+    <div class="role-toggle">
+      <button type="button" class="role-btn" [ngClass]="{'active': form.controls.role.value === 'customer'}" (click)="setRole('customer')">
+        {{ 'ROLE_CUSTOMER' | translate }}
+      </button>
+      <button type="button" class="role-btn" [ngClass]="{'active': form.controls.role.value === 'craftsman'}" (click)="setRole('craftsman')">
+        {{ 'ROLE_CRAFTSMAN' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label for="password">{{ 'PASSWORD' | translate }}</label>
+    <div class="password-wrapper">
+      <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="auth-input" autocomplete="new-password" />
+      <button type="button" class="password-toggle" (click)="togglePassword('password')">
+        {{ showPassword ? '🙈' : '👁️' }}
+      </button>
+    </div>
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <span class="error-text">{{ 'VALIDATION_PASSWORD_MIN' | translate }}</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="confirmPassword">{{ 'CONFIRM_PASSWORD' | translate }}</label>
+    <div class="password-wrapper">
+      <input id="confirmPassword" [type]="showConfirm ? 'text' : 'password'" formControlName="confirmPassword" class="auth-input" autocomplete="new-password" />
+      <button type="button" class="password-toggle" (click)="togglePassword('confirm')">
+        {{ showConfirm ? '🙈' : '👁️' }}
+      </button>
+    </div>
+    @if (form.errors?.['passwordMismatch'] && form.controls.confirmPassword.touched) {
+      <span class="error-text">{{ 'VALIDATION_PASSWORD_MISMATCH' | translate }}</span>
+    }
+  </div>
+
+  <button type="submit" class="btn-primary w-100 mt-3" [disabled]="form.invalid || loading">
+    @if (loading) {
+      <app-spinner [visible]="true" [fullPage]="false" />
+    }
+    {{ 'REGISTER' | translate }}
+  </button>
+</form>
+
+<p class="auth-switch mt-4 text-center">
+  {{ 'HAVE_ACCOUNT' | translate }}
+  <a routerLink="/auth/login" class="auth-link">{{ 'LOGIN' | translate }}</a>
+</p>

@@ -1,0 +1,47 @@
+.navbar {
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+  color: var(--accent);
+  font-size: 1.35rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: var(--transition);
+}
+.nav-link:hover { color: var(--accent); }
+
+.icon-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .35rem .65rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .875rem;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  line-height: 1;
+}
+.icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-user-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: .875rem;
+}
+
+.btn-sm {
+  height: 36px;
+  padding: 0 1rem;
+  font-size: .8125rem;
+}

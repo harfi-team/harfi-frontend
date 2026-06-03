@@ -1,0 +1,119 @@
+.auth-wrapper {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.auth-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #1a6b4a 0%, #0d4a32 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.auth-brand-content {
+  text-align: center;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-logo {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.auth-brand-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: .5rem;
+}
+
+.auth-brand-tagline {
+  font-size: 1.1rem;
+  opacity: .85;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.auth-pattern {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.06) 0%, transparent 60%),
+              radial-gradient(circle at 70% 80%, rgba(255,255,255,.04) 0%, transparent 50%);
+  z-index: 0;
+}
+
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-page);
+  position: relative;
+  padding: 2rem;
+}
+
+.auth-floating-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: .5rem;
+  z-index: 10;
+}
+html[dir="rtl"] .auth-floating-controls {
+  right: auto;
+  left: 1rem;
+}
+
+.auth-floating-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+.auth-floating-btn:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-card-wrapper {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem;
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .auth-wrapper {
+    flex-direction: column;
+  }
+  .auth-brand {
+    padding: 1.5rem 1rem;
+    min-height: auto;
+  }
+  .auth-logo { font-size: 2.5rem; }
+  .auth-brand-title { font-size: 1.75rem; }
+  .auth-brand-tagline { font-size: .9375rem; }
+  .auth-form-panel { padding: 1rem; }
+  .auth-card { padding: 1.5rem; }
+}

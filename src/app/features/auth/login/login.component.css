@@ -1,0 +1,28 @@
+.auth-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.w-100 { width: 100%; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.text-center { text-align: center; }
+
+.auth-switch {
+  font-size: .875rem;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.auth-link:hover { text-decoration: underline; }
