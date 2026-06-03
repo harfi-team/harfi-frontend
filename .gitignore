@@ -39,6 +39,9 @@ testem.log
 /typings
 __screenshots__/
 
+# Analysis (internal, not for remote)
+PROJECT_ANALYSIS.md
+
 # System files
 .DS_Store
 Thumbs.db

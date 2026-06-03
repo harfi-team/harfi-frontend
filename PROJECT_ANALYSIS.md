@@ -142,7 +142,14 @@ From `tsconfig.json` and `tsconfig.app.json`:
 
 ### Path aliases
 
-**None defined.** All imports use relative paths.
+| Alias | Maps to |
+|-------|---------|
+| `@core` | `src/app/core` |
+| `@shared` | `src/app/shared` |
+| `@features` | `src/app/features` |
+| `@env` | `src/environments` |
+
+Defined in `tsconfig.json` under `compilerOptions.paths`. Use these aliases with absolute imports instead of brittle relative paths (e.g., `import { AuthService } from '@core/services/auth.service'` instead of `'../../../core/services/auth.service'`).
 
 ### Notable
 
@@ -780,4 +787,4 @@ The following files exist but are empty stubs:
 - Tokens stored in `localStorage` (accessible to any JavaScript on the same origin — XSS vulnerability)
 - No HttpOnly cookies are used
 - No CSRF protection implemented
-- No token expiry refresh buffer (could cause race conditions if a request is made just before the token expires)
+- Token refresh uses a 30s expiry buffer in `TokenService.isLoggedIn()` — treats tokens with ≤30s remaining as expired to avoid race conditions
