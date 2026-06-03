@@ -8,7 +8,7 @@ import { TokenService } from '../services/token.service';
 import { AuthResponseDto } from '../models/auth.models';
 
 let isRefreshing = false;
-const refreshSubject = new BehaviorSubject<string | null>(null);
+let refreshSubject = new BehaviorSubject<string | null>(null);
 
 function skipRefresh(url: string): boolean {
   return url.includes('/auth/refresh') || url.includes('/auth/login');
@@ -54,6 +54,7 @@ export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
           catchError(refreshError => {
             isRefreshing = false;
             refreshSubject.error(refreshError);
+            refreshSubject = new BehaviorSubject<string | null>(null);
             tokenService.clearAll();
             router.navigate(['/auth/login']);
             return throwError(() => refreshError);

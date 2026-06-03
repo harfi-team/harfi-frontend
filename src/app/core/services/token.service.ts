@@ -52,7 +52,7 @@ export class TokenService {
     const token = this.getAccessToken();
     const expires = this.getExpiresAt();
     if (!token || !expires) return false;
-    return Date.now() < new Date(expires).getTime();
+    return Date.now() < (new Date(expires).getTime() - 30_000);
   }
 
   clearAll(): void {

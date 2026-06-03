@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 export type Language = 'ar' | 'en';
@@ -6,8 +6,9 @@ export type Language = 'ar' | 'en';
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   current = signal<Language>('ar');
+  private translate = inject(TranslateService);
 
-  constructor(private translate: TranslateService) {
+  constructor() {
     const saved = localStorage.getItem('harfi_lang') as Language | null;
     const lang = saved || 'ar';
     this.current.set(lang);
