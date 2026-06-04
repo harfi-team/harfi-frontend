@@ -29,6 +29,16 @@ export class RegisterComponent {
   showPassword = false;
   showConfirm = false;
 
+  get passwordStrength(): number {
+    const val = this.form.controls.password.value ?? '';
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+    if (/\d/.test(val)) score++;
+    if (/[^a-zA-Z0-9]/.test(val)) score++;
+    return score;
+  }
+
   form = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     email: new FormControl('', [Validators.required, Validators.email]),

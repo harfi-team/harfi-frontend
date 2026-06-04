@@ -9,8 +9,11 @@ export class LanguageService {
   private translate = inject(TranslateService);
 
   constructor() {
-    const saved = localStorage.getItem('harfi_lang') as Language | null;
-    const lang = saved || 'ar';
+    let lang = localStorage.getItem('harfi_lang') as Language | null;
+    if (lang !== 'ar' && lang !== 'en') {
+      lang = 'ar';
+      localStorage.setItem('harfi_lang', 'ar');
+    }
     this.current.set(lang);
     this.apply(lang);
   }

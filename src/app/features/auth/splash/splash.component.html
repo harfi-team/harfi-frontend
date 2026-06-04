@@ -1,0 +1,116 @@
+<div class="splash-layout">
+  <div class="splash-left">
+    <div class="splash-left-content">
+      <img src="assets/images/harfi_logo.png" alt="حرفي" class="splash-logo" />
+      <h1 class="splash-title">{{ 'WELCOME_BACK' | translate }}</h1>
+      <p class="splash-tagline">{{ 'WELCOME_TAGLINE' | translate }}</p>
+      <div class="splash-stats">
+        <span>10k+ {{ 'STAT_CRAFTSMEN' | translate }}</span>
+        <span class="stat-dot">|</span>
+        <span>4.9 {{ 'STAT_RATING' | translate }}</span>
+        <span class="stat-dot">|</span>
+        <span>50+ {{ 'STAT_SPECIALTIES' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="splash-right">
+    <div class="splash-controls-start">
+      <button class="splash-control-btn" (click)="theme.toggle()">
+        {{ theme.current() === 'dark' ? '☀️' : '🌙' }}
+      </button>
+      <button class="splash-control-btn" (click)="language.toggle()">
+        {{ language.current() === 'ar' ? 'EN' : 'AR' }}
+      </button>
+    </div>
+    <div class="splash-controls-end">
+      <button class="splash-skip-link" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
+    </div>
+
+    <div class="splash-slides-container">
+      @for (slide of slides; track $index) {
+        @if ($index === currentSlide) {
+          <div class="splash-slide">
+            <div class="splash-slide-icon">{{ slide.icon }}</div>
+            <h2 class="splash-slide-title">
+              {{ slide.titleParts[0] }}<span class="gradient-text">{{ slide.titleParts[1] }}</span>{{ slide.titleParts[2] }}
+            </h2>
+            <p class="splash-slide-desc">{{ slide.descKey | translate }}</p>
+            <button class="gradient-btn splash-nav-btn" (click)="next()">
+              @if (isLastSlide) {
+                {{ 'ONBOARDING_START' | translate }} ←
+              } @else {
+                {{ 'ONBOARDING_NEXT' | translate }} ←
+              }
+            </button>
+            @if (isLastSlide) {
+              <button class="splash-create-account" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
+            }
+            @if (!isLastSlide) {
+              <button class="splash-skip-text" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
+            }
+          </div>
+        }
+      }
+    </div>
+
+    <div class="splash-dots">
+      @for (slide of slides; track $index) {
+        <button
+          class="splash-dot"
+          [ngClass]="{'active': $index === currentSlide}"
+          (click)="goToSlide($index)"
+        ></button>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="splash-mobile">
+  <div class="splash-mobile-top">
+    <div class="splash-mobile-controls">
+      <button class="splash-mobile-control-btn" (click)="theme.toggle()">
+        {{ theme.current() === 'dark' ? '☀️' : '🌙' }}
+      </button>
+      <button class="splash-mobile-control-btn" (click)="language.toggle()">
+        {{ language.current() === 'ar' ? 'EN' : 'AR' }}
+      </button>
+    </div>
+    <button class="splash-mobile-skip" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
+  </div>
+
+  <div class="splash-mobile-body">
+    @for (slide of slides; track $index) {
+      @if ($index === currentSlide) {
+        <div class="splash-mobile-slide">
+          <img src="assets/images/harfi_logo.png" alt="حرفي" class="splash-mobile-logo" />
+          <div class="splash-mobile-icon">{{ slide.icon }}</div>
+          <h2 class="splash-mobile-title">
+            {{ slide.titleParts[0] }}<span class="splash-mobile-gradient">{{ slide.titleParts[1] }}</span>{{ slide.titleParts[2] }}
+          </h2>
+          <p class="splash-mobile-desc">{{ slide.descKey | translate }}</p>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="splash-mobile-bottom">
+    <div class="splash-mobile-dots">
+      @for (slide of slides; track $index) {
+        <button
+          class="splash-mobile-dot"
+          [ngClass]="{'active': $index === currentSlide}"
+          (click)="goToSlide($index)"
+        ></button>
+      }
+    </div>
+
+    @if (isLastSlide) {
+      <button class="splash-mobile-start-btn" (click)="next()">{{ 'ONBOARDING_START' | translate }}</button>
+      <button class="splash-mobile-register-btn" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
+      <a class="splash-mobile-login-link" routerLink="/auth/login">{{ 'HAVE_ACCOUNT' | translate }} {{ 'LOGIN' | translate }}</a>
+    } @else {
+      <button class="splash-mobile-next-btn" (click)="next()">{{ 'ONBOARDING_NEXT' | translate }}</button>
+    }
+  </div>
+</div>
