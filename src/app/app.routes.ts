@@ -3,6 +3,11 @@ import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+  {
+    path: 'welcome',
+    loadComponent: () => import('./features/auth/splash/splash.component').then(m => m.SplashComponent),
+  },
   {
     path: 'auth',
     loadComponent: () => import('./shared/layouts/auth-layout/auth-layout.component').then(m => m.AuthLayoutComponent),
@@ -49,5 +54,5 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', redirectTo: 'auth/login' },
+  { path: '**', redirectTo: 'welcome' },
 ];
