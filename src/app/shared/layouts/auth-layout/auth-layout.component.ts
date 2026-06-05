@@ -16,7 +16,14 @@ export class AuthLayoutComponent {
   language = inject(LanguageService);
   router = inject(Router);
 
+  get isArabic(): boolean {
+    return this.language.current() === 'ar';
+  }
+
   get isRegisterPage(): boolean {
     return this.router.url.includes('/register');
   }
+
+  goToLogin() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/login']); }
+  goToRegister() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/register']); }
 }

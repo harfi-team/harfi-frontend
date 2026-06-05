@@ -79,5 +79,14 @@
   "COMPLETED_ORDERS": "Completed Orders",
   "STAT_CRAFTSMEN": "Registered craftsmen",
   "STAT_RATING": "Average rating",
-  "STAT_SPECIALTIES": "Specialties"
+  "STAT_SPECIALTIES": "Specialties",
+  "SPLASH_BRAND_TITLE": "Egypt's First Craftsmen Platform",
+  "SPLASH_BADGE": "Trusted Platform",
+  "SPLASH_GRADIENT_S1": "Craftsman",
+  "SPLASH_GRADIENT_S2": "Agree",
+  "SPLASH_GRADIENT_S3": "Guaranteed",
+  "NAV_HOME": "Home",
+  "NAV_HOW": "How It Works",
+  "NAV_CRAFTSMEN": "Craftsmen",
+  "NAV_CONTACT": "Contact Us"
 }
