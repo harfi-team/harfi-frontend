@@ -1,79 +1,41 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
-import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-splash',
   standalone: true,
-  imports: [RouterLink, NgClass, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './splash.component.html',
   styleUrl: './splash.component.css',
 })
-export class SplashComponent implements OnInit {
+export class SplashComponent {
   private router = inject(Router);
-
-  ngOnInit(): void {
-    localStorage.removeItem('harfi_onboarded');
-  }
+  private translate = inject(TranslateService);
   theme = inject(ThemeService);
-  language = inject(LanguageService);
+  lang = inject(LanguageService);
 
   currentSlide = 0;
 
   slides = [
-    {
-      icon: '🔍',
-      titleKey: 'ONBOARDING_S1_TITLE',
-      titleParts: ['ابحث عن ', 'الحرفي', ' المناسب'],
-      gradientWord: 'الحرفي',
-      descKey: 'ONBOARDING_S1_DESC',
-    },
-    {
-      icon: '💬',
-      titleKey: 'ONBOARDING_S2_TITLE',
-      titleParts: ['تواصل ', 'واتفق', ' مباشرة'],
-      gradientWord: 'واتفق',
-      descKey: 'ONBOARDING_S2_DESC',
-    },
-    {
-      icon: '⭐',
-      titleKey: 'ONBOARDING_S3_TITLE',
-      titleParts: ['جودة ', 'مضمونة', ' 100%'],
-      gradientWord: 'مضمونة',
-      descKey: 'ONBOARDING_S3_DESC',
-    },
+    { id: 0, icon: '🔍', title: 'ONBOARDING_S1_TITLE', gradientWord: 'SPLASH_GRADIENT_S1', desc: 'ONBOARDING_S1_DESC' },
+    { id: 1, icon: '💬', title: 'ONBOARDING_S2_TITLE', gradientWord: 'SPLASH_GRADIENT_S2', desc: 'ONBOARDING_S2_DESC' },
+    { id: 2, icon: '⭐', title: 'ONBOARDING_S3_TITLE', gradientWord: 'SPLASH_GRADIENT_S3', desc: 'ONBOARDING_S3_DESC' }
   ];
 
-  get isLastSlide(): boolean {
-    return this.currentSlide === this.slides.length - 1;
+  get isDark() { return this.theme.current() === 'dark'; }
+  get isArabic() { return this.lang.current() === 'ar'; }
+
+  getSlideTitle(slide: any): string {
+    const full = this.translate.instant(slide.title);
+    const word = this.translate.instant(slide.gradientWord);
+    return full.replace(word, `<span class="gradient-text">${word}</span>`);
   }
 
-  next(): void {
-    if (this.isLastSlide) {
-      this.completeOnboarding();
-    } else {
-      this.currentSlide++;
-    }
-  }
-
-  skip(): void {
-    this.completeOnboarding();
-  }
-
-  goToSlide(index: number): void {
-    this.currentSlide = index;
-  }
-
-  private completeOnboarding(): void {
-    localStorage.setItem('harfi_onboarded', 'true');
-    this.router.navigate(['/auth/login']);
-  }
-
-  goToRegister(): void {
-    localStorage.setItem('harfi_onboarded', 'true');
-    this.router.navigate(['/auth/register']);
-  }
+  goToLogin() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/login']); }
+  goToRegister() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/register']); }
+  skip() { this.goToLogin(); }
+  nextSlide() { if (this.currentSlide < 2) this.currentSlide++; }
 }

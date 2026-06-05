@@ -79,5 +79,14 @@
   "COMPLETED_ORDERS": "طلب مكتمل",
   "STAT_CRAFTSMEN": "حرفي مسجل",
   "STAT_RATING": "متوسط التقييم",
-  "STAT_SPECIALTIES": "تخصص مختلف"
+  "STAT_SPECIALTIES": "تخصص مختلف",
+  "SPLASH_BRAND_TITLE": "منصة الحرفيين الأولى",
+  "SPLASH_BADGE": "منصة موثوقة",
+  "SPLASH_GRADIENT_S1": "الحرفي",
+  "SPLASH_GRADIENT_S2": "واتفق",
+  "SPLASH_GRADIENT_S3": "مضمونة",
+  "NAV_HOME": "الرئيسية",
+  "NAV_HOW": "كيف يعمل",
+  "NAV_CRAFTSMEN": "الحرفيون",
+  "NAV_CONTACT": "تواصل معنا"
 }

@@ -1,116 +1,136 @@
-<div class="splash-layout">
-  <div class="splash-left">
-    <div class="splash-left-content">
-      <img src="assets/images/harfi_logo.png" alt="حرفي" class="splash-logo" />
-      <h1 class="splash-title">{{ 'WELCOME_BACK' | translate }}</h1>
-      <p class="splash-tagline">{{ 'WELCOME_TAGLINE' | translate }}</p>
-      <div class="splash-stats">
-        <span>10k+ {{ 'STAT_CRAFTSMEN' | translate }}</span>
-        <span class="stat-dot">|</span>
-        <span>4.9 {{ 'STAT_RATING' | translate }}</span>
-        <span class="stat-dot">|</span>
-        <span>50+ {{ 'STAT_SPECIALTIES' | translate }}</span>
+<!-- NAVBAR (full width, above split) -->
+<nav class="splash-nav" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+  <div class="splash-nav-right">
+    <img src="assets/images/harfi_logo.png" height="36" alt="حرفي" class="nav-logo-img" />
+    <span class="nav-brand-name gradient-text">{{ 'APP_NAME' | translate }}</span>
+  </div>
+  <div class="splash-nav-center">
+    <a class="nav-link">{{ 'NAV_HOME' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_HOW' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_CRAFTSMEN' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_CONTACT' | translate }}</a>
+  </div>
+  <div class="splash-nav-left">
+    <button class="nav-ctrl-btn" (click)="theme.toggle()">
+      {{ isDark ? '☀️' : '🌙' }}
+    </button>
+    <button class="nav-ctrl-btn" (click)="lang.toggle()">
+      🌐 {{ isArabic ? 'EN' : 'ع' }}
+    </button>
+    <button class="nav-login-btn" (click)="goToLogin()">
+      {{ 'LOGIN' | translate }}
+    </button>
+    <button class="nav-start-btn gradient-btn" (click)="goToRegister()">
+      {{ 'ONBOARDING_START' | translate }}
+    </button>
+  </div>
+</nav>
+
+<!-- SPLIT BODY -->
+<div class="splash-body" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+
+  <!-- RIGHT PANEL: slides -->
+  <div class="splash-right" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+    <div class="slide-badge">
+      <span class="badge-dot"></span>
+      {{ 'SPLASH_BADGE' | translate }}
+    </div>
+
+    @for (slide of slides; track slide.id) {
+      @if (currentSlide === slide.id) {
+        <div class="slide-content animate-fade">
+          <div class="slide-icon-box">{{ slide.icon }}</div>
+          <h2 class="slide-title" [innerHTML]="getSlideTitle(slide)"></h2>
+          <p class="slide-desc">{{ slide.desc | translate }}</p>
+        </div>
+      }
+    }
+
+    <div class="slide-actions">
+      <div class="action-row">
+        @if (currentSlide < 2) {
+          <button class="btn-next gradient-btn" (click)="nextSlide()">
+            {{ 'ONBOARDING_NEXT' | translate }} {{ isArabic ? '←' : '→' }}
+          </button>
+          <button class="btn-skip-inline" (click)="skip()">
+            {{ 'ONBOARDING_SKIP' | translate }}
+          </button>
+        } @else {
+          <button class="btn-next gradient-btn" (click)="goToRegister()">
+            {{ 'ONBOARDING_START' | translate }} {{ isArabic ? '←' : '→' }}
+          </button>
+          <button class="btn-skip-inline" (click)="skip()">
+            {{ 'ONBOARDING_SKIP' | translate }}
+          </button>
+        }
+      </div>
+      <div class="slide-dots" [style.justifyContent]="isArabic ? 'flex-start' : 'flex-end'">
+        @for (slide of slides; track slide.id) {
+          <span class="dot" [class.active]="currentSlide === slide.id"
+                (click)="currentSlide = slide.id"></span>
+        }
       </div>
     </div>
   </div>
 
-  <div class="splash-right">
-    <div class="splash-controls-start">
-      <button class="splash-control-btn" (click)="theme.toggle()">
-        {{ theme.current() === 'dark' ? '☀️' : '🌙' }}
-      </button>
-      <button class="splash-control-btn" (click)="language.toggle()">
-        {{ language.current() === 'ar' ? 'EN' : 'AR' }}
-      </button>
-    </div>
-    <div class="splash-controls-end">
-      <button class="splash-skip-link" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
-    </div>
-
-    <div class="splash-slides-container">
-      @for (slide of slides; track $index) {
-        @if ($index === currentSlide) {
-          <div class="splash-slide">
-            <div class="splash-slide-icon">{{ slide.icon }}</div>
-            <h2 class="splash-slide-title">
-              {{ slide.titleParts[0] }}<span class="gradient-text">{{ slide.titleParts[1] }}</span>{{ slide.titleParts[2] }}
-            </h2>
-            <p class="splash-slide-desc">{{ slide.descKey | translate }}</p>
-            <button class="gradient-btn splash-nav-btn" (click)="next()">
-              @if (isLastSlide) {
-                {{ 'ONBOARDING_START' | translate }} ←
-              } @else {
-                {{ 'ONBOARDING_NEXT' | translate }} ←
-              }
-            </button>
-            @if (isLastSlide) {
-              <button class="splash-create-account" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
-            }
-            @if (!isLastSlide) {
-              <button class="splash-skip-text" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
-            }
-          </div>
-        }
-      }
-    </div>
-
-    <div class="splash-dots">
-      @for (slide of slides; track $index) {
-        <button
-          class="splash-dot"
-          [ngClass]="{'active': $index === currentSlide}"
-          (click)="goToSlide($index)"
-        ></button>
-      }
+  <!-- LEFT PANEL: dark outer + inner gradient card -->
+  <div class="splash-left" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+    <div class="splash-brand-card">
+      <div class="brand-logo-circle">
+        <img src="assets/images/harfi_logo.png" alt="حرفي" class="brand-logo-img" />
+      </div>
+      <h1 class="brand-title">{{ 'SPLASH_BRAND_TITLE' | translate }}</h1>
+      <p class="brand-subtitle">{{ 'WELCOME_TAGLINE' | translate }}</p>
+      <div class="brand-stats">
+        <div class="stat-item">
+          <span class="stat-num">10k+</span>
+          <span class="stat-label">{{ 'STAT_CRAFTSMEN' | translate }}</span>
+        </div>
+        <div class="stat-sep">|</div>
+        <div class="stat-item">
+          <span class="stat-num">4.9</span>
+          <span class="stat-label">{{ 'STAT_RATING' | translate }}</span>
+        </div>
+        <div class="stat-sep">|</div>
+        <div class="stat-item">
+          <span class="stat-num">50+</span>
+          <span class="stat-label">{{ 'STAT_SPECIALTIES' | translate }}</span>
+        </div>
+      </div>
     </div>
   </div>
+
 </div>
 
+<!-- MOBILE FULL-SCREEN (< 768px) -->
 <div class="splash-mobile">
-  <div class="splash-mobile-top">
-    <div class="splash-mobile-controls">
-      <button class="splash-mobile-control-btn" (click)="theme.toggle()">
-        {{ theme.current() === 'dark' ? '☀️' : '🌙' }}
-      </button>
-      <button class="splash-mobile-control-btn" (click)="language.toggle()">
-        {{ language.current() === 'ar' ? 'EN' : 'AR' }}
-      </button>
-    </div>
-    <button class="splash-mobile-skip" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
+  <div class="mobile-top-bar">
+    <button class="nav-ctrl-btn" (click)="theme.toggle()">{{ isDark ? '☀️' : '🌙' }}</button>
+    <button class="nav-ctrl-btn" (click)="lang.toggle()">🌐</button>
+    <button class="btn-skip-mobile" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
   </div>
-
-  <div class="splash-mobile-body">
-    @for (slide of slides; track $index) {
-      @if ($index === currentSlide) {
-        <div class="splash-mobile-slide">
-          <img src="assets/images/harfi_logo.png" alt="حرفي" class="splash-mobile-logo" />
-          <div class="splash-mobile-icon">{{ slide.icon }}</div>
-          <h2 class="splash-mobile-title">
-            {{ slide.titleParts[0] }}<span class="splash-mobile-gradient">{{ slide.titleParts[1] }}</span>{{ slide.titleParts[2] }}
-          </h2>
-          <p class="splash-mobile-desc">{{ slide.descKey | translate }}</p>
+  <div class="mobile-content">
+    <img src="assets/images/harfi_logo.png" alt="حرفي" class="mobile-logo" />
+    @for (slide of slides; track slide.id) {
+      @if (currentSlide === slide.id) {
+        <div class="mobile-slide animate-fade">
+          <h2>{{ slide.title | translate }}</h2>
+          <p>{{ slide.desc | translate }}</p>
         </div>
       }
     }
   </div>
-
-  <div class="splash-mobile-bottom">
-    <div class="splash-mobile-dots">
-      @for (slide of slides; track $index) {
-        <button
-          class="splash-mobile-dot"
-          [ngClass]="{'active': $index === currentSlide}"
-          (click)="goToSlide($index)"
-        ></button>
+  <div class="mobile-bottom">
+    <div class="slide-dots">
+      @for (slide of slides; track slide.id) {
+        <span class="dot" [class.active]="currentSlide === slide.id"></span>
       }
     </div>
-
-    @if (isLastSlide) {
-      <button class="splash-mobile-start-btn" (click)="next()">{{ 'ONBOARDING_START' | translate }}</button>
-      <button class="splash-mobile-register-btn" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
-      <a class="splash-mobile-login-link" routerLink="/auth/login">{{ 'HAVE_ACCOUNT' | translate }} {{ 'LOGIN' | translate }}</a>
+    @if (currentSlide < 2) {
+      <button class="btn-mobile-next" (click)="nextSlide()">{{ 'ONBOARDING_NEXT' | translate }}</button>
     } @else {
-      <button class="splash-mobile-next-btn" (click)="next()">{{ 'ONBOARDING_NEXT' | translate }}</button>
+      <button class="btn-mobile-start gradient-btn" (click)="goToRegister()">{{ 'ONBOARDING_START' | translate }}</button>
+      <button class="btn-mobile-login" (click)="goToLogin()">{{ 'HAVE_ACCOUNT' | translate }} {{ 'LOGIN' | translate }}</button>
     }
   </div>
 </div>
