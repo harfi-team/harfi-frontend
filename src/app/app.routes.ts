@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
   {
     path: 'welcome',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/splash/splash.component').then(m => m.SplashComponent),
   },
   {
@@ -18,7 +20,12 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'craftsmen/search', pathMatch: 'full' },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        loadChildren: () =>
+          import('./features/home/home.routes').then(m => m.HOME_ROUTES),
+      },
       {
         path: 'craftsmen',
         loadChildren: () => import('./features/craftsman/craftsman.routes').then(m => m.craftsmanRoutes),

@@ -1,4 +1,25 @@
-.main-content {
-  min-height: calc(100dvh - 72px);
-  padding: 1.5rem;
+:host {
+  display: block;
+}
+
+.page-content {
+  min-height: 100dvh;
+  padding-bottom: 80px;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    margin-right: 260px;
+    padding-bottom: 0;
+  }
+}
+
+:host-context([lang='en']) .page-content {
+  margin-right: 0;
+}
+
+@media (min-width: 768px) {
+  :host-context([lang='en']) .page-content {
+    margin-left: 260px;
+  }
 }
