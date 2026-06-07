@@ -6,31 +6,74 @@
   </div>
 
   <div class="nav-items">
-    <a
-      class="nav-item"
-      routerLink="/home"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <span class="material-symbols-outlined">home</span>
-      <span>{{ 'NAV.HOME' | translate }}</span>
-    </a>
-    <a class="nav-item" routerLink="/craftsmen" routerLinkActive="active">
-      <span class="material-symbols-outlined">search</span>
-      <span>{{ 'NAV.SEARCH' | translate }}</span>
-    </a>
-    <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
-      <span class="material-symbols-outlined">calendar_today</span>
-      <span>{{ 'NAV.BOOKINGS' | translate }}</span>
-    </a>
-    <a class="nav-item" routerLink="/chat" routerLinkActive="active">
-      <span class="material-symbols-outlined">chat</span>
-      <span>{{ 'NAV.CHAT' | translate }}</span>
-    </a>
-    <a class="nav-item" routerLink="/user" routerLinkActive="active">
-      <span class="material-symbols-outlined">person</span>
-      <span>{{ 'NAV.PROFILE' | translate }}</span>
-    </a>
+    @if (!isAdmin) {
+      <a
+        class="nav-item"
+        routerLink="/home"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="material-symbols-outlined">home</span>
+        <span>{{ 'NAV.HOME' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/chat" routerLinkActive="active">
+        <span class="material-symbols-outlined">chat</span>
+        <span>{{ 'NAV.CHAT' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/notifications" routerLinkActive="active">
+        <span class="material-symbols-outlined">notifications</span>
+        <span>{{ 'NOTIFICATIONS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/user" routerLinkActive="active">
+        <span class="material-symbols-outlined">person</span>
+        <span>{{ 'NAV.PROFILE' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/craftsmen" routerLinkActive="active">
+        <span class="material-symbols-outlined">search</span>
+        <span>{{ 'NAV.SEARCH' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
+        <span class="material-symbols-outlined">calendar_today</span>
+        <span>{{ 'NAV.BOOKINGS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/ai" routerLinkActive="active">
+        <span class="material-symbols-outlined">smart_toy</span>
+        <span>{{ 'AI_ASSISTANT' | translate }}</span>
+      </a>
+    }
+
+    @if (isAdmin) {
+      <button class="add-craftsman-btn gradient-btn" (click)="navigateToAddCraftsman()">
+        <span class="material-symbols-outlined" style="font-size:18px">add</span>
+        إضافة حرفي جديد
+      </button>
+      <hr class="nav-divider" />
+      <span class="nav-section-label">{{ 'ADMIN.DASHBOARD' | translate }}</span>
+      <a class="nav-item" routerLink="/admin/dashboard" routerLinkActive="active">
+        <span class="material-symbols-outlined">home</span>
+        <span>{{ 'ADMIN.OVERVIEW' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/craftsmen" routerLinkActive="active">
+        <span class="material-symbols-outlined">person</span>
+        <span>{{ 'ADMIN.MANAGE_CRAFTSMEN' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/customers" routerLinkActive="active">
+        <span class="material-symbols-outlined">chat</span>
+        <span>{{ 'ADMIN.MANAGE_CUSTOMERS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/jobs" routerLinkActive="active">
+        <span class="material-symbols-outlined">calendar_today</span>
+        <span>{{ 'ADMIN.MANAGE_JOBS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/reviews" routerLinkActive="active">
+        <span class="material-symbols-outlined">smart_toy</span>
+        <span>{{ 'ADMIN.REVIEWS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/settings" routerLinkActive="active">
+        <span class="material-symbols-outlined">settings</span>
+        <span>{{ 'ADMIN.SETTINGS' | translate }}</span>
+      </a>
+    }
   </div>
 
   <div class="nav-footer">
@@ -47,8 +90,6 @@
       <span>{{ 'NAV.LOGOUT' | translate }}</span>
     </button>
   </div>
-
-  <button class="nav-book-btn" routerLink="/craftsmen">{{ 'NAV.BOOK_NOW' | translate }}</button>
 </nav>
 
 <!-- Bottom Nav (Mobile) -->

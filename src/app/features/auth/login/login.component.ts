@@ -30,7 +30,14 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading = true;
     this.authService.login(this.form.value as any).subscribe({
-      next: () => this.router.navigate(['/home']),
+      next: () => {
+        const role = this.authService.getRole();
+        if (role === 'admin') {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
       error: (err) => {
         this.errorHandler.handle(err);
         this.loading = false;

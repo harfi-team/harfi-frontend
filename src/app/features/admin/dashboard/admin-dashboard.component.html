@@ -1,0 +1,181 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <p class="dashboard-welcome">{{ 'ADMIN.WELCOME' | translate }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-grid">
+      @for (_ of [1,2,3,4]; track _) {
+        <div class="skeleton harfi-card" style="height:140px"></div>
+      }
+    </div>
+  } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <span class="growth-badge growth-badge--green">{{ (stats()?.craftsmenGrowthPercent || 12) }}%+ ↑</span>
+          <div class="stat-card__icon stat-card__icon--purple">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">person</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.totalCraftsmen || 1248) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <span class="growth-badge growth-badge--green">{{ (stats()?.customersGrowthPercent || 5) }}%+ ↑</span>
+          <div class="stat-card__icon stat-card__icon--blue">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">group</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.totalCustomers || 1247) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CUSTOMERS' | translate }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <span class="growth-badge growth-badge--green">{{ (stats()?.jobsGrowthPercent || 24) }}%+ ↑</span>
+          <div class="stat-card__icon stat-card__icon--orange">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">shopping_bag</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.completedJobs || 3891) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.COMPLETED_JOBS' | translate }}</div>
+      </div>
+
+      <div class="stat-card stat-card--urgent">
+        <div class="stat-card__header">
+          <span class="urgent-badge">{{ 'ADMIN.URGENT' | translate }}</span>
+          <div class="stat-card__icon stat-card__icon--red">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">pending</span>
+          </div>
+        </div>
+        <div class="stat-card__value stat-card__value--red">{{ (stats()?.pendingApproval || 12) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.PENDING_APPROVAL' | translate }}</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <span class="chart-menu">⋮</span>
+          <h3 class="chart-card__title">{{ 'ADMIN.LAST_30_DAYS' | translate }}</h3>
+        </div>
+        <svg viewBox="0 0 400 150" class="area-chart" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E94057" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#E94057" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,120 C40,110 80,100 120,80 C160,60 200,70 240,50 C280,30 320,40 360,20 L400,10 L400,150 L0,150 Z"
+                fill="url(#areaGrad)"/>
+          <path d="M0,120 C40,110 80,100 120,80 C160,60 200,70 240,50 C280,30 320,40 360,20 L400,10"
+                fill="none" stroke="#E94057" stroke-width="2"/>
+        </svg>
+        <div class="chart-xaxis">
+          <span>30 مايو</span>
+          <span>22 مايو</span>
+          <span>15 مايو</span>
+          <span>8 مايو</span>
+          <span>1 مايو</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <span class="chart-menu">⋮</span>
+          <h3 class="chart-card__title">{{ 'ADMIN.SERVICE_DISTRIBUTION' | translate }}</h3>
+        </div>
+        <div class="donut-wrapper">
+          <svg viewBox="0 0 120 120" class="donut-chart">
+            <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#E94057" stroke-width="18"
+                    stroke-dasharray="127 156" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#8A2387" stroke-width="18"
+                    stroke-dasharray="85 198" stroke-dashoffset="-127" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#F27121" stroke-width="18"
+                    stroke-dasharray="71 212" stroke-dashoffset="-212" transform="rotate(-90 60 60)"/>
+            <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">1.2K</text>
+            <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.TOTAL_ORDERS' | translate }}</text>
+          </svg>
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#E94057"></span><span>{{ 'SERVICES.PLUMBING' | translate }}</span><span class="legend-pct">45%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#8A2387"></span><span>{{ 'SERVICES.ELECTRICAL' | translate }}</span><span class="legend-pct">30%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#F27121"></span><span>{{ 'SERVICES.CARPENTRY' | translate }}</span><span class="legend-pct">25%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Tables Row -->
+    <div class="tables-row">
+      <div class="table-card">
+        <div class="table-card__header">
+          <a class="view-all-link" routerLink="/admin/jobs">{{ 'ADMIN.VIEW_ALL' | translate }}</a>
+          <h3 class="table-card__title"><span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">shopping_bag</span> {{ 'ADMIN.LATEST_ORDERS' | translate }}</h3>
+        </div>
+        <table class="mini-table">
+          <thead>
+            <tr><th>{{ 'VALUE' | translate }}</th><th>{{ 'SERVICE' | translate }}</th><th>{{ 'ORDER_ID' | translate }}</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>150 {{ 'CURRENCY' | translate }}</td>
+              <td>{{ 'ADMIN.PLUMBING_REPAIR' | translate }}</td>
+              <td class="order-id">#ORD-9821<br><small class="text-muted">{{ 'ADMIN.SINCE_10M' | translate }}</small></td>
+            </tr>
+            <tr>
+              <td>250 {{ 'CURRENCY' | translate }}</td>
+              <td>{{ 'ADMIN.AC_INSTALL' | translate }}</td>
+              <td class="order-id">#ORD-9820<br><small class="text-muted">{{ 'ADMIN.SINCE_45M' | translate }}</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card__header">
+          <a class="view-all-link" routerLink="/admin/craftsmen">{{ 'ADMIN.VIEW_ALL' | translate }}</a>
+          <h3 class="table-card__title"><span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">person</span> {{ 'ADMIN.LATEST_CRAFTSMEN' | translate }}</h3>
+        </div>
+        <table class="mini-table">
+          <thead>
+            <tr><th>{{ 'STATUS' | translate }}</th><th>{{ 'PROFESSION' | translate }}</th><th>{{ 'CRAFTSMAN' | translate }}</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="status-badge rejected">{{ 'ADMIN.REVIEW_STATUS' | translate }}</span></td>
+              <td><span class="harfi-chip">{{ 'SERVICES.PLUMBING' | translate }}</span></td>
+              <td>
+                <div class="craftsman-cell">
+                  <div class="avatar-sm">م</div>
+                  <div>
+                    <div class="craftsman-name">محمد عبدالله</div>
+                    <div class="craftsman-city text-muted">{{ 'CITY_RIYADH' | translate }}</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="status-badge open">{{ 'ADMIN.ACTIVE' | translate }}</span></td>
+              <td><span class="harfi-chip">{{ 'SERVICES.ELECTRICAL' | translate }}</span></td>
+              <td>
+                <div class="craftsman-cell">
+                  <div class="avatar-sm">خ</div>
+                  <div>
+                    <div class="craftsman-name">خالد صالح</div>
+                    <div class="craftsman-city text-muted">{{ 'CITY_JEDDAH' | translate }}</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,94 @@
+<div class="reviews-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">{{ 'ADMIN.REVIEWS' | translate }}</h2>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <div class="search-input-wrapper">
+      <span class="material-symbols-outlined search-ico">search</span>
+      <input
+        type="text"
+        class="filter-search"
+        [placeholder]="'SEARCH' | translate"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearch()"
+      />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (reviews().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'CUSTOMER' | translate }}</th>
+              <th>{{ 'CRAFTSMAN' | translate }}</th>
+              <th>{{ 'RATING' | translate }}</th>
+              <th>{{ 'COMMENT' | translate }}</th>
+              <th>{{ 'DATE' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of reviews(); track r.id) {
+              <tr>
+                <td>{{ r.customerName }}</td>
+                <td>{{ r.craftsmanName }}</td>
+                <td>
+                  <div class="stars-display">
+                    @for (_ of starsArray(r.rating); track $index) {
+                      <span class="material-symbols-outlined star filled" style="font-size:18px;line-height:1">star</span>
+                    }
+                    @for (_ of emptyStarsArray(r.rating); track $index) {
+                      <span class="material-symbols-outlined star empty" style="font-size:18px;line-height:1">star_border</span>
+                    }
+                    <span class="rating-num">({{ r.rating }})</span>
+                  </div>
+                </td>
+                <td class="comment-cell">{{ r.comment }}</td>
+                <td>{{ r.date }}</td>
+                <td><span class="status-badge open">{{ r.status }}</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-icon-btn action-delete" (click)="deleteReview(r.id)" title="{{ 'DELETE' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }}
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
+          @for (p of [].constructor(totalPages); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
