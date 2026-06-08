@@ -13,10 +13,23 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/layouts/auth-layout/auth-layout.component').then(m => m.AuthLayoutComponent),
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes),
   },
+  // ── AI: navbar يظهر (داخل main-layout) لكن بدون authGuard → يفتح بدون لوجن ──
+  {
+    path: '',
+    loadComponent: () => import('./shared/layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    children: [
+      {
+        path: 'ai',
+        loadChildren: () => import('./features/ai/ai.routes').then(m => m.aiRoutes),
+      },
+    ],
+  },
   {
     path: '',
     loadComponent: () => import('./shared/layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     canActivate: [authGuard],
+             // ← ضيف ده
+
     children: [
       { path: '', redirectTo: 'craftsmen/search', pathMatch: 'full' },
       {
@@ -47,10 +60,6 @@ export const routes: Routes = [
       {
         path: 'notifications',
         loadChildren: () => import('./features/notifications/notifications.routes').then(m => m.notificationsRoutes),
-      },
-      {
-        path: 'ai',
-        loadChildren: () => import('./features/ai/ai.routes').then(m => m.aiRoutes),
       },
     ],
   },
