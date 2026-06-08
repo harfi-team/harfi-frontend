@@ -12,6 +12,10 @@ import { ReviewsService } from '../reviews.service';
   styleUrls: ['./review-form.component.css'],
 })
 export class ReviewFormComponent implements OnInit {
+  /**
+   * jobId passed from parent component.
+   * Example: <review-form [jobId]="5" />
+   */
   @Input() jobId!: number;
 
   private reviewsService = inject(ReviewsService);
@@ -23,6 +27,7 @@ export class ReviewFormComponent implements OnInit {
 
   isLoading = false;
   isSubmitted = false; // true → show thank you screen
+  errorMessage = ''; // Arabic error from backend
 
   hoveredStar = 0;
   starsArray = [1, 2, 3, 4, 5];
@@ -53,6 +58,7 @@ export class ReviewFormComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.errorMessage = '';
 
     this.reviewsService
       .submitReview({
@@ -65,8 +71,10 @@ export class ReviewFormComponent implements OnInit {
           this.isLoading = false;
           this.isSubmitted = true;
         },
-        error: () => {
+        error: (err) => {
           this.isLoading = false;
+          this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
+          this.form.enable();
         },
       });
   }

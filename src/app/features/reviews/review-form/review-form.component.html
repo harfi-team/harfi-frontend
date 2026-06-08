@@ -2,16 +2,17 @@
   <!-- ══ Thank You ══ -->
   <div *ngIf="isSubmitted" class="done-screen">
     <div class="done-icon">✅</div>
-    <!-- ✅ translate pipe — no hardcoded text -->
     <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
     <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
   </div>
 
   <!-- ══ Form ══ -->
   <div *ngIf="!isSubmitted">
-    <!-- ✅ translate pipe -->
     <div class="form-title">{{ 'REVIEWS.FORM.TITLE' | translate }}</div>
 
+    <div *ngIf="errorMessage" class="alert-error">
+      {{ errorMessage }}
+    </div>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <!-- ── Stars ── -->
       <div class="mb-4">
@@ -35,7 +36,6 @@
           </span>
         </div>
 
-        <!-- ✅ translate pipe for star labels -->
         <small class="star-label">
           <ng-container [ngSwitch]="starsControl?.value">
             <span *ngSwitchCase="1">{{ 'REVIEWS.FORM.STAR_1' | translate }}</span>
@@ -48,7 +48,6 @@
         </small>
 
         <div *ngIf="starsControl?.invalid && starsControl?.touched" class="error-text">
-          <!-- ✅ translate pipe -->
           {{ 'REVIEWS.FORM.STARS_REQUIRED' | translate }}
         </div>
       </div>
@@ -81,11 +80,18 @@
       </div>
 
       <!-- ── Submit ── -->
+
       <button type="submit" class="submit-btn" [disabled]="isLoading">
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-        <!-- ✅ translate pipe -->
         {{ (isLoading ? 'REVIEWS.FORM.SUBMITTING_BTN' : 'REVIEWS.FORM.SUBMIT_BTN') | translate }}
       </button>
+      <p
+        *ngIf="isLoading"
+        class="text-center mt-2"
+        style="color: var(--text-secondary); font-size: 0.85rem"
+      >
+        جارٍ حفظ تقييمك...
+      </p>
     </form>
   </div>
 </div>

@@ -8,17 +8,17 @@
  * customerId NOT included — backend reads it from JWT token.
  */
 export interface CreateReviewRequest {
-    jobId: number;
-    stars: number;
-    comment?: string;
+  jobId: number;
+  stars: number;
+  comment?: string;
 }
 /**
  * POST /api/reviews/rag-feedback
  * User rates the AI self-fix guide after reading it.
  */
 export interface CreateRagFeedbackRequest {
-    ragDocumentId: number;
-    feedbackType: 'ساعدني' | 'محتاج حرفي';
+  ragDocumentId: number;
+  feedbackType: 'ساعدني' | 'محتاج حرفي';
 }
 
 /**
@@ -26,10 +26,9 @@ export interface CreateRagFeedbackRequest {
  * User sends a message to the AI assistant.
  */
 export interface AiChatRequest {
-    message: string;
-    sessionId?: string;
+  message: string;
+  sessionId?: string;
 }
-
 
 // ════════════════════════════════════════════════════════════
 //  RESPONSE MODELS — what we GET from the backend
@@ -37,15 +36,15 @@ export interface AiChatRequest {
 
 /**
  * Single review object returned by:
- *   GET  /api/reviews/craftsman/{id} 
+ *   GET  /api/reviews/craftsman/{id}
  */
 export interface ReviewResponse {
-    id: number;
-    jobId: number;
-    stars: number;
-    comment?: string;
-    customerName: string;
-    createdAt: string;
+  id: number;
+  jobId: number;
+  stars: number;
+  comment?: string;
+  customerName: string;
+  createdAt: string;
 }
 
 /**
@@ -53,28 +52,8 @@ export interface ReviewResponse {
  * Includes summary stats + list of reviews.
  */
 export interface CraftsmanReviewsResponse {
-    craftsmanId: number;
-    totalReviews: number;
-    averageStars: number;   // e.g. 4.6
-    reviews: ReviewResponse[];
-}
-
-/**
- * Returned by POST /api/AI/welcome
- * The greeting message shown when AI chat screen opens.
- */
-export interface AiWelcomeResponse {
-    message: string;
-}
-
-/**
- * Returned by POST /api/AI/chat
- * The AI assistant's reply to the user's message.
- */
-export interface AiChatResponse {
-    reply: string;          // AI response text in Arabic
-    sessionId?: string;     // backend may return session ID
-    ragDocumentId?: number; // set if AI used a RAG document
-    // if ragDocumentId exists → show rag-feedback buttons
-    suggestCraftsman?: boolean; // true → show "search craftsman" button
+  craftsmanId: number;
+  totalReviews: number;
+  averageStars: number; // e.g. 4.6
+  reviews: ReviewResponse[];
 }

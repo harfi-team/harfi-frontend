@@ -1,0 +1,99 @@
+<div class="reviews-section">
+  <!-- ══ Loading Skeleton ══ -->
+  <div *ngIf="isLoading">
+    <div class="skeleton-header skeleton mb-3"></div>
+    <div *ngFor="let i of [1, 2, 3]" class="review-card skeleton mb-3">
+      <div class="skeleton-line skeleton mb-2"></div>
+      <div class="skeleton-line short skeleton"></div>
+    </div>
+  </div>
+
+  <!-- ══ Error State ══ -->
+  <div *ngIf="!isLoading && hasError" class="empty-state">
+    <div class="empty-icon">⚠️</div>
+    <p>{{ 'REVIEWS.CRAFTSMAN.LOAD_ERROR' | translate }}</p>
+    <button class="retry-btn" (click)="loadReviews()">
+      {{ 'REVIEWS.CRAFTSMAN.RETRY_BTN' | translate }}
+    </button>
+  </div>
+
+  <!-- ══ Main Content ══ -->
+  <div *ngIf="!isLoading && !hasError && data">
+    <!-- ── Summary Bar ── -->
+    <div class="summary-bar">
+      <div class="summary-right">
+        <span class="section-title">
+          {{ 'REVIEWS.CRAFTSMAN.TITLE' | translate }}
+        </span>
+        <span class="total-badge">
+          {{ data.totalReviews }}
+          {{ 'REVIEWS.CRAFTSMAN.REVIEWS_COUNT' | translate }}
+        </span>
+      </div>
+
+      <!-- Average Stars -->
+      <div class="average-block">
+        <span class="average-number">{{ data.averageStars }}</span>
+        <div class="average-stars">
+          <span
+            *ngFor="let filled of getStarsArray(data.averageStars)"
+            class="star-icon"
+            [class.filled]="filled === 1"
+          >
+            ★
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Empty Reviews ── -->
+    <div *ngIf="data.totalReviews === 0" class="empty-state">
+      <div class="empty-icon">💬</div>
+      <p>{{ 'REVIEWS.CRAFTSMAN.NO_REVIEWS' | translate }}</p>
+    </div>
+
+    <!-- ── Reviews List ── -->
+    <div *ngIf="data.totalReviews > 0">
+      <div *ngFor="let review of visibleReviews" class="review-card">
+        <!-- Review Header -->
+        <div class="review-header">
+          <div class="reviewer-info">
+            <!-- Avatar initials -->
+            <div class="reviewer-avatar">
+              {{ review.customerName.charAt(0) }}
+            </div>
+            <div>
+              <div class="reviewer-name">{{ review.customerName }}</div>
+              <div class="review-date">{{ formatDate(review.createdAt) }}</div>
+            </div>
+          </div>
+
+          <!-- Stars -->
+          <div class="review-stars">
+            <span
+              *ngFor="let filled of getStarsArray(review.stars)"
+              class="star-icon"
+              [class.filled]="filled === 1"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+
+        <!-- Comment -->
+        <p *ngIf="review.comment" class="review-comment">
+          {{ review.comment }}
+        </p>
+        <p *ngIf="!review.comment" class="no-comment">
+          {{ 'REVIEWS.CRAFTSMAN.NO_COMMENT' | translate }}
+        </p>
+      </div>
+
+      <!-- ── Show More / Less Button ── -->
+      <button *ngIf="data.totalReviews > visibleCount" class="toggle-btn" (click)="toggleShowAll()">
+        {{ (showAll ? 'REVIEWS.CRAFTSMAN.SHOW_LESS' : 'REVIEWS.CRAFTSMAN.SHOW_MORE') | translate }}
+        {{ !showAll ? '(' + (data.totalReviews - visibleCount) + ')' : '' }}
+      </button>
+    </div>
+  </div>
+</div>

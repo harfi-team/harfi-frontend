@@ -1,0 +1,85 @@
+<div class="customers-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">{{ 'ADMIN.MANAGE_CUSTOMERS' | translate }}</h2>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <div class="search-input-wrapper">
+      <span class="material-symbols-outlined search-ico">search</span>
+      <input
+        type="text"
+        class="filter-search"
+        [placeholder]="'SEARCH' | translate"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearch()"
+      />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (customers().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'NAME' | translate }}</th>
+              <th>{{ 'PHONE' | translate }}</th>
+              <th>{{ 'EMAIL' | translate }}</th>
+              <th>{{ 'CITY' | translate }}</th>
+              <th>{{ 'JOIN_DATE' | translate }}</th>
+              <th>{{ 'TOTAL_JOBS' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of customers(); track c.id) {
+              <tr>
+                <td>{{ c.name }}</td>
+                <td>{{ c.phone }}</td>
+                <td>{{ c.email }}</td>
+                <td>{{ c.city }}</td>
+                <td>{{ c.joinDate }}</td>
+                <td>{{ c.totalJobs | number }}</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-icon-btn" title="{{ 'VIEW' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span></button>
+                    <button class="action-icon-btn action-delete" (click)="deleteCustomer(c.id)" title="{{ 'DELETE' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }}
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
+          @for (p of [].constructor(totalPages); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

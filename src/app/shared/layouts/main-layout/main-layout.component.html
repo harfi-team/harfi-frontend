@@ -1,4 +1,27 @@
 <app-side-nav />
 <div class="page-content">
-  <router-outlet />
+  <header class="app-topbar">
+    <div class="topbar-left">
+      <h1 class="page-title">{{ pageTitle() | translate }}</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input
+          type="text"
+          class="search-input"
+          [placeholder]="'ADMIN.SEARCH_ORDER' | translate"
+        />
+      </div>
+      <button class="icon-btn">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <div class="user-avatar">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+    </div>
+  </header>
+  <main class="main-content">
+    <router-outlet />
+  </main>
 </div>
