@@ -220,6 +220,23 @@
     "DAY_MON": "Mon",
     "DAY_TUE": "Tue",
     "DAY_WED": "Wed",
-    "DAY_THU": "Thu"
-  }
+    "DAY_THU": "Thu",
+    "TOTAL_CUSTOMERS": "Total Customers",
+    "COMPLETED_JOBS": "Completed Jobs",
+    "LAST_30_DAYS": "Orders Last 30 Days",
+    "SERVICE_DISTRIBUTION": "Service Distribution",
+    "LATEST_CRAFTSMEN": "Latest Registered Craftsmen",
+    "LATEST_ORDERS": "Latest Orders",
+    "REVIEW_STATUS": "Under Review",
+    "PLUMBING_REPAIR": "Fix Water Leak",
+    "AC_INSTALL": "Install AC Unit",
+    "SINCE_10M": "10 minutes ago",
+    "SINCE_45M": "45 minutes ago",
+    "TOTAL_ORDERS": "Total Orders",
+    "URGENT": "Urgent",
+    "VALUE": "Value"
+  },
+  "CITY_RIYADH": "Riyadh",
+  "CITY_JEDDAH": "Jeddah",
+  "CURRENCY": "SAR"
 }
