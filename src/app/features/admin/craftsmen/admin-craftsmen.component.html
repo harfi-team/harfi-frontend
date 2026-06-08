@@ -1,0 +1,164 @@
+<div class="craftsmen-page">
+  <!-- Stats Cards -->
+  <div class="stats-row">
+    <div class="stat-card stat-card--red">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">person</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ 324 | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--orange">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">hourglass_empty</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ 12 | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.PENDING_APPROVAL' | translate }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--green">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">check_circle</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ 280 | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.ACTIVE' | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Row -->
+  <div class="filter-row">
+    <div class="search-input-wrapper">
+      <span class="material-symbols-outlined search-ico">search</span>
+      <input
+        type="text"
+        class="filter-search"
+        [placeholder]="'ADMIN.SEARCH_CRAFTSMAN' | translate"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearch()"
+      />
+    </div>
+    <select class="filter-select" [(ngModel)]="city" (ngModelChange)="onSearch()">
+      <option value="">{{ 'ADMIN.ALL_CITIES' | translate }}</option>
+      <option value="القاهرة">القاهرة</option>
+      <option value="الجيزة">الجيزة</option>
+      <option value="الإسكندرية">الإسكندرية</option>
+    </select>
+    <select class="filter-select" [(ngModel)]="specialty" (ngModelChange)="onSearch()">
+      <option value="">{{ 'ADMIN.ALL_SPECIALTIES' | translate }}</option>
+      <option value="سباكة">{{ 'SERVICES.PLUMBING' | translate }}</option>
+      <option value="كهرباء">{{ 'SERVICES.ELECTRICAL' | translate }}</option>
+      <option value="نجارة">{{ 'SERVICES.CARPENTRY' | translate }}</option>
+    </select>
+  </div>
+
+  <!-- Tab Pills -->
+  <div class="tab-pills">
+    <button class="tab-pill" [class.active]="activeTab() === 'all'" (click)="setTab('all')">
+      {{ 'ALL' | translate }} (324)
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'pending'" (click)="setTab('pending')">
+      {{ 'ADMIN.PENDING_APPROVAL' | translate }} (12)
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'approved'" (click)="setTab('approved')">
+      {{ 'ADMIN.APPROVED' | translate }} (298)
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'rejected'" (click)="setTab('rejected')">
+      {{ 'ADMIN.REJECTED_STATUS' | translate }} (10)
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4,5]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (craftsmen().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:32px"><input type="checkbox" /></th>
+              <th>{{ 'CRAFTSMAN' | translate }}</th>
+              <th>{{ 'SPECIALTY' | translate }}</th>
+              <th>{{ 'CITY' | translate }}</th>
+              <th>{{ 'REGISTRATION_DATE' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of craftsmen(); track c.id) {
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="craftsman-cell">
+                    <div class="avatar-circle">{{ c.name.charAt(0) }}</div>
+                    <div class="craftsman-info">
+                      <span class="craftsman-name">{{ c.name }}</span>
+                      <span class="craftsman-phone">{{ c.phone }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="harfi-chip">{{ c.specialty }}</span></td>
+                <td>{{ c.city }}</td>
+                <td>{{ c.registrationDate }}</td>
+                <td>
+                  <span class="status-dot-badge status-dot-badge--{{ c.status }}">
+                    <span class="dot"></span>
+                    {{ getStatusLabel(c.status) | translate }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-icon-btn" title="{{ 'VIEW' | translate }}">
+                      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                    </button>
+                    @if (c.status === 'pending') {
+                      <button class="action-icon-btn action-approve" (click)="approve(c.id)" title="{{ 'APPROVE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+                      </button>
+                      <button class="action-icon-btn action-reject" (click)="reject(c.id)" title="{{ 'REJECT' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">cancel</span>
+                      </button>
+                    }
+                    <button class="action-icon-btn action-more" title="{{ 'MORE' | translate }}">
+                      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">more_vert</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }} {{ 'CRAFTSMEN' | translate }}
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
+          @for (p of [].constructor(totalPages); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
