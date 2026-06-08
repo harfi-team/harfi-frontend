@@ -1,0 +1,183 @@
+<div class="ai-logs-page">
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card stat-card--gradient">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:28px;line-height:1">chat</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ (analytics()?.totalChats ?? 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CHATS' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--white">
+      <div class="stat-card__icon stat-card__icon--brand">
+        <span class="material-symbols-outlined" style="font-size:28px;line-height:1">token</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ formatTokens(analytics()?.totalTokensUsed ?? 0) }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_TOKENS' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--white">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <span class="material-symbols-outlined" style="font-size:28px;line-height:1">analytics</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ (analytics()?.averageTokensPerChat ?? 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.AVG_TOKENS' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--white">
+      <div class="stat-card__icon stat-card__icon--green">
+        <span class="material-symbols-outlined" style="font-size:28px;line-height:1">person_book</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ (analytics()?.totalCraftsmenIngested ?? 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.INGESTED_CRAFTSMEN' | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date Range Filter -->
+  <div class="filter-row">
+    <div class="date-filter-group">
+      <label class="date-label">{{ 'FROM' | translate }}</label>
+      <input type="date" class="filter-date" [(ngModel)]="fromDate" (ngModelChange)="applyFilter()" />
+    </div>
+    <div class="date-filter-group">
+      <label class="date-label">{{ 'TO' | translate }}</label>
+      <input type="date" class="filter-date" [(ngModel)]="toDate" (ngModelChange)="applyFilter()" />
+    </div>
+    @if (fromDate() || toDate()) {
+      <button class="btn-clear-filter" (click)="clearFilter()">
+        <span class="material-symbols-outlined" style="font-size:16px;line-height:1">close</span>
+        {{ 'CLEAR' | translate }}
+      </button>
+    }
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4,5]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (logs().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:40px"></th>
+              <th>{{ 'ADMIN.USER' | translate }}</th>
+              <th>{{ 'ADMIN.ROLE' | translate }}</th>
+              <th>{{ 'ADMIN.CONTENT' | translate }}</th>
+              <th>{{ 'ADMIN.TOOL_USED' | translate }}</th>
+              <th>{{ 'ADMIN.TOKENS' | translate }}</th>
+              <th>{{ 'ADMIN.DATETIME' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (group of groupedLogs(); track group.sessionId) {
+              <!-- Session Group Header -->
+              <tr class="session-header" (click)="toggleSession(group.sessionId)">
+                <td>
+                  <span class="expand-icon" [class.expanded]="isExpanded(group.sessionId)">
+                    <span class="material-symbols-outlined" style="font-size:18px;line-height:1">expand_more</span>
+                  </span>
+                </td>
+                <td colspan="6">
+                  <div class="session-info">
+                    <span class="session-badge">{{ 'ADMIN.SESSION' | translate }}</span>
+                    <code class="session-id">{{ group.sessionId }}</code>
+                    <span class="session-user">{{ group.userName }}</span>
+                    <span class="session-count">{{ group.messages.length }} {{ 'ADMIN.MESSAGES' | translate }}</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Expanded Messages -->
+              @if (isExpanded(group.sessionId)) {
+                @for (msg of group.messages; track msg.id) {
+                  <tr class="message-row" [class.row-assistant]="msg.role === 'assistant'">
+                    <td></td>
+                    <td>
+                      <div class="user-cell">
+                        <div class="avatar-xs">{{ msg.userName.charAt(0) }}</div>
+                        <span>{{ msg.userName }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="role-badge {{ roleColor(msg.role) }}">
+                        {{ (msg.role === 'assistant' ? 'ADMIN.ASSISTANT' : 'ADMIN.USER') | translate }}
+                      </span>
+                    </td>
+                    <td class="content-cell" title="{{ msg.content }}">{{ truncate(msg.content) }}</td>
+                    <td>
+                      @if (msg.toolUsed) {
+                        <span class="tool-chip">{{ msg.toolUsed }}</span>
+                      } @else {
+                        <span class="text-muted">&mdash;</span>
+                      }
+                    </td>
+                    <td class="tokens-cell">{{ msg.tokensUsed | number }}</td>
+                    <td class="date-cell">{{ msg.createdAt | date:'short' }}</td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-row">
+        <span class="pagination-info">
+          {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }}
+          {{ 'OF' | translate }} {{ total() | number }}
+        </span>
+        <div class="pagination-btns">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">‹</button>
+          @for (p of [].constructor(totalPages()); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages()" (click)="changePage(page() + 1)">›</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- AI Sync Buttons -->
+  <div class="sync-section">
+    <h3 class="sync-title">{{ 'ADMIN.AI_SYNC' | translate }}</h3>
+    <div class="sync-buttons">
+      <button class="sync-btn sync-btn--craftsmen" (click)="syncCraftsmen()" [disabled]="syncingCraftsmen()">
+        @if (syncingCraftsmen()) {
+          <span class="spinner"></span>
+        } @else {
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">sync</span>
+        }
+        {{ 'ADMIN.SYNC_CRAFTSMEN' | translate }}
+      </button>
+      <button class="sync-btn sync-btn--jobs" (click)="syncJobs()" [disabled]="syncingJobs()">
+        @if (syncingJobs()) {
+          <span class="spinner"></span>
+        } @else {
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">sync</span>
+        }
+        {{ 'ADMIN.SYNC_JOBS' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

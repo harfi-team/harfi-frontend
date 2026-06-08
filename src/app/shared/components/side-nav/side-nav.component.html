@@ -1,4 +1,3 @@
-<!-- Side Nav (Desktop) -->
 <nav class="side-nav">
   <div class="nav-brand">
     <img src="assets/images/harfi_logo.png" alt="حرفي" class="nav-logo" />
@@ -7,12 +6,7 @@
 
   <div class="nav-items">
     @if (!isAdmin) {
-      <a
-        class="nav-item"
-        routerLink="/home"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+      <a class="nav-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <span class="material-symbols-outlined">home</span>
         <span>{{ 'NAV.HOME' | translate }}</span>
       </a>
@@ -43,10 +37,12 @@
     }
 
     @if (isAdmin) {
-      <button class="add-craftsman-btn gradient-btn" (click)="navigateToAddCraftsman()">
-        <span class="material-symbols-outlined" style="font-size:18px">add</span>
-        إضافة حرفي جديد
-      </button>
+      @if (showAddButton()) {
+        <button class="add-craftsman-btn gradient-btn" (click)="navigateToAddCraftsman()">
+          <span class="material-symbols-outlined" style="font-size:18px">add</span>
+          {{ 'ADMIN.ADD_CRAFTSMAN' | translate }}
+        </button>
+      }
       <hr class="nav-divider" />
       <span class="nav-section-label">{{ 'ADMIN.DASHBOARD' | translate }}</span>
       <a class="nav-item" routerLink="/admin/dashboard" routerLinkActive="active">
@@ -58,7 +54,7 @@
         <span>{{ 'ADMIN.MANAGE_CRAFTSMEN' | translate }}</span>
       </a>
       <a class="nav-item" routerLink="/admin/customers" routerLinkActive="active">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="material-symbols-outlined">group</span>
         <span>{{ 'ADMIN.MANAGE_CUSTOMERS' | translate }}</span>
       </a>
       <a class="nav-item" routerLink="/admin/jobs" routerLinkActive="active">
@@ -66,8 +62,24 @@
         <span>{{ 'ADMIN.MANAGE_JOBS' | translate }}</span>
       </a>
       <a class="nav-item" routerLink="/admin/reviews" routerLinkActive="active">
-        <span class="material-symbols-outlined">smart_toy</span>
+        <span class="material-symbols-outlined">star</span>
         <span>{{ 'ADMIN.REVIEWS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/reports" routerLinkActive="active">
+        <span class="material-symbols-outlined">flag</span>
+        <span>{{ 'ADMIN.REPORTS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/ai-logs" routerLinkActive="active">
+        <span class="material-symbols-outlined">smart_toy</span>
+        <span>{{ 'ADMIN.AI_LOGS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/audit-logs" routerLinkActive="active">
+        <span class="material-symbols-outlined">history</span>
+        <span>{{ 'ADMIN.AUDIT_LOGS' | translate }}</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/analytics" routerLinkActive="active">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <span>{{ 'ADMIN.ANALYTICS' | translate }}</span>
       </a>
       <a class="nav-item" routerLink="/admin/settings" routerLinkActive="active">
         <span class="material-symbols-outlined">settings</span>
@@ -92,14 +104,8 @@
   </div>
 </nav>
 
-<!-- Bottom Nav (Mobile) -->
 <nav class="bottom-nav">
-  <a
-    class="bottom-nav-item"
-    routerLink="/home"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
+  <a class="bottom-nav-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
     <span class="material-symbols-outlined">home</span>
     <span>{{ 'NAV.HOME' | translate }}</span>
   </a>

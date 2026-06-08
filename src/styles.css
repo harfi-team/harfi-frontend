@@ -109,6 +109,16 @@ html, body {
 .status-badge.in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .status-badge.done { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+.status-badge.cancelled { background: rgba(107, 114, 128, 0.1); color: var(--text-secondary); }
+.status-badge.disputed { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+
+/* Job Status Classes (from JobStatusPipe) */
+.status-open { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+.status-in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.status-completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+.status-cancelled { background: rgba(107, 114, 128, 0.1); color: var(--text-secondary); }
+.status-disputed { background: rgba(239, 68, 68, 0.1); color: var(--error); }
 
 /* Layouts */
 .sidebar-layout {

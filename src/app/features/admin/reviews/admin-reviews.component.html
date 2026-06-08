@@ -1,24 +1,27 @@
 <div class="reviews-page">
-  <!-- Header -->
   <div class="page-header">
     <h2 class="page-title">{{ 'ADMIN.REVIEWS' | translate }}</h2>
   </div>
 
-  <!-- Search -->
-  <div class="search-row">
-    <div class="search-input-wrapper">
+  <div class="filter-row" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <div class="search-input-wrapper" style="max-width:400px">
       <span class="material-symbols-outlined search-ico">search</span>
-      <input
-        type="text"
-        class="filter-search"
-        [placeholder]="'SEARCH' | translate"
-        [(ngModel)]="search"
-        (ngModelChange)="onSearch()"
-      />
+      <input type="text" class="filter-search" [placeholder]="'SEARCH' | translate" [(ngModel)]="search" (ngModelChange)="onSearch()" />
     </div>
+    <select class="filter-select" [(ngModel)]="minStars" (ngModelChange)="onSearch()" style="min-width:100px">
+      <option [value]="undefined">{{ 'ALL' | translate }}</option>
+      @for (s of [1,2,3,4,5]; track s) {
+        <option [value]="s">{{ s }}+ {{ 'STARS' | translate }}</option>
+      }
+    </select>
+    <select class="filter-select" [(ngModel)]="maxStars" (ngModelChange)="onSearch()" style="min-width:100px">
+      <option [value]="undefined">{{ 'ALL' | translate }}</option>
+      @for (s of [1,2,3,4,5]; track s) {
+        <option [value]="s">{{ s }}- {{ 'STARS' | translate }}</option>
+      }
+    </select>
   </div>
 
-  <!-- Table -->
   <div class="harfi-card table-card">
     @if (loading()) {
       <div class="skeleton-table">
@@ -28,44 +31,77 @@
       </div>
     } @else if (reviews().length === 0) {
       <div class="empty-state">
-        <p>{{ 'NO_DATA' | translate }}</p>
+        <p>{{ 'ADMIN.EMPTY_REVIEWS' | translate }}</p>
       </div>
     } @else {
       <div class="table-responsive">
         <table class="admin-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>{{ 'CUSTOMER' | translate }}</th>
               <th>{{ 'CRAFTSMAN' | translate }}</th>
               <th>{{ 'RATING' | translate }}</th>
               <th>{{ 'COMMENT' | translate }}</th>
-              <th>{{ 'DATE' | translate }}</th>
               <th>{{ 'STATUS' | translate }}</th>
               <th>{{ 'ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             @for (r of reviews(); track r.id) {
-              <tr>
-                <td>{{ r.customerName }}</td>
-                <td>{{ r.craftsmanName }}</td>
+              <tr [class.row-deleted]="r.isDeleted">
+                <td>{{ r.id }}</td>
                 <td>
-                  <div class="stars-display">
-                    @for (_ of starsArray(r.rating); track $index) {
-                      <span class="material-symbols-outlined star filled" style="font-size:18px;line-height:1">star</span>
+                  <div class="name-cell">
+                    {{ r.customerName }}
+                    @if (r.customer?.isDeleted) {
+                      <span class="warning-badge" title="{{ 'ADMIN.DELETED_CUSTOMER' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:14px;line-height:1">warning</span>
+                      </span>
                     }
-                    @for (_ of emptyStarsArray(r.rating); track $index) {
-                      <span class="material-symbols-outlined star empty" style="font-size:18px;line-height:1">star_border</span>
-                    }
-                    <span class="rating-num">({{ r.rating }})</span>
                   </div>
                 </td>
-                <td class="comment-cell">{{ r.comment }}</td>
-                <td>{{ r.date }}</td>
-                <td><span class="status-badge open">{{ r.status }}</span></td>
+                <td>
+                  <div class="name-cell">
+                    {{ r.craftsmanName }}
+                    @if (r.craftsman?.isDeleted) {
+                      <span class="warning-badge" title="{{ 'ADMIN.DELETED_CRAFTSMAN' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:14px;line-height:1">warning</span>
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="stars-display">
+                    @for (_ of starsArray(r.stars); track $index) {
+                      <span class="material-symbols-outlined star filled" style="font-size:18px;line-height:1">star</span>
+                    }
+                    @for (_ of emptyStarsArray(r.stars); track $index) {
+                      <span class="material-symbols-outlined star empty" style="font-size:18px;line-height:1">star_border</span>
+                    }
+                  </div>
+                </td>
+                <td class="comment-cell" [title]="r.comment">{{ truncate(r.comment, 60) }}</td>
+                <td>
+                  <span class="status-dot-badge status-dot-badge--{{ getBadge(r).cssClass }}">
+                    <span class="dot"></span>
+                    {{ getBadge(r).label | translate }}
+                  </span>
+                </td>
                 <td>
                   <div class="action-btns">
-                    <button class="action-icon-btn action-delete" (click)="deleteReview(r.id)" title="{{ 'DELETE' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span></button>
+                    @if (!r.isDeleted) {
+                      <button class="action-icon-btn" (click)="openView(r.id)" title="{{ 'VIEW' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                      </button>
+                    }
+                    @if (showActions(r).delete) {
+                      <button class="action-icon-btn action-delete" (click)="openDelete(r.id)" title="{{ 'DELETE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+                      </button>
+                    } @else {
+                      <span class="deleted-label">{{ 'ADMIN.DELETED' | translate }}</span>
+                    }
                   </div>
                 </td>
               </tr>
@@ -74,7 +110,6 @@
         </table>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination">
         <div class="pagination-info">
           {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }}
@@ -82,9 +117,7 @@
         <div class="pagination-controls">
           <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
           @for (p of [].constructor(totalPages); track $index) {
-            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
-              {{ $index + 1 }}
-            </button>
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
           }
           <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
         </div>
@@ -92,3 +125,38 @@
     }
   </div>
 </div>
+
+<app-confirm-dialog
+  [visible]="dialogVisible()"
+  [title]="'ADMIN.CONFIRM_DELETE'"
+  [message]="'ADMIN.CONFIRM_DELETE_MESSAGE'"
+  [confirmLabel]="'DELETE'"
+  [requireReason]="true"
+  [reasonLabel]="'ADMIN.DELETION_REASON'"
+  (confirmed)="onDeleteConfirmed($event)"
+  (dismissed)="dialogVisible.set(false)"
+/>
+
+@if (viewReview()) {
+  <div class="modal-overlay" (click)="closeView()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'VIEW' | translate }} {{ 'REVIEW' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+        <p><strong>{{ 'CUSTOMER' | translate }}:</strong> {{ viewReview()?.customerName }}</p>
+        <p><strong>{{ 'CRAFTSMAN' | translate }}:</strong> {{ viewReview()?.craftsmanName }}</p>
+        <p><strong>{{ 'RATING' | translate }}:</strong>
+          @for (_ of starsArray(viewReview()?.stars || 0); track $index) {
+            <span class="material-symbols-outlined star filled" style="font-size:18px">star</span>
+          }
+        </p>
+        <p><strong>{{ 'COMMENT' | translate }}:</strong> {{ viewReview()?.comment }}</p>
+        <p><strong>{{ 'DATE' | translate }}:</strong> {{ viewReview()?.createdAt | date:'medium' }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeView()">{{ 'CANCEL' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}

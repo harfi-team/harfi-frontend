@@ -1,0 +1,443 @@
+<div class="analytics-page">
+  <!-- Header Row -->
+  <div class="analytics-header">
+    <h2 class="analytics-title">{{ 'ADMIN.ANALYTICS' | translate }}</h2>
+    <div class="export-dropdown">
+      <button class="btn-export gradient-btn" [disabled]="exporting()">
+        {{ exporting() ? ('ADMIN.EXPORTING' | translate) : ('ADMIN.EXPORT_CSV' | translate) }} ▾
+      </button>
+      <div class="export-menu">
+        <button (click)="exportData('users')">{{ 'ADMIN.EXPORT_USERS' | translate }}</button>
+        <button (click)="exportData('craftsmen')">{{ 'ADMIN.EXPORT_CRAFTSMEN' | translate }}</button>
+        <button (click)="exportData('jobs')">{{ 'ADMIN.EXPORT_JOBS' | translate }}</button>
+        <button (click)="exportData('reviews')">{{ 'ADMIN.EXPORT_REVIEWS' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Pills -->
+  <div class="tabs-group">
+    <button class="filter-tab" [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">{{ 'ADMIN.OVERVIEW' | translate }}</button>
+    <button class="filter-tab" [class.active]="activeTab() === 'craftsmen'" (click)="setTab('craftsmen')">{{ 'ADMIN.CRAFTSMEN' | translate }}</button>
+    <button class="filter-tab" [class.active]="activeTab() === 'jobs'" (click)="setTab('jobs')">{{ 'ADMIN.JOBS' | translate }}</button>
+    <button class="filter-tab" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">{{ 'ADMIN.REVIEWS' | translate }}</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 1 — نظرة عامة                                              -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'overview') {
+    @if (loadingOverview()) {
+      <div class="skeleton-grid">
+        @for (_ of [1,2,3,4,5,6,7,8,9]; track _) {
+          <div class="skeleton harfi-card" style="height:120px"></div>
+        }
+      </div>
+    } @else if (overview(); as o) {
+      <div class="stats-grid stats-grid--9">
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <span class="info-tooltip" [title]="'ADMIN.INCLUDES_DELETED' | translate">
+              <span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:var(--text-secondary);cursor:help">info</span>
+            </span>
+          </div>
+          <div class="stat-card__value">{{ o.totalUsers | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_USERS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <span class="info-tooltip" [title]="'ADMIN.INCLUDES_DELETED' | translate">
+              <span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:var(--text-secondary);cursor:help">info</span>
+            </span>
+          </div>
+          <div class="stat-card__value">{{ o.totalCraftsmen | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--urgent">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--red">
+              <span class="material-symbols-outlined">pending</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ o.pendingCraftsmen | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.PENDING_CRAFTSMEN' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">shopping_bag</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ o.activeJobs | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.ACTIVE_JOBS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--green">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ o.completedJobs | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.COMPLETED_JOBS' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--danger">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--warning">
+              <span class="material-symbols-outlined">warning</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ o.disputedJobs | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.DISPUTED_JOBS' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--danger">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--red">
+              <span class="material-symbols-outlined">flag</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ o.pendingReports | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.PENDING_REPORTS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <span class="material-symbols-outlined">reviews</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ o.totalReviews | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_REVIEWS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ o.averageRating | number:'1.1-1' }}</div>
+          <div class="stat-card__stars">
+            @for (icon of starDisplay(o.averageRating); track $index) {
+              <span class="material-symbols-outlined star-icon">{{ icon }}</span>
+            }
+          </div>
+          <div class="stat-card__label">{{ 'ADMIN.AVERAGE_RATING' | translate }}</div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 2 — الحرفيون                                               -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'craftsmen') {
+    @if (loadingCraftsmen()) {
+      <div class="skeleton-grid">
+        @for (_ of [1,2,3,4,5,6]; track _) {
+          <div class="skeleton harfi-card" style="height:120px"></div>
+        }
+      </div>
+    } @else if (craftsmen(); as c) {
+      <div class="stats-grid stats-grid--6">
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ c.totalCraftsmen | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--urgent">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">pending</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ c.pendingApproval | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.PENDING_APPROVAL' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--green">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+          </div>
+          <div class="stat-card__value" style="color:var(--success)">{{ c.approved | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.APPROVED' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--red">
+              <span class="material-symbols-outlined">block</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ c.rejected | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.REJECTED' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--warning-bg">
+              <span class="material-symbols-outlined">pause_circle</span>
+            </div>
+          </div>
+          <div class="stat-card__value" style="color:var(--warning)">{{ c.suspended | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.SUSPENDED' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ c.averageRating | number:'1.1-1' }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.AVERAGE_RATING' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Donut Charts Row -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3 class="chart-card__title">{{ 'ADMIN.BY_SERVICE_TYPE' | translate }}</h3>
+          <div class="donut-wrapper">
+            @if (sumValues(c.byServiceType) > 0) {
+              <svg viewBox="0 0 120 120" class="donut-chart">
+                <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
+                @for (seg of donutSegments(c.byServiceType); track seg.label) {
+                  <circle cx="60" cy="60" r="45" fill="none" [attr.stroke]="seg.color" stroke-width="18"
+                          [attr.stroke-dasharray]="(seg.ratio * 283) + ' ' + (283 - seg.ratio * 283)"
+                          [attr.stroke-dashoffset]="seg.offset"
+                          transform="rotate(-90 60 60)"/>
+                }
+                <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">{{ sumValues(c.byServiceType) }}</text>
+                <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.CRAFTSMEN' | translate }}</text>
+              </svg>
+            }
+          </div>
+          <div class="donut-legend">
+            @for (seg of donutSegments(c.byServiceType); track seg.label) {
+              <div class="legend-item">
+                <span class="legend-dot" [style.background]="seg.color"></span>
+                <span>{{ seg.label }}</span>
+                <span class="legend-pct">{{ seg.ratio | percent:'1.0-0' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-card__title">{{ 'ADMIN.BY_CITY' | translate }}</h3>
+          <div class="donut-wrapper">
+            @if (sumValues(c.byCity) > 0) {
+              <svg viewBox="0 0 120 120" class="donut-chart">
+                <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
+                @for (seg of donutSegments(c.byCity); track seg.label) {
+                  <circle cx="60" cy="60" r="45" fill="none" [attr.stroke]="seg.color" stroke-width="18"
+                          [attr.stroke-dasharray]="(seg.ratio * 283) + ' ' + (283 - seg.ratio * 283)"
+                          [attr.stroke-dashoffset]="seg.offset"
+                          transform="rotate(-90 60 60)"/>
+                }
+                <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">{{ sumValues(c.byCity) }}</text>
+                <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.CRAFTSMEN' | translate }}</text>
+              </svg>
+            }
+          </div>
+          <div class="donut-legend">
+            @for (seg of donutSegments(c.byCity); track seg.label) {
+              <div class="legend-item">
+                <span class="legend-dot" [style.background]="seg.color"></span>
+                <span>{{ seg.label }}</span>
+                <span class="legend-pct">{{ seg.ratio | percent:'1.0-0' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 3 — الطلبات                                                 -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'jobs') {
+    @if (loadingJobs()) {
+      <div class="skeleton-grid">
+        @for (_ of [1,2,3,4,5,6]; track _) {
+          <div class="skeleton harfi-card" style="height:120px"></div>
+        }
+      </div>
+    } @else if (jobs(); as j) {
+      <div class="stats-grid stats-grid--6">
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <span class="material-symbols-outlined">shopping_bag</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ j.totalJobs | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_JOBS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <span class="material-symbols-outlined">new_window</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ j.open | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.OPEN' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">settings</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ j.inProgress | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.IN_PROGRESS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--green">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+          </div>
+          <div class="stat-card__value" style="color:var(--success)">{{ j.completed | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.COMPLETED' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--red">
+              <span class="material-symbols-outlined">block</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ j.rejected | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.REJECTED' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--danger">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--warning-bg">
+              <span class="material-symbols-outlined">warning</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ j.disputed | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.DISPUTED' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="chart-card">
+        <h3 class="chart-card__title">{{ 'ADMIN.JOB_STATUS_DISTRIBUTION' | translate }}</h3>
+        <div class="bar-chart">
+          @for (status of jobStatuses(); track status.key) {
+            <div class="bar-row">
+              <span class="bar-label">{{ status.label | translate }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="(status.value / maxJobStatus()) * 100" [style.background]="status.color"></div>
+              </div>
+              <span class="bar-value">{{ status.value | number }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Average Completion Days -->
+      <div class="stat-card stat-card--inline" style="margin-top:16px">
+        <div class="stat-card__header">
+          <div class="stat-card__icon stat-card__icon--blue">
+            <span class="material-symbols-outlined">schedule</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ j.averageCompletionDays | number:'1.1-1' }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.AVG_COMPLETION_DAYS' | translate }}</div>
+      </div>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 4 — المراجعات                                              -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'reviews') {
+    @if (loadingReviews()) {
+      <div class="skeleton-grid">
+        @for (_ of [1,2,3]; track _) {
+          <div class="skeleton harfi-card" style="height:120px"></div>
+        }
+      </div>
+    } @else if (reviews(); as r) {
+      <div class="stats-grid stats-grid--3">
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <span class="material-symbols-outlined">reviews</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ r.totalReviews | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_REVIEWS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ r.averageStars | number:'1.1-1' }}</div>
+          <div class="stat-card__stars">
+            @for (icon of starDisplay(r.averageStars); track $index) {
+              <span class="material-symbols-outlined star-icon">{{ icon }}</span>
+            }
+          </div>
+          <div class="stat-card__label">{{ 'ADMIN.AVERAGE_STARS' | translate }}</div>
+        </div>
+
+        <div class="stat-card stat-card--danger">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--red">
+              <span class="material-symbols-outlined">delete</span>
+            </div>
+          </div>
+          <div class="stat-card__value stat-card__value--red">{{ r.deletedReviews | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.DELETED_REVIEWS' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Star Distribution Bar Chart -->
+      <div class="chart-card">
+        <h3 class="chart-card__title">{{ 'ADMIN.STAR_DISTRIBUTION' | translate }}</h3>
+        <div class="bar-chart">
+          @for (bar of starBars(); track bar.stars) {
+            <div class="bar-row">
+              <span class="bar-label">{{ bar.stars }} {{ 'STARS' | translate }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="(bar.count / maxStarCount()) * 100" [style.background]="bar.color"></div>
+              </div>
+              <span class="bar-value">{{ bar.count | number }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

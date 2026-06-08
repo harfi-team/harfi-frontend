@@ -1,0 +1,163 @@
+<div class="audit-logs-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">سجل العمليات الإدارية</h2>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-input-wrapper">
+      <span class="material-symbols-outlined filter-ico">search</span>
+      <input
+        type="text"
+        class="filter-input"
+        placeholder="بحث بالإجراء..."
+        [(ngModel)]="actionFilter"
+        (ngModelChange)="onFilter()"
+      />
+    </div>
+    <select class="filter-select" [(ngModel)]="targetTypeFilter" (ngModelChange)="onFilter()">
+      <option value="">كل الأنواع</option>
+      @for (t of targetTypeOptions; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+    <input
+      type="date"
+      class="filter-date"
+      [(ngModel)]="fromDate"
+      (ngModelChange)="onFilter()"
+      placeholder="من تاريخ"
+    />
+    <input
+      type="date"
+      class="filter-date"
+      [(ngModel)]="toDate"
+      (ngModelChange)="onFilter()"
+      placeholder="إلى تاريخ"
+    />
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4,5]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (logs().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>المشرف</th>
+              <th>الإجراء</th>
+              <th>نوع الهدف</th>
+              <th>رقم الهدف</th>
+              <th>الملاحظات</th>
+              <th>عنوان IP</th>
+              <th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of logs(); track log.id) {
+              <tr class="clickable-row" (click)="showDetail(log)">
+                <td>
+                  @if (log.adminName) {
+                    {{ log.adminName }}
+                  } @else {
+                    <span class="deleted-admin">{{ 'ADMIN.DELETED_ADMIN' | translate }}</span>
+                  }
+                </td>
+                <td><span class="action-chip">{{ 'APPROVED_ACTION_' + log.action | translate }}</span></td>
+                <td>{{ log.targetType }}</td>
+                <td>{{ log.targetId }}</td>
+                <td class="notes-cell">{{ log.notes ? (log.notes.length > 30 ? (log.notes | slice:0:30) + '...' : log.notes) : '-' }}</td>
+                <td>{{ log.ipAddress || '-' }}</td>
+                <td>{{ log.createdAt }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-row">
+        <div class="pagination-info">
+          عرض {{ startEntry | number }}-{{ endEntry | number }} من {{ total() | number }}
+        </div>
+        <div class="pagination-btns">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">‹</button>
+          @for (p of [].constructor(totalPages); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">›</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Detail Modal -->
+  @if (selectedLog(); as log) {
+    <div class="modal-overlay" (click)="closeDetail()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">تفاصيل العملية</h3>
+          <button class="modal-close-btn" (click)="closeDetail()">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">close</span>
+          </button>
+        </div>
+        @if (detailLoading()) {
+          <div class="modal-loading">جاري التحميل...</div>
+        } @else {
+          <div class="modal-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">المعرف</span>
+                <span class="detail-value">{{ log.id }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">المشرف</span>
+                <span class="detail-value">{{ log.adminName }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">الإجراء</span>
+                <span class="detail-value">{{ 'APPROVED_ACTION_' + log.action | translate }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">نوع الهدف</span>
+                <span class="detail-value">{{ log.targetType }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">رقم الهدف</span>
+                <span class="detail-value">{{ log.targetId }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">عنوان IP</span>
+                <span class="detail-value">{{ log.ipAddress || '-' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">التاريخ</span>
+                <span class="detail-value">{{ log.createdAt }}</span>
+              </div>
+              <div class="detail-item detail-item--full">
+                <span class="detail-label">الملاحظات</span>
+                <span class="detail-value">{{ log.notes || '-' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeDetail()">إغلاق</button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

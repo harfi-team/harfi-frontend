@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
@@ -18,6 +18,8 @@ export class SideNavComponent {
   themeService = inject(ThemeService);
   languageService = inject(LanguageService);
 
+  showAddButton = input<boolean>(false);
+
   get isAdmin(): boolean {
     return this.auth.getRole() === 'admin';
   }
@@ -31,6 +33,6 @@ export class SideNavComponent {
   }
 
   navigateToAddCraftsman(): void {
-    this.router.navigate(['/admin/craftsmen/add']);
+    // Removed - no backend endpoint exists
   }
 }

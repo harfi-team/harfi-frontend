@@ -3,13 +3,14 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AdminService } from '../admin.service';
-import { ReviewAdminDto } from '@core/models/admin.models';
+import { AdminReview } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-admin-reviews',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, DecimalPipe],
+  imports: [CommonModule, FormsModule, TranslateModule, DecimalPipe, ConfirmDialogComponent],
   templateUrl: './admin-reviews.component.html',
   styleUrl: './admin-reviews.component.css',
 })
@@ -17,12 +18,19 @@ export class AdminReviewsComponent {
   private adminService = inject(AdminService);
   private errorHandler = inject(ErrorHandlerService);
 
-  reviews = signal<ReviewAdminDto[]>([]);
+  reviews = signal<AdminReview[]>([]);
   loading = signal(true);
   total = signal(0);
   page = signal(1);
-  pageSize = 10;
+  pageSize = 20;
   search = signal('');
+  minStars = signal<number | undefined>(undefined);
+  maxStars = signal<number | undefined>(undefined);
+
+  viewReview = signal<any | null>(null);
+
+  dialogVisible = signal(false);
+  selectedId = signal<number>(0);
 
   constructor() {
     this.loadReviews();
@@ -30,14 +38,10 @@ export class AdminReviewsComponent {
 
   loadReviews(): void {
     this.loading.set(true);
-    this.adminService.getReviews({
-      search: this.search() || undefined,
-      page: this.page(),
-      pageSize: this.pageSize,
-    }).subscribe({
+    this.adminService.getReviews(undefined, this.minStars(), this.maxStars(), this.page(), this.pageSize).subscribe({
       next: (data) => {
         this.reviews.set(data.items);
-        this.total.set(data.total);
+        this.total.set(data.totalCount);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
@@ -54,13 +58,54 @@ export class AdminReviewsComponent {
     this.loadReviews();
   }
 
-  deleteReview(id: string): void {
-    this.adminService.deleteReview(id).subscribe({
-      next: () => {
-        this.errorHandler.success('تم حذف التقييم');
+  openView(id: number): void {
+    this.adminService.getReviewById(id).subscribe({
+      next: (data) => this.viewReview.set(data),
+      error: () => this.viewReview.set(null),
+    });
+  }
+
+  closeView(): void {
+    this.viewReview.set(null);
+  }
+
+  openDelete(id: number): void {
+    this.selectedId.set(id);
+    this.dialogVisible.set(true);
+  }
+
+  onDeleteConfirmed(reason?: string): void {
+    this.adminService.deleteReview(this.selectedId(), reason || 'admin delete').subscribe({
+      next: (res) => {
+        this.errorHandler.success(res.message || 'تم حذف التقييم');
+        this.dialogVisible.set(false);
         this.loadReviews();
       },
+      error: () => this.dialogVisible.set(false),
     });
+  }
+
+  starsArray(rating: number): number[] {
+    return Array(Math.round(rating ?? 0)).fill(0);
+  }
+
+  emptyStarsArray(rating: number): number[] {
+    return Array(5 - Math.round(rating ?? 0)).fill(0);
+  }
+
+  truncate(text: string, max: number): string {
+    return text?.length > max ? text.slice(0, max) + '...' : text || '';
+  }
+
+  getBadge(r: any): { label: string; cssClass: string } {
+    if (r.isDeleted) return { label: 'ADMIN.DELETED', cssClass: 'deleted' };
+    if (r.customer?.isDeleted) return { label: 'ADMIN.DELETED_CUSTOMER', cssClass: 'pending' };
+    if (r.craftsman?.isDeleted) return { label: 'ADMIN.DELETED_CRAFTSMAN', cssClass: 'pending' };
+    return { label: 'ADMIN.ACTIVATED', cssClass: 'approved' };
+  }
+
+  showActions(r: any): { delete: boolean } {
+    return { delete: !r.isDeleted };
   }
 
   get totalPages(): number {
@@ -73,13 +118,5 @@ export class AdminReviewsComponent {
 
   get endEntry(): number {
     return Math.min(this.page() * this.pageSize, this.total());
-  }
-
-  starsArray(rating: number): number[] {
-    return Array(Math.round(rating)).fill(0);
-  }
-
-  emptyStarsArray(rating: number): number[] {
-    return Array(5 - Math.round(rating)).fill(0);
   }
 }

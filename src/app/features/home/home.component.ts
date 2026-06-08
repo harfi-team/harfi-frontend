@@ -31,7 +31,7 @@ interface Order {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslateModule, CommonModule],
+  imports: [RouterLink, TranslateModule, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

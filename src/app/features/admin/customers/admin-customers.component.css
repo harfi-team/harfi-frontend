@@ -130,6 +130,20 @@
   color: var(--error);
 }
 
+.row-deleted {
+  opacity: 0.6;
+}
+
+.deleted-date-hint,
+.inactive-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: help;
+}
+
 .pagination {
   display: flex;
   justify-content: space-between;
