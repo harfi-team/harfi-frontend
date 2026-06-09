@@ -140,6 +140,8 @@
     "CITY": "City",
     "ADDRESS": "Address",
     "SCHEDULED_AT": "Preferred Date",
+    "CREATED_AT": "Created",
+    "PROBLEM_IMAGE": "Problem Photo",
     "BUDGET": "Budget",
     "CRAFTSMAN_ID": "Craftsman ID",
     "CRAFTSMAN_NAME": "Craftsman",
@@ -217,7 +219,8 @@
     "MOVING": "Moving",
     "PEST": "Pest Control",
     "ROOFING": "Roofing",
-    "MORE": "More"
+    "MORE": "More",
+    "OTHER": "Other"
   },
   "CRAFTSMEN": {
     "MAHMOUD": "Mahmoud Khaled",

@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CraftsmanDto } from '../../core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman/craftsman.service';
 import { JobsService } from '../jobs/jobs.service';
-import { JobDto, JobStatus } from '@core/models/job.models';
+import { JobDto, JobStatus } from '../../core/models/job.models';
 
 interface Service {
   icon: string;
@@ -110,6 +110,7 @@ export class HomeComponent implements OnInit {
   }
 
   getServiceIcon(serviceType: string): string {
+    if (!serviceType) return 'handyman';
     const iconMap: Record<string, string> = {
       'سباك': 'plumbing',
       'كهربائي': 'electrical_services',

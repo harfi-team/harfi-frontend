@@ -16,6 +16,7 @@ export interface JobDto {
   address?: string;
   budget?: number | null;
   preferredDate?: string | null;
+  problemImageUrl?: string | null;
   status: JobStatus;
   createdAt?: string;
   updatedAt?: string;

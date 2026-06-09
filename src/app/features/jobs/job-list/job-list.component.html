@@ -74,16 +74,41 @@
       @for (job of visibleJobs(); track trackByJobId($index, job)) {
         <article class="job-card">
           <header class="job-card__header">
-            <div>
-              <p class="job-service">{{ getServiceLabel(job.service) | translate }}</p>
-              <h2>{{ getAssignedLabel(job) }}</h2>
+            <div class="job-card__title-group">
+              <div class="job-service-icon">
+                <span class="material-symbols-outlined">{{ getServiceIcon(job.service) }}</span>
+              </div>
+              <div>
+                <p class="job-service">{{ getServiceLabel(job.service) | translate }}</p>
+                <h2>{{ getAssignedLabel(job) }}</h2>
+              </div>
             </div>
             <span [class]="getStatusClass(job.status)">{{ getStatusLabelKey(job.status) | translate }}</span>
           </header>
 
           <p class="job-description">{{ job.description }}</p>
 
+          @if (job.problemImageUrl) {
+            <div class="job-image-section">
+              <img
+                class="job-image-thumb"
+                [src]="getImageUrl(job.problemImageUrl)"
+                [alt]="'JOBS.PROBLEM_IMAGE' | translate"
+              />
+            </div>
+          }
+
           <dl class="job-meta">
+            <div>
+              <dt>{{ 'JOBS.CREATED_AT' | translate }}</dt>
+              <dd>
+                @if (job.createdAt) {
+                  {{ job.createdAt | date: 'mediumDate' }}
+                } @else {
+                  {{ 'JOBS.NOT_SET' | translate }}
+                }
+              </dd>
+            </div>
             <div>
               <dt>{{ 'JOBS.CITY' | translate }}</dt>
               <dd>{{ job.city || '-' }}</dd>

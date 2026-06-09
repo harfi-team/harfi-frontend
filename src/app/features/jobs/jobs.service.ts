@@ -2,10 +2,22 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateJobDto, JobAction, JobDto } from '@core/models/job.models';
+import { CreateJobDto, JobAction, JobDto, JobStatus } from '@core/models/job.models';
 
 type ApiListResponse<T> = T[] | { items?: T[]; data?: T[]; result?: T[] };
 type ApiItemResponse<T> = T | { item?: T; data?: T; result?: T; job?: T };
+
+const STATUS_MAP: Record<string, JobStatus> = {
+  'مفتوح': 'open',
+  'قيد التنفيذ': 'in-progress',
+  'مكتمل': 'done',
+  'مرفوض': 'rejected',
+  'ملغى': 'rejected',
+  'open': 'open',
+  'in-progress': 'in-progress',
+  'done': 'done',
+  'rejected': 'rejected',
+};
 
 @Injectable({ providedIn: 'root' })
 export class JobsService {
@@ -17,14 +29,16 @@ export class JobsService {
   }
 
   getCustomerJobs(customerId: number | string): Observable<JobDto[]> {
-    return this.http.get<ApiListResponse<JobDto>>(`${this.base}/customer/${customerId}`).pipe(
+    return this.http.get<ApiListResponse<any>>(`${this.base}/customer/${customerId}`).pipe(
       map(response => this.extractList(response)),
+      map(items => items.map(item => this.normalizeJob(item))),
     );
   }
 
   getCraftsmanJobs(craftsmanId: number | string): Observable<JobDto[]> {
-    return this.http.get<ApiListResponse<JobDto>>(`${this.base}/craftsman/${craftsmanId}`).pipe(
+    return this.http.get<ApiListResponse<any>>(`${this.base}/craftsman/${craftsmanId}`).pipe(
       map(response => this.extractList(response)),
+      map(items => items.map(item => this.normalizeJob(item))),
     );
   }
 
@@ -51,6 +65,26 @@ export class JobsService {
       default:
         throw new Error('Unsupported job action');
     }
+  }
+
+  private normalizeJob(raw: any): JobDto {
+    return {
+      id: String(raw.id),
+      customerId: raw.customerId,
+      customerName: raw.customerName,
+      craftsmanId: raw.craftsmanId,
+      craftsmanName: raw.craftsmanName,
+      service: raw.service || raw.serviceType || '',
+      description: raw.description || raw.problemDescription || '',
+      city: raw.city || '',
+      address: raw.address || '',
+      budget: raw.budget ?? null,
+      preferredDate: raw.preferredDate || null,
+      problemImageUrl: raw.problemImageUrl || null,
+      status: STATUS_MAP[raw.status] || 'open',
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
+    };
   }
 
   private extractList<T>(response: ApiListResponse<T>): T[] {

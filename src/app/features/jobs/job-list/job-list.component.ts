@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { JobAction, JobDto, JobStatus } from '@core/models/job.models';
 import { JobsService } from '../jobs.service';
+import { environment } from '../../../../environments/environment';
 
 type JobFilterTab = 'all' | JobStatus;
 
@@ -72,7 +73,10 @@ export class JobListComponent implements OnInit {
 
     request.subscribe({
       next: (items) => {
-        this.jobs.set(items);
+        const sorted = [...items].sort(
+          (a, b) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
+        );
+        this.jobs.set(sorted);
         this.loading.set(false);
       },
       error: (error) => {
@@ -134,6 +138,7 @@ export class JobListComponent implements OnInit {
   }
 
   getServiceLabel(service: string): string {
+    if (!service) return 'SERVICES.OTHER';
     const normalized = service.toLowerCase();
     const map: Record<string, string> = {
       plumbing: 'SERVICES.PLUMBING',
@@ -145,9 +150,17 @@ export class JobListComponent implements OnInit {
       moving: 'SERVICES.MOVING',
       pest: 'SERVICES.PEST',
       roofing: 'SERVICES.ROOFING',
+      'سباك': 'SERVICES.PLUMBING',
+      'كهربائي': 'SERVICES.ELECTRICAL',
+      'نجار': 'SERVICES.CARPENTRY',
+      'نقاش': 'SERVICES.PAINTING',
+      'تكييف': 'SERVICES.AC',
+      'نظافة': 'SERVICES.CLEANING',
+      'نقل': 'SERVICES.MOVING',
+      'مكافحة حشرات': 'SERVICES.PEST',
     };
 
-    return map[normalized] ?? service;
+    return map[normalized] ?? map[service] ?? service;
   }
 
   getAssignedLabel(job: JobDto): string {
@@ -172,5 +185,34 @@ export class JobListComponent implements OnInit {
 
   trackByJobId(_: number, job: JobDto): string {
     return job.id;
+  }
+
+  getServiceIcon(service: string): string {
+    if (!service) return 'handyman';
+    const iconMap: Record<string, string> = {
+      'سباك': 'plumbing',
+      'كهربائي': 'electrical_services',
+      'نجار': 'carpenter',
+      'نقاش': 'format_paint',
+      'تكييف': 'ac_unit',
+      'نظافة': 'cleaning_services',
+      'نقل': 'local_shipping',
+      'مكافحة حشرات': 'pest_control',
+      'plumbing': 'plumbing',
+      'electrical': 'electrical_services',
+      'carpentry': 'carpenter',
+      'painting': 'format_paint',
+      'ac': 'ac_unit',
+      'cleaning': 'cleaning_services',
+      'moving': 'local_shipping',
+      'pest': 'pest_control',
+      'roofing': 'roofing',
+    };
+    return iconMap[service.toLowerCase()] ?? iconMap[service] ?? 'handyman';
+  }
+
+  getImageUrl(path: string): string {
+    const serverBase = environment.apiBaseUrl.replace('/api', '');
+    return `${serverBase}${path}`;
   }
 }

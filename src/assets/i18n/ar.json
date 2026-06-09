@@ -140,6 +140,8 @@
     "CITY": "المدينة",
     "ADDRESS": "العنوان",
     "SCHEDULED_AT": "التاريخ المفضل",
+    "CREATED_AT": "تاريخ الإنشاء",
+    "PROBLEM_IMAGE": "صورة المشكلة",
     "BUDGET": "الميزانية",
     "CRAFTSMAN_ID": "رقم الحرفي",
     "CRAFTSMAN_NAME": "الحرفي",
@@ -217,7 +219,8 @@
     "MOVING": "نقل عفش",
     "PEST": "مكافحة حشرات",
     "ROOFING": "عزل أسطح",
-    "MORE": "المزيد"
+    "MORE": "المزيد",
+    "OTHER": "أخرى"
   },
   "CRAFTSMEN": {
     "MAHMOUD": "محمود خالد",
