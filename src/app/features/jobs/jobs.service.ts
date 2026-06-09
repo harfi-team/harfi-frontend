@@ -24,8 +24,24 @@ export class JobsService {
   private http = inject(HttpClient);
   private base = `${environment.apiBaseUrl}/jobs`;
 
-  createJob(body: CreateJobDto): Observable<void> {
-    return this.http.post<void>(this.base, body);
+  createJob(body: CreateJobDto): Observable<any> {
+    const payload: any = {
+      craftsmanId: body.craftsmanId ? Number(body.craftsmanId) : undefined,
+      serviceType: body.service,
+      description: body.description,
+      address: body.address,
+      preferredDate: body.preferredDate || undefined,
+      problemImageUrl: body.problemImageUrl || undefined,
+      problemDescription: body.problemDescription || undefined,
+    };
+    return this.http.post<any>(this.base, payload);
+  }
+
+  uploadJobImage(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const uploadUrl = environment.apiBaseUrl.replace('/api', '') + '/api/jobs/upload-image';
+    return this.http.post<{ url: string }>(uploadUrl, formData);
   }
 
   getCustomerJobs(customerId: number | string): Observable<JobDto[]> {

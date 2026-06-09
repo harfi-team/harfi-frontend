@@ -30,4 +30,6 @@ export interface CreateJobDto {
   budget?: number | null;
   preferredDate?: string | null;
   craftsmanId?: number | string | null;
+  problemImageUrl?: string | null;
+  problemDescription?: string | null;
 }

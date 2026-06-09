@@ -167,12 +167,19 @@
     "SUCCESS_REJECTED": "Job rejected successfully",
     "SUCCESS_COMPLETED": "Job marked as completed",
     "VALIDATION_REQUIRED": "This field is required",
-    "VALIDATION_DESCRIPTION": "Add at least 20 characters so the request is clear.",
+    "VALIDATION_DESCRIPTION": "Add at least 10 characters so the request is clear.",
     "CREATE_GUIDE_TITLE": "What happens next?",
     "CREATE_GUIDE_DESC": "Once you submit the job, the selected craftsman can review it, accept the request, and move it through the workflow.",
-    "CREATE_GUIDE_1": "Use a clear description so the request is easy to review.",
+    "CREATE_GUIDE_1": "Describe the problem clearly...",
     "CREATE_GUIDE_2": "Add a budget and preferred date only if you already have them.",
-    "CREATE_GUIDE_3": "Leave the craftsman ID empty for a general request."
+    "CREATE_GUIDE_3": "Leave the craftsman ID empty for a general request.",
+    "UPLOAD_HINT": "Drag and drop an image or click to browse",
+    "STREET_DETAIL": "Street / Building Details",
+    "NO_CRAFTSMAN_SELECTED": "No craftsman selected yet",
+    "VISIT_FEE": "Visit Fee",
+    "ESTIMATED_TOTAL": "Estimated Total",
+    "CONFIRM_BOOKING": "Confirm Booking",
+    "SECURE_INFO": "Private & secure information"
   },
   "HOME": {
     "USER": "User",
