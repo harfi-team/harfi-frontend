@@ -44,6 +44,7 @@ export class AiLogsComponent {
   constructor() {
     this.loadAnalytics();
     this.loadLogs();
+    this.loadVectorsCount();
   }
 
   groupedLogs = computed<AiLogGroup[]>(() => {
@@ -124,15 +125,21 @@ export class AiLogsComponent {
     this.loadLogs();
   }
 
+  vectorsTotal = signal<number>(0);
+  loadingVectors = signal(false);
+
   syncCraftsmen(): void {
     this.syncingCraftsmen.set(true);
     this.http
-      .post<{ count: number }>(`${environment.apiBaseUrl}/AI/ingest/craftsmen`, {})
+      .post<{ totalCraftsmen: number; totalChunksIndexed: number; message: string }>(
+        `${environment.apiBaseUrl}/AI/ingest/craftsmen`, {}
+      )
       .pipe(finalize(() => this.syncingCraftsmen.set(false)))
       .subscribe({
         next: (res) => {
-          this.errorHandler.success(`تمت مزامنة ${res.count} حرفي بنجاح`);
+          this.errorHandler.success(res.message || `تمت مزامنة ${res.totalCraftsmen} حرفي بنجاح`);
           this.loadAnalytics();
+          this.loadVectorsCount();
         },
       });
   }
@@ -140,13 +147,24 @@ export class AiLogsComponent {
   syncJobs(): void {
     this.syncingJobs.set(true);
     this.http
-      .post<{ count: number }>(`${environment.apiBaseUrl}/AI/ingest/jobs`, {})
+      .post<{ indexed: number }>(`${environment.apiBaseUrl}/AI/ingest/jobs`, {})
       .pipe(finalize(() => this.syncingJobs.set(false)))
       .subscribe({
         next: (res) => {
-          this.errorHandler.success(`تمت مزامنة ${res.count} حل بنجاح`);
+          this.errorHandler.success(`تمت مزامنة ${res.indexed} حل بنجاح`);
           this.loadAnalytics();
+          this.loadVectorsCount();
         },
+      });
+  }
+
+  loadVectorsCount(): void {
+    this.loadingVectors.set(true);
+    this.http
+      .get<{ totalVectors: number }>(`${environment.apiBaseUrl}/AI/vectors/count`)
+      .pipe(finalize(() => this.loadingVectors.set(false)))
+      .subscribe({
+        next: (res) => this.vectorsTotal.set(res.totalVectors),
       });
   }
 

@@ -81,22 +81,22 @@ export class AdminService {
   }
 
   approveCraftsman(id: number, notifyMessage?: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/craftsmen/${id}/approve`, { notifyMessage })
+    return this.http.put<AdminActionResponse>(`${this.base}/craftsmen/${id}/approve`, { notifyMessage })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   rejectCraftsman(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/craftsmen/${id}/reject`, { reason })
+    return this.http.put<AdminActionResponse>(`${this.base}/craftsmen/${id}/reject`, { reason })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   suspendCraftsman(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/craftsmen/${id}/suspend`, { reason })
+    return this.http.put<AdminActionResponse>(`${this.base}/craftsmen/${id}/suspend`, { reason })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   deleteCraftsman(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/craftsmen/${id}/delete`, { reason })
+    return this.http.delete<AdminActionResponse>(`${this.base}/craftsmen/${id}`, { body: { reason } })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
@@ -119,17 +119,17 @@ export class AdminService {
   }
 
   deactivateUser(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/users/${id}/deactivate`, { reason })
+    return this.http.put<AdminActionResponse>(`${this.base}/users/${id}/deactivate`, { reason })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   reactivateUser(id: number): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/users/${id}/reactivate`, {})
+    return this.http.put<AdminActionResponse>(`${this.base}/users/${id}/reactivate`, null)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   deleteUser(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/users/${id}/delete`, { reason })
+    return this.http.delete<AdminActionResponse>(`${this.base}/users/${id}`, { body: { reason } })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
@@ -152,12 +152,12 @@ export class AdminService {
   }
 
   flagDispute(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/jobs/${id}/flag-dispute`, { reason })
+    return this.http.put<AdminActionResponse>(`${this.base}/jobs/${id}/flag-dispute`, { reason })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   resolveDispute(id: number, resolution: string, favoredParty: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/jobs/${id}/resolve-dispute`, { resolution, favoredParty })
+    return this.http.put<AdminActionResponse>(`${this.base}/jobs/${id}/resolve-dispute`, { resolution, favoredParty })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
@@ -185,7 +185,7 @@ export class AdminService {
   }
 
   deleteReview(id: number, reason: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/reviews/${id}/delete`, { reason })
+    return this.http.delete<AdminActionResponse>(`${this.base}/reviews/${id}`, { body: { reason } })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
@@ -198,7 +198,7 @@ export class AdminService {
   }
 
   resolveReport(id: number, action: string, notes: string): Observable<AdminActionResponse> {
-    return this.http.post<AdminActionResponse>(`${this.base}/reports/${id}/resolve`, { action, notes })
+    return this.http.put<AdminActionResponse>(`${this.base}/reports/${id}/resolve`, { action, notes })
       .pipe(catchError(this.handleError.bind(this)));
   }
 
@@ -238,61 +238,66 @@ export class AdminService {
   }
 
   exportData(type: string, from?: string, to?: string): Observable<Blob> {
-    return this.http.get(`${this.base}/analytics/export/${type}`, {
-      params: this.buildParams({ from, to }),
+    return this.http.get(`${this.base}/analytics/export`, {
+      params: this.buildParams({ type, from, to }),
       responseType: 'blob',
     }).pipe(catchError(this.handleError.bind(this)));
   }
 
   // ─── Config — Settings ────────────────────────────────────────────────
 
+  reactivateCraftsman(id: number): Observable<AdminActionResponse> {
+    return this.http.put<AdminActionResponse>(`${this.base}/craftsmen/${id}/approve`, {})
+      .pipe(catchError(this.handleError.bind(this)));
+  }
+
   getServiceTypes(): Observable<ServiceType[]> {
-    return this.http.get<ServiceType[]>(`${this.base}/settings/service-types`)
+    return this.http.get<ServiceType[]>(`${this.base}/config/service-types`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   createServiceType(dto: Omit<ServiceType, 'id'>): Observable<ServiceType> {
-    return this.http.post<ServiceType>(`${this.base}/settings/service-types`, dto)
+    return this.http.post<ServiceType>(`${this.base}/config/service-types`, dto)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   updateServiceType(id: number, dto: Omit<ServiceType, 'id'>): Observable<ServiceType> {
-    return this.http.put<ServiceType>(`${this.base}/settings/service-types/${id}`, dto)
+    return this.http.put<ServiceType>(`${this.base}/config/service-types/${id}`, dto)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   deleteServiceType(id: number): Observable<AdminActionResponse> {
-    return this.http.delete<AdminActionResponse>(`${this.base}/settings/service-types/${id}`)
+    return this.http.delete<AdminActionResponse>(`${this.base}/config/service-types/${id}`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   getCities(): Observable<City[]> {
-    return this.http.get<City[]>(`${this.base}/settings/cities`)
+    return this.http.get<City[]>(`${this.base}/config/cities`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   createCity(dto: Omit<City, 'id'>): Observable<City> {
-    return this.http.post<City>(`${this.base}/settings/cities`, dto)
+    return this.http.post<City>(`${this.base}/config/cities`, dto)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   updateCity(id: number, dto: Omit<City, 'id'>): Observable<City> {
-    return this.http.put<City>(`${this.base}/settings/cities/${id}`, dto)
+    return this.http.put<City>(`${this.base}/config/cities/${id}`, dto)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   deleteCity(id: number): Observable<AdminActionResponse> {
-    return this.http.delete<AdminActionResponse>(`${this.base}/settings/cities/${id}`)
+    return this.http.delete<AdminActionResponse>(`${this.base}/config/cities/${id}`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   getFeatureFlags(): Observable<FeatureFlag[]> {
-    return this.http.get<FeatureFlag[]>(`${this.base}/settings/feature-flags`)
+    return this.http.get<FeatureFlag[]>(`${this.base}/config/feature-flags`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 
   toggleFeatureFlag(key: string, isEnabled: boolean): Observable<AdminActionResponse> {
-    return this.http.put<AdminActionResponse>(`${this.base}/settings/feature-flags/${key}`, { isEnabled })
+    return this.http.put<AdminActionResponse>(`${this.base}/config/feature-flags/${key}`, { isEnabled })
       .pipe(catchError(this.handleError.bind(this)));
   }
 

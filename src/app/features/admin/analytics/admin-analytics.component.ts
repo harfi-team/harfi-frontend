@@ -1,87 +1,216 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed, AfterViewInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
 import { AdminService } from '../admin.service';
 import {
   OverviewStats,
   CraftsmenAnalytics,
   JobsAnalytics,
   ReviewsAnalytics,
+  AiAnalytics,
 } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { Chart, registerables } from 'chart.js';
 
-type TabId = 'overview' | 'craftsmen' | 'jobs' | 'reviews';
+Chart.register(...registerables);
+
+type TabId = 'overview' | 'craftsmen' | 'jobs' | 'reviews' | 'ai';
+
+Chart.defaults.font.family = "'Cairo', sans-serif";
+
+const COLORS = {
+  brand: '#E94057',
+  purple: '#8A2387',
+  orange: '#F27121',
+  blue: '#3b82f6',
+  green: '#10b981',
+  red: '#ef4444',
+  yellow: '#f59e0b',
+  indigo: '#6366f1',
+  pink: '#ec4899',
+  teal: '#14b8a6',
+};
+
+const CHART_COLORS = [COLORS.brand, COLORS.purple, COLORS.orange, COLORS.blue, COLORS.green, COLORS.yellow, COLORS.indigo, COLORS.pink, COLORS.teal, COLORS.red];
 
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DecimalPipe],
+  imports: [CommonModule, FormsModule, TranslateModule, DecimalPipe],
   templateUrl: './admin-analytics.component.html',
   styleUrl: './admin-analytics.component.css',
 })
-export class AdminAnalyticsComponent {
+export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   private adminService = inject(AdminService);
   private errorHandler = inject(ErrorHandlerService);
 
   activeTab = signal<TabId>('overview');
-
-  overview = signal<OverviewStats | null>(null);
-  craftsmen = signal<CraftsmenAnalytics | null>(null);
-  jobs = signal<JobsAnalytics | null>(null);
-  reviews = signal<ReviewsAnalytics | null>(null);
-
-  loadingOverview = signal(true);
-  loadingCraftsmen = signal(false);
-  loadingJobs = signal(false);
-  loadingReviews = signal(false);
+  loading = signal(false);
   exporting = signal(false);
 
-  private colors = ['#E94057', '#8A2387', '#F27121', '#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'];
+  overviewData = signal<OverviewStats | null>(null);
+  craftsmanAnalytics = signal<CraftsmenAnalytics | null>(null);
+  jobAnalytics = signal<JobsAnalytics | null>(null);
+  reviewAnalytics = signal<ReviewsAnalytics | null>(null);
+  aiAnalytics = signal<AiAnalytics | null>(null);
+
+  error = signal<string | null>(null);
+
+  private charts: Chart[] = [];
+
+  readonly craftsmanStatusChartData = computed(() => {
+    const d = this.craftsmanAnalytics();
+    if (!d) return null;
+    return {
+      labels: ['معلق', 'مقبول', 'مرفوض', 'موقوف'],
+      datasets: [{
+        data: [d.pendingApproval, d.approved, d.rejected, d.suspended],
+        backgroundColor: [COLORS.yellow, COLORS.green, COLORS.red, COLORS.orange],
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly craftsmanServiceChartData = computed(() => {
+    const d = this.craftsmanAnalytics();
+    if (!d || !d.byServiceType) return null;
+    const entries = Object.entries(d.byServiceType);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{
+        data: entries.map(([, v]) => v),
+        backgroundColor: entries.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]),
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly craftsmanCityChartData = computed(() => {
+    const d = this.craftsmanAnalytics();
+    if (!d || !d.byCity) return null;
+    const entries = Object.entries(d.byCity);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{
+        data: entries.map(([, v]) => v),
+        backgroundColor: entries.map((_, i) => CHART_COLORS[(i + 3) % CHART_COLORS.length]),
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly jobStatusChartData = computed(() => {
+    const d = this.jobAnalytics();
+    if (!d) return null;
+    return {
+      labels: ['مفتوح', 'قيد التنفيذ', 'مكتمل', 'مرفوض', 'نزاع'],
+      datasets: [{
+        data: [d.open, d.inProgress, d.completed, d.rejected, d.disputed],
+        backgroundColor: [COLORS.blue, COLORS.yellow, COLORS.green, COLORS.red, COLORS.purple],
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly jobServiceChartData = computed(() => {
+    const d = this.jobAnalytics();
+    if (!d || !d.byServiceType) return null;
+    const entries = Object.entries(d.byServiceType);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{
+        data: entries.map(([, v]) => v),
+        backgroundColor: entries.map((_, i) => CHART_COLORS[(i + 2) % CHART_COLORS.length]),
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly reviewStarChartData = computed(() => {
+    const d = this.reviewAnalytics();
+    if (!d || !d.starDistribution) return null;
+    return {
+      labels: ['نجمة', 'نجمتان', '3 نجوم', '4 نجوم', '5 نجوم'],
+      datasets: [{
+        data: [d.starDistribution['1'] || 0, d.starDistribution['2'] || 0, d.starDistribution['3'] || 0, d.starDistribution['4'] || 0, d.starDistribution['5'] || 0],
+        backgroundColor: [COLORS.red, COLORS.orange, COLORS.yellow, COLORS.blue, COLORS.green],
+        borderWidth: 0,
+      }],
+    };
+  });
+
+  readonly aiIngestedChartData = computed(() => {
+    const d = this.aiAnalytics();
+    if (!d) return null;
+    return {
+      labels: ['حرفيون', 'حلول'],
+      datasets: [{
+        data: [d.totalCraftsmenIngested, d.totalSolutionsIngested],
+        backgroundColor: [COLORS.purple, COLORS.teal],
+        borderWidth: 0,
+      }],
+    };
+  });
 
   constructor() {
-    this.loadOverview();
-  }
-
-  private loadOverview(): void {
-    this.loadingOverview.set(true);
-    this.adminService.getOverviewStats().subscribe({
-      next: (data) => { this.overview.set(data); this.loadingOverview.set(false); },
-      error: () => this.loadingOverview.set(false),
+    this.loadAll();
+    effect(() => {
+      const tab = this.activeTab();
+      setTimeout(() => {
+        if (tab === 'craftsmen') {
+          this.initCraftsmanCharts();
+        } else if (tab === 'jobs') {
+          this.initJobCharts();
+        } else if (tab === 'reviews') {
+          this.initReviewChart();
+        } else if (tab === 'ai') {
+          this.initAiChart();
+        }
+      }, 50);
     });
   }
 
-  private loadCraftsmen(): void {
-    if (this.craftsmen()) return;
-    this.loadingCraftsmen.set(true);
-    this.adminService.getCraftsmenAnalytics().subscribe({
-      next: (data) => { this.craftsmen.set(data); this.loadingCraftsmen.set(false); },
-      error: () => this.loadingCraftsmen.set(false),
-    });
+  ngAfterViewInit(): void {
+    if (this.activeTab() === 'overview') {
+      setTimeout(() => this.initOverviewCharts(), 100);
+    }
   }
 
-  private loadJobs(): void {
-    if (this.jobs()) return;
-    this.loadingJobs.set(true);
-    this.adminService.getJobsAnalytics().subscribe({
-      next: (data) => { this.jobs.set(data); this.loadingJobs.set(false); },
-      error: () => this.loadingJobs.set(false),
-    });
+  ngOnDestroy(): void {
+    this.destroyCharts();
   }
 
-  private loadReviews(): void {
-    if (this.reviews()) return;
-    this.loadingReviews.set(true);
-    this.adminService.getReviewsAnalytics().subscribe({
-      next: (data) => { this.reviews.set(data); this.loadingReviews.set(false); },
-      error: () => this.loadingReviews.set(false),
+  private loadAll(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    forkJoin({
+      overview: this.adminService.getOverviewStats(),
+      craftsmen: this.adminService.getCraftsmenAnalytics(),
+      jobs: this.adminService.getJobsAnalytics(),
+      reviews: this.adminService.getReviewsAnalytics(),
+      ai: this.adminService.getAiAnalytics(),
+    }).subscribe({
+      next: (data) => {
+        this.overviewData.set(data.overview);
+        this.craftsmanAnalytics.set(data.craftsmen);
+        this.jobAnalytics.set(data.jobs);
+        this.reviewAnalytics.set(data.reviews);
+        this.aiAnalytics.set(data.ai);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        const msg = err.error?.message || 'حدث خطأ أثناء تحميل البيانات';
+        this.error.set(msg);
+        this.errorHandler.error(msg);
+      },
     });
   }
 
   setTab(tab: TabId): void {
     this.activeTab.set(tab);
-    if (tab === 'craftsmen' && !this.craftsmen()) this.loadCraftsmen();
-    if (tab === 'jobs' && !this.jobs()) this.loadJobs();
-    if (tab === 'reviews' && !this.reviews()) this.loadReviews();
   }
 
   exportData(type: string): void {
@@ -91,7 +220,7 @@ export class AdminAnalyticsComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${type}-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `harfi-${type}-${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
         this.exporting.set(false);
@@ -112,53 +241,169 @@ export class AdminAnalyticsComponent {
     return stars;
   }
 
-  sumValues(map: Record<string, number> | null | undefined): number {
-    return map ? Object.values(map).reduce((a, b) => a + b, 0) : 0;
+  private destroyCharts(): void {
+    for (const c of this.charts) c.destroy();
+    this.charts = [];
   }
 
-  donutSegments(map: Record<string, number> | null | undefined): { label: string; value: number; color: string; offset: number; ratio: number }[] {
-    if (!map) return [];
-    const total = this.sumValues(map);
-    const entries = Object.entries(map);
-    const circumference = 2 * Math.PI * 45;
-    let offset = 0;
-    return entries.map(([label, value], i) => {
-      const ratio = total > 0 ? value / total : 0;
-      const length = ratio * circumference;
-      const seg = { label, value, color: this.colors[i % this.colors.length], offset, ratio };
-      offset -= length;
-      return seg;
-    });
+  private createChart(canvasId: string, config: any): void {
+    const existing = this.charts.find(c => c.canvas.id === canvasId);
+    if (existing) existing.destroy();
+    this.charts = this.charts.filter(c => c.canvas.id !== canvasId);
+
+    const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const chart = new Chart(ctx, config);
+    this.charts.push(chart);
   }
 
-  jobStatuses(): { key: string; label: string; value: number; color: string }[] {
-    const j = this.jobs();
-    if (!j) return [];
-    return [
-      { key: 'open', label: 'ADMIN.OPEN', value: j.open, color: '#3b82f6' },
-      { key: 'inProgress', label: 'ADMIN.IN_PROGRESS', value: j.inProgress, color: '#f59e0b' },
-      { key: 'completed', label: 'ADMIN.COMPLETED', value: j.completed, color: '#10b981' },
-      { key: 'rejected', label: 'ADMIN.REJECTED', value: j.rejected, color: '#ef4444' },
-      { key: 'disputed', label: 'ADMIN.DISPUTED', value: j.disputed, color: '#8B5CF6' },
-    ];
+  private initCraftsmanCharts(): void {
+    const statusData = this.craftsmanStatusChartData();
+    if (statusData) {
+      this.createChart('craftsmanStatusChart', {
+        type: 'doughnut',
+        data: statusData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          rtl: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16, usePointStyle: true } },
+          },
+        },
+      });
+    }
+
+    const serviceData = this.craftsmanServiceChartData();
+    if (serviceData) {
+      this.createChart('craftsmanServiceChart', {
+        type: 'bar',
+        data: serviceData,
+        options: {
+          indexAxis: 'y',
+          rtl: true,
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1 } },
+            y: { ticks: { font: { size: 11 } } },
+          },
+        },
+      });
+    }
+
+    const cityData = this.craftsmanCityChartData();
+    if (cityData) {
+      this.createChart('craftsmanCityChart', {
+        type: 'bar',
+        data: cityData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          rtl: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 10 }, maxRotation: 45 } },
+          },
+        },
+      });
+    }
   }
 
-  maxJobStatus(): number {
-    return Math.max(...this.jobStatuses().map(s => s.value), 1);
+  private initJobCharts(): void {
+    const jobStatusData = this.jobStatusChartData();
+    if (jobStatusData) {
+      this.createChart('jobStatusChart', {
+        type: 'doughnut',
+        data: jobStatusData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          rtl: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 16, usePointStyle: true } },
+          },
+        },
+      });
+    }
+
+    const jobServiceData = this.jobServiceChartData();
+    if (jobServiceData) {
+      this.createChart('jobServiceChart', {
+        type: 'bar',
+        data: jobServiceData,
+        options: {
+          indexAxis: 'y',
+          rtl: true,
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1 } },
+            y: { ticks: { font: { size: 11 } } },
+          },
+        },
+      });
+    }
   }
 
-  starBars(): { stars: string; count: number; color: string }[] {
-    const r = this.reviews();
-    if (!r) return [];
-    const maxCount = Math.max(...Object.values(r.starDistribution), 1);
-    return ['5', '4', '3', '2', '1'].map((key, i) => ({
-      stars: key,
-      count: r.starDistribution[key] || 0,
-      color: this.colors[i],
-    }));
+  private initReviewChart(): void {
+    const starData = this.reviewStarChartData();
+    if (starData) {
+      this.createChart('reviewStarChart', {
+        type: 'bar',
+        data: starData,
+        options: {
+          rtl: true,
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 11 } } },
+          },
+        },
+      });
+    }
   }
 
-  maxStarCount(): number {
-    return Math.max(...this.starBars().map(b => b.count), 1);
+  private initAiChart(): void {
+    const ingestedData = this.aiIngestedChartData();
+    if (ingestedData) {
+      this.createChart('aiIngestedChart', {
+        type: 'bar',
+        data: ingestedData,
+        options: {
+          rtl: true,
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 12 } } },
+          },
+        },
+      });
+    }
   }
+
+  private initOverviewCharts(): void {
+  }
+
+  protected readonly COLORS = COLORS;
+  protected readonly CHART_COLORS = CHART_COLORS;
 }

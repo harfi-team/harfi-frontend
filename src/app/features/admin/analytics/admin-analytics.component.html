@@ -21,28 +21,26 @@
     <button class="filter-tab" [class.active]="activeTab() === 'craftsmen'" (click)="setTab('craftsmen')">{{ 'ADMIN.CRAFTSMEN' | translate }}</button>
     <button class="filter-tab" [class.active]="activeTab() === 'jobs'" (click)="setTab('jobs')">{{ 'ADMIN.JOBS' | translate }}</button>
     <button class="filter-tab" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">{{ 'ADMIN.REVIEWS' | translate }}</button>
+    <button class="filter-tab" [class.active]="activeTab() === 'ai'" (click)="setTab('ai')">{{ 'ADMIN.AI' | translate }}</button>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════ -->
   <!-- TAB 1 — نظرة عامة                                              -->
   <!-- ════════════════════════════════════════════════════════════════ -->
   @if (activeTab() === 'overview') {
-    @if (loadingOverview()) {
-      <div class="skeleton-grid">
+    @if (loading()) {
+      <div class="skeleton-grid stats-grid--9">
         @for (_ of [1,2,3,4,5,6,7,8,9]; track _) {
           <div class="skeleton harfi-card" style="height:120px"></div>
         }
       </div>
-    } @else if (overview(); as o) {
+    } @else if (overviewData(); as o) {
       <div class="stats-grid stats-grid--9">
         <div class="stat-card">
           <div class="stat-card__header">
             <div class="stat-card__icon stat-card__icon--blue">
               <span class="material-symbols-outlined">group</span>
             </div>
-            <span class="info-tooltip" [title]="'ADMIN.INCLUDES_DELETED' | translate">
-              <span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:var(--text-secondary);cursor:help">info</span>
-            </span>
           </div>
           <div class="stat-card__value">{{ o.totalUsers | number }}</div>
           <div class="stat-card__label">{{ 'ADMIN.TOTAL_USERS' | translate }}</div>
@@ -53,9 +51,6 @@
             <div class="stat-card__icon stat-card__icon--purple">
               <span class="material-symbols-outlined">person</span>
             </div>
-            <span class="info-tooltip" [title]="'ADMIN.INCLUDES_DELETED' | translate">
-              <span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:var(--text-secondary);cursor:help">info</span>
-            </span>
           </div>
           <div class="stat-card__value">{{ o.totalCraftsmen | number }}</div>
           <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
@@ -93,7 +88,7 @@
 
         <div class="stat-card stat-card--danger">
           <div class="stat-card__header">
-            <div class="stat-card__icon stat-card__icon--warning">
+            <div class="stat-card__icon stat-card__icon--warning-bg">
               <span class="material-symbols-outlined">warning</span>
             </div>
           </div>
@@ -143,13 +138,13 @@
   <!-- TAB 2 — الحرفيون                                               -->
   <!-- ════════════════════════════════════════════════════════════════ -->
   @if (activeTab() === 'craftsmen') {
-    @if (loadingCraftsmen()) {
-      <div class="skeleton-grid">
+    @if (loading()) {
+      <div class="skeleton-grid stats-grid--6">
         @for (_ of [1,2,3,4,5,6]; track _) {
           <div class="skeleton harfi-card" style="height:120px"></div>
         }
       </div>
-    } @else if (craftsmen(); as c) {
+    } @else if (craftsmanAnalytics(); as c) {
       <div class="stats-grid stats-grid--6">
         <div class="stat-card">
           <div class="stat-card__header">
@@ -212,78 +207,43 @@
         </div>
       </div>
 
-      <!-- Donut Charts Row -->
+      <!-- Chart.js Charts Row -->
       <div class="charts-row">
         <div class="chart-card">
-          <h3 class="chart-card__title">{{ 'ADMIN.BY_SERVICE_TYPE' | translate }}</h3>
-          <div class="donut-wrapper">
-            @if (sumValues(c.byServiceType) > 0) {
-              <svg viewBox="0 0 120 120" class="donut-chart">
-                <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
-                @for (seg of donutSegments(c.byServiceType); track seg.label) {
-                  <circle cx="60" cy="60" r="45" fill="none" [attr.stroke]="seg.color" stroke-width="18"
-                          [attr.stroke-dasharray]="(seg.ratio * 283) + ' ' + (283 - seg.ratio * 283)"
-                          [attr.stroke-dashoffset]="seg.offset"
-                          transform="rotate(-90 60 60)"/>
-                }
-                <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">{{ sumValues(c.byServiceType) }}</text>
-                <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.CRAFTSMEN' | translate }}</text>
-              </svg>
-            }
-          </div>
-          <div class="donut-legend">
-            @for (seg of donutSegments(c.byServiceType); track seg.label) {
-              <div class="legend-item">
-                <span class="legend-dot" [style.background]="seg.color"></span>
-                <span>{{ seg.label }}</span>
-                <span class="legend-pct">{{ seg.ratio | percent:'1.0-0' }}</span>
-              </div>
-            }
+          <h3 class="chart-card__title">{{ 'ADMIN.CRAFTSMAN_STATUS' | translate }}</h3>
+          <div class="chart-container">
+            <canvas id="craftsmanStatusChart"></canvas>
           </div>
         </div>
 
         <div class="chart-card">
-          <h3 class="chart-card__title">{{ 'ADMIN.BY_CITY' | translate }}</h3>
-          <div class="donut-wrapper">
-            @if (sumValues(c.byCity) > 0) {
-              <svg viewBox="0 0 120 120" class="donut-chart">
-                <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
-                @for (seg of donutSegments(c.byCity); track seg.label) {
-                  <circle cx="60" cy="60" r="45" fill="none" [attr.stroke]="seg.color" stroke-width="18"
-                          [attr.stroke-dasharray]="(seg.ratio * 283) + ' ' + (283 - seg.ratio * 283)"
-                          [attr.stroke-dashoffset]="seg.offset"
-                          transform="rotate(-90 60 60)"/>
-                }
-                <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">{{ sumValues(c.byCity) }}</text>
-                <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.CRAFTSMEN' | translate }}</text>
-              </svg>
-            }
+          <h3 class="chart-card__title">{{ 'ADMIN.BY_SERVICE_TYPE' | translate }}</h3>
+          <div class="chart-container">
+            <canvas id="craftsmanServiceChart"></canvas>
           </div>
-          <div class="donut-legend">
-            @for (seg of donutSegments(c.byCity); track seg.label) {
-              <div class="legend-item">
-                <span class="legend-dot" [style.background]="seg.color"></span>
-                <span>{{ seg.label }}</span>
-                <span class="legend-pct">{{ seg.ratio | percent:'1.0-0' }}</span>
-              </div>
-            }
-          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-card__title">{{ 'ADMIN.BY_CITY' | translate }}</h3>
+        <div class="chart-container chart-container--wide">
+          <canvas id="craftsmanCityChart"></canvas>
         </div>
       </div>
     }
   }
 
   <!-- ════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 3 — الطلبات                                                 -->
+  <!-- TAB 3 — الطلبات                                                -->
   <!-- ════════════════════════════════════════════════════════════════ -->
   @if (activeTab() === 'jobs') {
-    @if (loadingJobs()) {
-      <div class="skeleton-grid">
+    @if (loading()) {
+      <div class="skeleton-grid stats-grid--6">
         @for (_ of [1,2,3,4,5,6]; track _) {
           <div class="skeleton harfi-card" style="height:120px"></div>
         }
       </div>
-    } @else if (jobs(); as j) {
+    } @else if (jobAnalytics(); as j) {
       <div class="stats-grid stats-grid--6">
         <div class="stat-card">
           <div class="stat-card__header">
@@ -346,24 +306,24 @@
         </div>
       </div>
 
-      <!-- Bar Chart -->
-      <div class="chart-card">
-        <h3 class="chart-card__title">{{ 'ADMIN.JOB_STATUS_DISTRIBUTION' | translate }}</h3>
-        <div class="bar-chart">
-          @for (status of jobStatuses(); track status.key) {
-            <div class="bar-row">
-              <span class="bar-label">{{ status.label | translate }}</span>
-              <div class="bar-track">
-                <div class="bar-fill" [style.width.%]="(status.value / maxJobStatus()) * 100" [style.background]="status.color"></div>
-              </div>
-              <span class="bar-value">{{ status.value | number }}</span>
-            </div>
-          }
+      <!-- Chart.js Charts Row -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3 class="chart-card__title">{{ 'ADMIN.JOB_STATUS_DISTRIBUTION' | translate }}</h3>
+          <div class="chart-container">
+            <canvas id="jobStatusChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-card__title">{{ 'ADMIN.BY_SERVICE_TYPE' | translate }}</h3>
+          <div class="chart-container">
+            <canvas id="jobServiceChart"></canvas>
+          </div>
         </div>
       </div>
 
-      <!-- Average Completion Days -->
-      <div class="stat-card stat-card--inline" style="margin-top:16px">
+      <div class="stat-card stat-card--inline">
         <div class="stat-card__header">
           <div class="stat-card__icon stat-card__icon--blue">
             <span class="material-symbols-outlined">schedule</span>
@@ -379,13 +339,13 @@
   <!-- TAB 4 — المراجعات                                              -->
   <!-- ════════════════════════════════════════════════════════════════ -->
   @if (activeTab() === 'reviews') {
-    @if (loadingReviews()) {
-      <div class="skeleton-grid">
+    @if (loading()) {
+      <div class="skeleton-grid stats-grid--3">
         @for (_ of [1,2,3]; track _) {
           <div class="skeleton harfi-card" style="height:120px"></div>
         }
       </div>
-    } @else if (reviews(); as r) {
+    } @else if (reviewAnalytics(); as r) {
       <div class="stats-grid stats-grid--3">
         <div class="stat-card">
           <div class="stat-card__header">
@@ -423,19 +383,88 @@
         </div>
       </div>
 
-      <!-- Star Distribution Bar Chart -->
       <div class="chart-card">
         <h3 class="chart-card__title">{{ 'ADMIN.STAR_DISTRIBUTION' | translate }}</h3>
-        <div class="bar-chart">
-          @for (bar of starBars(); track bar.stars) {
-            <div class="bar-row">
-              <span class="bar-label">{{ bar.stars }} {{ 'STARS' | translate }}</span>
-              <div class="bar-track">
-                <div class="bar-fill" [style.width.%]="(bar.count / maxStarCount()) * 100" [style.background]="bar.color"></div>
-              </div>
-              <span class="bar-value">{{ bar.count | number }}</span>
+        <div class="chart-container">
+          <canvas id="reviewStarChart"></canvas>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 5 — الذكاء الاصطناعي                                       -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'ai') {
+    @if (loading()) {
+      <div class="skeleton-grid stats-grid--4">
+        @for (_ of [1,2,3,4]; track _) {
+          <div class="skeleton harfi-card" style="height:120px"></div>
+        }
+      </div>
+    } @else if (aiAnalytics(); as a) {
+      <div class="stats-grid stats-grid--4">
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--purple">
+              <span class="material-symbols-outlined">chat</span>
             </div>
-          }
+          </div>
+          <div class="stat-card__value">{{ a.totalChats | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_CHATS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--orange">
+              <span class="material-symbols-outlined">token</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ a.totalTokensUsed | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_TOKENS' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--green">
+              <span class="material-symbols-outlined">person_book</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ a.totalCraftsmenIngested | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.INGESTED_CRAFTSMEN' | translate }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__header">
+            <div class="stat-card__icon stat-card__icon--blue">
+              <span class="material-symbols-outlined">build</span>
+            </div>
+          </div>
+          <div class="stat-card__value">{{ a.totalSolutionsIngested | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.INGESTED_SOLUTIONS' | translate }}</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3 class="chart-card__title">{{ 'ADMIN.INGESTED_DATA' | translate }}</h3>
+          <div class="chart-container">
+            <canvas id="aiIngestedChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card__body-centered">
+            <div class="stat-card stat-card--inline" style="border:none;box-shadow:none;padding:0">
+              <div class="stat-card__header">
+                <div class="stat-card__icon stat-card__icon--orange">
+                  <span class="material-symbols-outlined">analytics</span>
+                </div>
+              </div>
+              <div class="stat-card__value">{{ a.averageTokensPerChat | number:'1.1-1' }}</div>
+              <div class="stat-card__label">{{ 'ADMIN.AVG_TOKENS' | translate }}</div>
+            </div>
+          </div>
         </div>
       </div>
     }

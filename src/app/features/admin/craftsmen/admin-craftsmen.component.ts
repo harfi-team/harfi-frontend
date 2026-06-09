@@ -132,7 +132,7 @@ export class AdminCraftsmenComponent {
     const call$ = type === 'approve' ? this.adminService.approveCraftsman(id, reason)
       : type === 'reject' ? this.adminService.rejectCraftsman(id, reason!)
       : type === 'suspend' ? this.adminService.suspendCraftsman(id, reason!)
-      : type === 'reactivate' ? this.adminService.approveCraftsman(id)
+      : type === 'reactivate' ? this.adminService.reactivateCraftsman(id)
       : this.adminService.deleteCraftsman(id, reason!);
 
     call$.subscribe({

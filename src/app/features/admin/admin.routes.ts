@@ -33,6 +33,11 @@ export const adminRoutes: Routes = [
       import('./jobs/admin-jobs.component').then(m => m.AdminJobsComponent),
   },
   {
+    path: 'jobs/:id',
+    loadComponent: () =>
+      import('./job-detail/job-detail.component').then(m => m.JobDetailComponent),
+  },
+  {
     path: 'reviews',
     loadComponent: () =>
       import('./reviews/admin-reviews.component').then(m => m.AdminReviewsComponent),
