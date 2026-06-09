@@ -89,8 +89,10 @@
   "NAV_HOW": "كيف يعمل",
   "NAV_CRAFTSMEN": "الحرفيون",
   "NAV_CONTACT": "تواصل معنا",
+
   "NOTIFICATIONS": "الإشعارات",
   "AI_ASSISTANT": "المساعد الذكي",
+<<<<<<< HEAD
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "بحث الحرفيين",
     "TITLE": "حرفيون لخدمة",
@@ -113,6 +115,9 @@
     "YEARS": "سنوات"
   },
   
+=======
+
+>>>>>>> dev
   "NAV": {
     "TAGLINE": "منصة الحرفيين",
     "HOME": "الرئيسية",
@@ -244,6 +249,125 @@
     "DATE2": "الأحد، 8 أكتوبر",
     "COMPLETED": "مكتمل"
   },
+
+  "REVIEWS": {
+    "FORM": {
+      "TITLE": "قيّم تجربتك مع الحرفي",
+      "STARS_LABEL": "التقييم",
+      "STARS_REQUIRED": "يرجى اختيار عدد النجوم",
+      "STARS_PLACEHOLDER": "اختر تقييمك",
+      "STAR_1": "سيء جداً",
+      "STAR_2": "سيء",
+      "STAR_3": "مقبول",
+      "STAR_4": "جيد",
+      "STAR_5": "ممتاز",
+      "COMMENT_LABEL": "تعليقك",
+      "COMMENT_OPTIONAL": "(اختياري)",
+      "COMMENT_PLACEHOLDER": "شاركنا تجربتك مع الحرفي...",
+      "COMMENT_MAX_LENGTH": "التعليق لا يجب أن يتجاوز 1000 حرف",
+      "SUBMIT_BTN": "إرسال التقييم",
+      "SUBMITTING_BTN": "جارٍ الإرسال...",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى"
+    },
+    "CRAFTSMAN": {
+  "TITLE": "التقييمات",
+  "REVIEWS_COUNT": "تقييم",
+  "NO_REVIEWS": "لا توجد تقييمات بعد",
+  "NO_COMMENT": "بدون تعليق",
+  "SHOW_MORE": "عرض المزيد",
+  "SHOW_LESS": "عرض أقل",
+  "LOAD_ERROR": "حدث خطأ في تحميل التقييمات",
+  "RETRY_BTN": "إعادة المحاولة"
+},
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "شكراً على تقييمك!",
+      "SUBTITLE": "رأيك يساعد الحرفيين الآخرين على التطور"
+    },
+    "FEEDBACK": {
+      "QUESTION": "هل ساعدك هذا المحتوى؟",
+      "HELPFUL_BTN": "ساعدني",
+      "NEED_CRAFTSMAN_BTN": "ما زلت بحاجة لحرفي",
+      "DONE_MESSAGE": "شكراً على رأيك 🙏",
+      "INVALID_TYPE_ERROR": "نوع الرأي غير صحيح",
+      "DUPLICATE_ERROR": "لقد قدمت رأيك على هذا المحتوى من قبل",
+      "RAG_NOT_FOUND_ERROR": "وثيقة الذكاء الاصطناعي غير موجودة"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "الطلب غير موجود",
+      "JOB_NOT_DONE": "لا يمكن تقديم تقييم إلا بعد اكتمال الشغل",
+      "NOT_YOUR_JOB": "أنت لست العميل صاحب هذا الطلب",
+      "ALREADY_REVIEWED": "لقد قدمت تقييماً لهذا الطلب من قبل",
+      "INVALID_STARS": "التقييم يجب أن يكون بين 1 و 5 نجوم",
+      "COMMENT_TOO_LONG": "التعليق لا يجب أن يتجاوز 1000 حرف"
+    }
+  },
+  "JOB_SUMMARY": {
+    "FORM": {
+      "TITLE": "ملخص الشغل",
+      "SUBTITLE": "اكتب وصفاً واضحاً للمشكلة وكيف حللتها بالعربي",
+      "PROBLEM_LABEL": "وصف المشكلة",
+      "PROBLEM_PLACEHOLDER": "مثال: كان في تسريب في أنبوب المياه تحت الحوض بسبب تلف الوصلة المطاطية...",
+      "PROBLEM_REQUIRED": "وصف المشكلة مطلوب",
+      "PROBLEM_MIN_LENGTH": "الوصف قصير جداً — اكتب على الأقل 20 حرف",
+      "SOLUTION_LABEL": "وصف الحل",
+      "SOLUTION_PLACEHOLDER": "مثال: قمت باستبدال الوصلة المطاطية التالفة وربط الأنبوب بشكل محكم وتجربة المياه...",
+      "SOLUTION_REQUIRED": "وصف الحل مطلوب",
+      "SOLUTION_MIN_LENGTH": "الوصف قصير جداً — اكتب على الأقل 20 حرف",
+      "SUBMIT_BTN": "إرسال الملخص",
+      "SUBMITTING_BTN": "جارٍ التقييم بالذكاء الاصطناعي...",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى",
+      "REQUIRED_MARK": "*"
+    },
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "تم قبول الملخص!",
+      "SUBTITLE": "تمت إضافة ملخصك لقاعدة المعرفة وسيساعد العملاء القادمين",
+      "CHROMA_BADGE": "تم الحفظ في ChromaDB"
+    },
+    "REJECTION": {
+      "TITLE": "لم يُقبل الملخص:",
+      "HINT": "يرجى إعادة الكتابة بتفاصيل أوضح"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "الطلب غير موجود",
+      "NOT_YOUR_JOB": "أنت لست الحرفي المخصص لهذا الطلب",
+      "JOB_NOT_DONE": "الملخص يكتب فقط بعد تأكيد اكتمال الطلب",
+      "ALREADY_SUBMITTED": "تم تقديم ملخص لهذا الطلب مسبقاً",
+      "PROBLEM_TOO_SHORT": "وصف المشكلة قصير جداً — اكتب على الأقل 20 حرف",
+      "SOLUTION_TOO_SHORT": "وصف الحل قصير جداً — اكتب على الأقل 20 حرف"
+    }
+  },
+  "AI_CHAT": {
+    "HEADER": {
+      "NAME": "مساعد حرفي الذكي",
+      "STATUS": "متاح الآن"
+    },
+    "INPUT": {
+      "PLACEHOLDER": "اكتب مشكلتك هنا...",
+      "SEND_BTN": "إرسال"
+    },
+    "MESSAGES": {
+      "DEFAULT_WELCOME": "أهلاً! كيف يمكنني مساعدتك اليوم؟",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى",
+      "THINKING": "جارٍ التفكير..."
+    },
+    "FEEDBACK": {
+      "QUESTION": "هل ساعدك هذا المحتوى؟",
+      "HELPFUL_BTN": "✓ نعم، ساعدني",
+      "NEED_CRAFTSMAN_BTN": "ما زلت بحاجة لحرفي",
+      "DONE": "شكراً على رأيك 🙏"
+    }
+  },
+  "COMMON": {
+    "REQUIRED": "*",
+    "OPTIONAL": "(اختياري)",
+    "CHAR_COUNT": "{{current}} / {{max}}",
+    "LOADING": "جارٍ التحميل...",
+    "UNAUTHORIZED": "رمز المصادقة غير صالح",
+    "SERVER_ERROR": "حدث خطأ في الخادم. يرجى المحاولة مرة أخرى"
+  }
+,
   "ALL": "الكل",
   "OF": "من",
   "SHOWING": "عرض",
@@ -327,5 +451,6 @@
   "CITY_RIYADH": "الرياض",
   "CITY_JEDDAH": "جدة",
   "CURRENCY": "رس"
+
 }
 

@@ -89,8 +89,10 @@
   "NAV_HOW": "How It Works",
   "NAV_CRAFTSMEN": "Craftsmen",
   "NAV_CONTACT": "Contact Us",
+
   "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
+<<<<<<< HEAD
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "Craftsmen Search",
     "TITLE": "Craftsmen for",
@@ -113,6 +115,9 @@
     "YEARS": "years"
   },
   
+=======
+
+>>>>>>> dev
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
     "HOME": "Home",
@@ -244,6 +249,124 @@
     "DATE2": "Sunday, Oct 8",
     "COMPLETED": "Completed"
   },
+
+  "REVIEWS": {
+    "FORM": {
+      "TITLE": "Rate Your Experience with the Craftsman",
+      "STARS_LABEL": "Rating",
+      "STARS_REQUIRED": "Please select a star rating",
+      "STARS_PLACEHOLDER": "Choose your rating",
+      "STAR_1": "Very Bad",
+      "STAR_2": "Bad",
+      "STAR_3": "Average",
+      "STAR_4": "Good",
+      "STAR_5": "Excellent",
+      "COMMENT_LABEL": "Your Comment",
+      "COMMENT_OPTIONAL": "(Optional)",
+      "COMMENT_PLACEHOLDER": "Share your experience with the craftsman...",
+      "COMMENT_MAX_LENGTH": "Comment must not exceed 1000 characters",
+      "SUBMIT_BTN": "Submit Review",
+      "SUBMITTING_BTN": "Submitting...",
+      "GENERIC_ERROR": "An error occurred, please try again"
+    },
+    "CRAFTSMAN": {
+  "TITLE": "Reviews",
+  "REVIEWS_COUNT": "reviews",
+  "NO_REVIEWS": "No reviews yet",
+  "NO_COMMENT": "No comment",
+  "SHOW_MORE": "Show more",
+  "SHOW_LESS": "Show less",
+  "LOAD_ERROR": "Failed to load reviews",
+  "RETRY_BTN": "Try again"
+},
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "Thank you for your review!",
+      "SUBTITLE": "Your feedback helps craftsmen improve their service"
+    },
+    "FEEDBACK": {
+      "QUESTION": "Did this content help you?",
+      "HELPFUL_BTN": "Yes, it helped",
+      "NEED_CRAFTSMAN_BTN": "I still need a craftsman",
+      "DONE_MESSAGE": "Thank you for your feedback 🙏",
+      "INVALID_TYPE_ERROR": "Invalid feedback type",
+      "DUPLICATE_ERROR": "You have already submitted feedback on this content",
+      "RAG_NOT_FOUND_ERROR": "AI document not found"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "Job not found",
+      "JOB_NOT_DONE": "You can only review a completed job",
+      "NOT_YOUR_JOB": "You are not the customer of this job",
+      "ALREADY_REVIEWED": "You have already submitted a review for this job",
+      "INVALID_STARS": "Rating must be between 1 and 5 stars",
+      "COMMENT_TOO_LONG": "Comment must not exceed 1000 characters"
+    }
+  },
+  "JOB_SUMMARY": {
+    "FORM": {
+      "TITLE": "Job Summary",
+      "SUBTITLE": "Write a clear description of the problem and how you solved it",
+      "PROBLEM_LABEL": "Problem Description",
+      "PROBLEM_PLACEHOLDER": "Example: There was a water leak under the sink due to a damaged rubber connector...",
+      "PROBLEM_REQUIRED": "Problem description is required",
+      "PROBLEM_MIN_LENGTH": "Description is too short — write at least 20 characters",
+      "SOLUTION_LABEL": "Solution Description",
+      "SOLUTION_PLACEHOLDER": "Example: I replaced the damaged rubber connector and secured the pipe, then tested the water flow...",
+      "SOLUTION_REQUIRED": "Solution description is required",
+      "SOLUTION_MIN_LENGTH": "Description is too short — write at least 20 characters",
+      "SUBMIT_BTN": "Submit Summary",
+      "SUBMITTING_BTN": "AI is evaluating...",
+      "GENERIC_ERROR": "An error occurred, please try again",
+      "REQUIRED_MARK": "*"
+    },
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "Summary Accepted!",
+      "SUBTITLE": "Your summary has been added to the knowledge base and will help future customers",
+      "CHROMA_BADGE": "Saved to ChromaDB"
+    },
+    "REJECTION": {
+      "TITLE": "Summary Not Accepted:",
+      "HINT": "Please rewrite with more specific details"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "Job not found",
+      "NOT_YOUR_JOB": "You are not the craftsman assigned to this job",
+      "JOB_NOT_DONE": "Summary can only be submitted after job completion is confirmed",
+      "ALREADY_SUBMITTED": "A summary has already been submitted for this job",
+      "PROBLEM_TOO_SHORT": "Problem description is too short — write at least 20 characters",
+      "SOLUTION_TOO_SHORT": "Solution description is too short — write at least 20 characters"
+    }
+  },
+  "AI_CHAT": {
+    "HEADER": {
+      "NAME": "Harfi AI Assistant",
+      "STATUS": "Online"
+    },
+    "INPUT": {
+      "PLACEHOLDER": "Describe your problem here...",
+      "SEND_BTN": "Send"
+    },
+    "MESSAGES": {
+      "DEFAULT_WELCOME": "Hello! How can I help you today?",
+      "GENERIC_ERROR": "An error occurred, please try again",
+      "THINKING": "Thinking..."
+    },
+    "FEEDBACK": {
+      "QUESTION": "Did this content help you?",
+      "HELPFUL_BTN": "✓ Yes, it helped",
+      "NEED_CRAFTSMAN_BTN": "I still need a craftsman",
+      "DONE": "Thank you for your feedback 🙏"
+    }
+  },
+  "COMMON": {
+    "REQUIRED": "*",
+    "OPTIONAL": "(Optional)",
+    "CHAR_COUNT": "{{current}} / {{max}}",
+    "LOADING": "Loading...",
+    "UNAUTHORIZED": "Invalid authentication token",
+    "SERVER_ERROR": "Server error occurred. Please try again"
+  },
   "ALL": "All",
   "OF": "of",
   "SHOWING": "Showing",
@@ -328,3 +451,5 @@
   "CITY_JEDDAH": "Jeddah",
   "CURRENCY": "SAR"
 }
+
+
