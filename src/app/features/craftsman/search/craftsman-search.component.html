@@ -1,0 +1,101 @@
+<div class="craftsman-search-page">
+  <section class="search-hero">
+    <div>
+      <p class="eyebrow">{{ 'CRAFTSMEN_FILTER.PAGE_LABEL' | translate }}</p>
+      <h1>
+        {{ 'CRAFTSMEN_FILTER.TITLE' | translate }}
+        <span class="accent">{{ activeServiceLabel }}</span>
+      </h1>
+      <p class="hero-copy">{{ 'CRAFTSMEN_FILTER.SUBTITLE' | translate }}</p>
+    </div>
+
+    <a class="hero-link" routerLink="/home">{{ 'CRAFTSMEN_FILTER.BACK_HOME' | translate }}</a>
+  </section>
+
+  <form class="filter-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>{{ 'CRAFTSMEN_FILTER.SEARCH' | translate }}</span>
+      <input type="text" formControlName="search" [placeholder]="'CRAFTSMEN_FILTER.SEARCH_PLACEHOLDER' | translate" />
+    </label>
+    <label>
+      <span>{{ 'CRAFTSMEN_FILTER.SERVICE' | translate }}</span>
+      <select formControlName="service">
+        @for (option of serviceOptions; track option.value) {
+          <option [value]="option.value">{{ option.labelKey | translate }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ 'CRAFTSMEN_FILTER.CITY' | translate }}</span>
+      <input type="text" formControlName="city" [placeholder]="'CRAFTSMEN_FILTER.CITY_PLACEHOLDER' | translate" />
+    </label>
+    <label>
+      <span>{{ 'CRAFTSMEN_FILTER.MIN_RATING' | translate }}</span>
+      <input type="number" min="0" max="5" step="0.1" formControlName="minRating" />
+    </label>
+    <label>
+      <span>{{ 'CRAFTSMEN_FILTER.MIN_EXPERIENCE' | translate }}</span>
+      <input type="number" min="0" step="1" formControlName="minExperience" />
+    </label>
+
+    <div class="filter-actions">
+      <button type="submit" class="primary-btn">{{ 'CRAFTSMEN_FILTER.APPLY' | translate }}</button>
+      <button type="button" class="secondary-btn" (click)="clearFilters()">{{ 'CRAFTSMEN_FILTER.CLEAR' | translate }}</button>
+    </div>
+  </form>
+
+  @if (loading()) {
+    <section class="state-card">
+      <span class="spinner"></span>
+      <p>{{ 'LOADING' | translate }}</p>
+    </section>
+  } @else if (craftsmen().length === 0) {
+    <section class="state-card empty-card">
+      <h2>{{ 'CRAFTSMEN_FILTER.NO_RESULTS_TITLE' | translate }}</h2>
+      <p>{{ 'CRAFTSMEN_FILTER.NO_RESULTS_DESC' | translate }}</p>
+    </section>
+  } @else {
+    <section class="results-grid">
+      @for (craftsman of craftsmen(); track craftsman.id) {
+        <article class="craftsman-card">
+          <div class="card-top">
+            <div class="avatar">
+              @if (craftsman.avatarUrl) {
+                <img class="avatar-img" [src]="craftsman.avatarUrl" [alt]="craftsman.name" />
+              } @else {
+                {{ craftsman.name.slice(0, 1) }}
+              }
+            </div>
+            <div class="meta">
+              <h2>{{ craftsman.name }}</h2>
+              <p>{{ craftsman.specialty }} · {{ craftsman.city }}</p>
+            </div>
+          </div>
+
+          <p class="bio">{{ craftsman.bio }}</p>
+
+          <div class="chips">
+            @for (service of craftsman.services; track service) {
+              <span class="chip">{{ getServiceLabel(service) | translate }}</span>
+            }
+          </div>
+
+          <div class="stats">
+            <span>⭐ {{ craftsman.rating }}</span>
+            <span>{{ craftsman.reviewsCount }} {{ 'CRAFTSMEN_FILTER.REVIEWS' | translate }}</span>
+            <span>{{ craftsman.experienceYears }} {{ 'CRAFTSMEN_FILTER.YEARS' | translate }}</span>
+            @if (getPriceRange(craftsman)) {
+              <span>{{ getPriceRange(craftsman) }} {{ 'CURRENCY' | translate }}</span>
+            }
+          </div>
+
+          @if (canBook()) {
+            <div class="card-actions">
+              <button type="button" class="primary-btn" (click)="bookNow(craftsman)">{{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}</button>
+            </div>
+          }
+        </article>
+      }
+    </section>
+  }
+</div>
