@@ -1,0 +1,140 @@
+<div class="jobs-page">
+  <section class="jobs-hero">
+    <div>
+      <p class="eyebrow">{{ 'JOBS.PAGE_LABEL' | translate }}</p>
+      <h1>{{ 'JOBS.PAGE_TITLE' | translate }}</h1>
+      <p class="hero-copy">{{ 'JOBS.PAGE_SUBTITLE' | translate }}</p>
+    </div>
+
+    @if (isCustomer()) {
+      <button class="create-btn" type="button" (click)="createJob()">
+        <span class="material-symbols-outlined">add_circle</span>
+        <span>{{ 'JOBS.CREATE_JOB' | translate }}</span>
+      </button>
+    }
+  </section>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <span class="summary-label">{{ 'JOBS.FILTER_ALL' | translate }}</span>
+      <strong>{{ counts().all }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-label">{{ 'JOBS.FILTER_OPEN' | translate }}</span>
+      <strong>{{ counts().open }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-label">{{ 'JOBS.FILTER_IN_PROGRESS' | translate }}</span>
+      <strong>{{ counts().progress }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-label">{{ 'JOBS.FILTER_DONE' | translate }}</span>
+      <strong>{{ counts().done }}</strong>
+    </article>
+  </section>
+
+  <section class="filter-bar">
+    @for (tab of filterTabs; track tab.value) {
+      <button
+        type="button"
+        class="filter-pill"
+        [class.active]="activeTab() === tab.value"
+        (click)="setTab(tab.value)"
+      >
+        {{ tab.labelKey | translate }}
+      </button>
+    }
+  </section>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <span class="spinner"></span>
+      <p>{{ 'LOADING' | translate }}</p>
+    </div>
+  } @else if (visibleJobs().length === 0) {
+    <section class="empty-state">
+      <h2>{{ 'JOBS.NO_JOBS' | translate }}</h2>
+      <p>
+        @if (isCustomer()) {
+          {{ 'JOBS.EMPTY_HINT_CUSTOMER' | translate }}
+        } @else {
+          {{ 'JOBS.EMPTY_HINT_CRAFTSMAN' | translate }}
+        }
+      </p>
+
+      @if (isCustomer()) {
+        <button class="create-btn create-btn--secondary" type="button" (click)="createJob()">
+          <span class="material-symbols-outlined">add</span>
+          <span>{{ 'JOBS.CREATE_JOB' | translate }}</span>
+        </button>
+      }
+    </section>
+  } @else {
+    <section class="jobs-grid">
+      @for (job of visibleJobs(); track trackByJobId($index, job)) {
+        <article class="job-card">
+          <header class="job-card__header">
+            <div>
+              <p class="job-service">{{ getServiceLabel(job.service) | translate }}</p>
+              <h2>{{ getAssignedLabel(job) }}</h2>
+            </div>
+            <span [class]="getStatusClass(job.status)">{{ getStatusLabelKey(job.status) | translate }}</span>
+          </header>
+
+          <p class="job-description">{{ job.description }}</p>
+
+          <dl class="job-meta">
+            <div>
+              <dt>{{ 'JOBS.CITY' | translate }}</dt>
+              <dd>{{ job.city || '-' }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'JOBS.ADDRESS' | translate }}</dt>
+              <dd>{{ job.address || ('JOBS.NOT_SET' | translate) }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'JOBS.SCHEDULED_AT' | translate }}</dt>
+              <dd>
+                @if (job.preferredDate) {
+                  {{ job.preferredDate | date: 'mediumDate' }}
+                } @else {
+                  {{ 'JOBS.NOT_SET' | translate }}
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>{{ 'JOBS.BUDGET' | translate }}</dt>
+              <dd>
+                @if (job.budget !== null && job.budget !== undefined) {
+                  {{ job.budget | number: '1.0-0' }} {{ 'CURRENCY' | translate }}
+                } @else {
+                  {{ 'JOBS.NOT_SET' | translate }}
+                }
+              </dd>
+            </div>
+          </dl>
+
+          @if (isCraftsman() && (canAccept(job) || canReject(job) || canComplete(job))) {
+            <div class="job-actions">
+              @if (canAccept(job)) {
+                <button type="button" class="action-btn action-btn--primary" (click)="performAction(job.id, 'accept')">
+                  {{ 'JOBS.ACTION_ACCEPT' | translate }}
+                </button>
+              }
+              @if (canReject(job)) {
+                <button type="button" class="action-btn action-btn--ghost" (click)="performAction(job.id, 'reject')">
+                  {{ 'JOBS.ACTION_REJECT' | translate }}
+                </button>
+              }
+              @if (canComplete(job)) {
+                <button type="button" class="action-btn action-btn--primary" (click)="performAction(job.id, 'complete')">
+                  {{ 'JOBS.ACTION_COMPLETE' | translate }}
+                </button>
+              }
+            </div>
+          }
+        </article>
+      }
+    </section>
+  }
+</div>

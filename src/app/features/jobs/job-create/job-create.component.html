@@ -1,0 +1,99 @@
+<div class="job-create-page">
+  <section class="page-header">
+    <div>
+      <p class="eyebrow">{{ 'JOBS.PAGE_LABEL' | translate }}</p>
+      <h1>{{ 'JOBS.CREATE_TITLE' | translate }}</h1>
+      <p>{{ 'JOBS.CREATE_SUBTITLE' | translate }}</p>
+    </div>
+
+    <a class="back-link" routerLink="/jobs">{{ 'JOBS.BACK_TO_JOBS' | translate }}</a>
+  </section>
+
+  <section class="create-layout">
+    <form class="job-form" [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        <span>{{ 'JOBS.SERVICE' | translate }}</span>
+        <select formControlName="service">
+          @for (service of services; track service.value) {
+            <option [value]="service.value">{{ service.labelKey | translate }}</option>
+          }
+        </select>
+        @if (form.controls.service.touched && form.controls.service.invalid) {
+          <small class="field-error">{{ 'JOBS.VALIDATION_REQUIRED' | translate }}</small>
+        }
+      </label>
+
+      <label>
+        <span>{{ 'JOBS.DESCRIPTION' | translate }}</span>
+        <textarea rows="5" formControlName="description"></textarea>
+        @if (form.controls.description.touched && form.controls.description.invalid) {
+          <small class="field-error">{{ 'JOBS.VALIDATION_DESCRIPTION' | translate }}</small>
+        }
+      </label>
+
+      <div class="form-grid">
+        <label>
+          <span>{{ 'JOBS.CITY' | translate }}</span>
+          <input type="text" formControlName="city" />
+          @if (form.controls.city.touched && form.controls.city.invalid) {
+            <small class="field-error">{{ 'JOBS.VALIDATION_REQUIRED' | translate }}</small>
+          }
+        </label>
+        <label>
+          <span>{{ 'JOBS.ADDRESS' | translate }}</span>
+          <input type="text" formControlName="address" />
+          @if (form.controls.address.touched && form.controls.address.invalid) {
+            <small class="field-error">{{ 'JOBS.VALIDATION_REQUIRED' | translate }}</small>
+          }
+        </label>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          <span>{{ 'JOBS.SCHEDULED_AT' | translate }}</span>
+          <input type="date" formControlName="preferredDate" />
+        </label>
+        <label>
+          <span>{{ 'JOBS.BUDGET' | translate }}</span>
+          <input type="number" min="0" step="1" formControlName="budget" />
+        </label>
+      </div>
+
+      @if (craftsmanName) {
+        <div class="craftsman-preview">
+          <span class="material-symbols-outlined">engineering</span>
+          <div class="craftsman-preview-info">
+            <span class="craftsman-preview-label">{{ 'JOBS.CRAFTSMAN_NAME' | translate }}</span>
+            <span class="craftsman-preview-name">{{ craftsmanName }}</span>
+          </div>
+          <button type="button" class="craftsman-preview-remove" (click)="clearCraftsman()" [title]="'CANCEL' | translate">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+      } @else {
+        <label>
+          <span>{{ 'JOBS.CRAFTSMAN_ID' | translate }} {{ 'OPTIONAL' | translate }}</span>
+          <input type="text" formControlName="craftsmanId" />
+        </label>
+      }
+
+      <button class="submit-btn" type="submit" [disabled]="loading">
+        @if (loading) {
+          {{ 'LOADING' | translate }}
+        } @else {
+          {{ 'JOBS.SUBMIT_REQUEST' | translate }}
+        }
+      </button>
+    </form>
+
+    <aside class="info-card">
+      <h2>{{ 'JOBS.CREATE_GUIDE_TITLE' | translate }}</h2>
+      <p>{{ 'JOBS.CREATE_GUIDE_DESC' | translate }}</p>
+      <ul>
+        <li>{{ 'JOBS.CREATE_GUIDE_1' | translate }}</li>
+        <li>{{ 'JOBS.CREATE_GUIDE_2' | translate }}</li>
+        <li>{{ 'JOBS.CREATE_GUIDE_3' | translate }}</li>
+      </ul>
+    </aside>
+  </section>
+</div>

@@ -1,22 +1,17 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
+import { CraftsmanDto } from '../../core/models/craftsman.models';
+import { CraftsmanService } from '../craftsman/craftsman.service';
 
 interface Service {
   icon: string;
   labelKey: string;
   variant: string;
-}
-
-interface Craftsman {
-  nameKey: string;
-  specialtyKey: string;
-  rating: number;
-  reviews: number;
-  distance: string;
+  slug: string;
 }
 
 interface Order {
@@ -31,13 +26,19 @@ interface Order {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslateModule, CommonModule],
+  imports: [RouterLink, TranslateModule, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
   auth = inject(AuthService);
   languageService = inject(LanguageService);
+  private router = inject(Router);
+  private craftsmanService = inject(CraftsmanService);
+
+  loadingCraftsmen = signal(true);
+  featuredCraftsmen = signal<CraftsmanDto[]>([]);
+  readonly isCustomer = this.auth.getRole() === 'customer';
 
   get greeting(): string {
     const hour = new Date().getHours();
@@ -48,22 +49,16 @@ export class HomeComponent implements OnInit {
   }
 
   services: Service[] = [
-    { icon: 'plumbing',            labelKey: 'SERVICES.PLUMBING',    variant: 'primary'   },
-    { icon: 'electrical_services', labelKey: 'SERVICES.ELECTRICAL',  variant: 'secondary' },
-    { icon: 'carpenter',           labelKey: 'SERVICES.CARPENTRY',   variant: 'tertiary'  },
-    { icon: 'format_paint',        labelKey: 'SERVICES.PAINTING',    variant: 'neutral'   },
-    { icon: 'ac_unit',             labelKey: 'SERVICES.AC',          variant: 'primary'   },
-    { icon: 'cleaning_services',   labelKey: 'SERVICES.CLEANING',    variant: 'error'     },
-    { icon: 'local_shipping',      labelKey: 'SERVICES.MOVING',      variant: 'secondary' },
-    { icon: 'pest_control',        labelKey: 'SERVICES.PEST',        variant: 'tertiary'  },
-    { icon: 'roofing',             labelKey: 'SERVICES.ROOFING',     variant: 'primary'   },
-    { icon: 'more_horiz',          labelKey: 'SERVICES.MORE',        variant: 'neutral'   },
-  ];
-
-  craftsmen: Craftsman[] = [
-    { nameKey: 'CRAFTSMEN.MAHMOUD', specialtyKey: 'CRAFTSMEN.PLUMBER',      rating: 4.9, reviews: 120, distance: '2' },
-    { nameKey: 'CRAFTSMEN.SAEED',   specialtyKey: 'CRAFTSMEN.ELECTRICIAN',  rating: 4.8, reviews: 85,  distance: '3.5' },
-    { nameKey: 'CRAFTSMEN.YASSER',  specialtyKey: 'CRAFTSMEN.CARPENTER',    rating: 5.0, reviews: 42,  distance: '5' },
+    { icon: 'plumbing',            labelKey: 'SERVICES.PLUMBING',    variant: 'primary',   slug: 'plumbing' },
+    { icon: 'electrical_services', labelKey: 'SERVICES.ELECTRICAL',  variant: 'secondary', slug: 'electrical' },
+    { icon: 'carpenter',           labelKey: 'SERVICES.CARPENTRY',   variant: 'tertiary',  slug: 'carpentry' },
+    { icon: 'format_paint',        labelKey: 'SERVICES.PAINTING',    variant: 'neutral',   slug: 'painting' },
+    { icon: 'ac_unit',             labelKey: 'SERVICES.AC',          variant: 'primary',   slug: 'ac' },
+    { icon: 'cleaning_services',   labelKey: 'SERVICES.CLEANING',    variant: 'error',     slug: 'cleaning' },
+    { icon: 'local_shipping',      labelKey: 'SERVICES.MOVING',      variant: 'secondary', slug: 'moving' },
+    { icon: 'pest_control',        labelKey: 'SERVICES.PEST',        variant: 'tertiary',  slug: 'pest' },
+    { icon: 'roofing',             labelKey: 'SERVICES.ROOFING',     variant: 'primary',   slug: 'roofing' },
+    { icon: 'more_horiz',          labelKey: 'SERVICES.MORE',        variant: 'neutral',   slug: '' },
   ];
 
   orders: Order[] = [
@@ -85,5 +80,45 @@ export class HomeComponent implements OnInit {
     },
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadFeaturedCraftsmen();
+  }
+
+  loadFeaturedCraftsmen(): void {
+    this.loadingCraftsmen.set(true);
+    this.craftsmanService.searchCraftsmen({}).subscribe({
+      next: (craftsmen) => {
+        this.featuredCraftsmen.set(
+          [...craftsmen]
+            .sort((left, right) => (right.rating ?? 0) - (left.rating ?? 0))
+            .slice(0, 6),
+        );
+        this.loadingCraftsmen.set(false);
+      },
+      error: () => {
+        this.featuredCraftsmen.set([]);
+        this.loadingCraftsmen.set(false);
+      },
+    });
+  }
+
+  getPrimaryServiceLabel(craftsman: CraftsmanDto): string {
+    const service = this.craftsmanService.getPrimaryService(craftsman);
+    return service ? `SERVICES.${service.toUpperCase()}` : craftsman.specialty;
+  }
+
+  getPriceRange(craftsman: CraftsmanDto): string {
+    return this.craftsmanService.getPriceRange(craftsman);
+  }
+
+  applyNow(craftsman: CraftsmanDto): void {
+    const service = this.craftsmanService.getPrimaryService(craftsman);
+    this.router.navigate(['/jobs/create'], {
+      queryParams: {
+        craftsmanId: craftsman.id,
+        craftsmanName: craftsman.name,
+        service: service || undefined,
+      },
+    });
+  }
 }

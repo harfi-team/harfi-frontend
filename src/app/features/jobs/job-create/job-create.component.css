@@ -1,0 +1,202 @@
+.job-create-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.page-header,
+.job-form,
+.info-card {
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--primary-color);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.page-header h1,
+.info-card h2 {
+  margin: 0;
+}
+
+.page-header p {
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary);
+}
+
+.back-link {
+  align-self: center;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.create-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
+  gap: 1rem;
+}
+
+.job-form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.job-form label,
+.info-card {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.job-form span {
+  font-weight: 600;
+}
+
+.job-form input,
+.job-form select,
+.job-form textarea {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.submit-btn {
+  justify-self: start;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.25rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+
+.submit-btn:disabled {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.craftsman-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--surface-secondary);
+}
+
+.craftsman-preview .material-symbols-outlined:first-child {
+  font-size: 1.6rem;
+  color: var(--primary-color);
+}
+
+.craftsman-preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.craftsman-preview-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.craftsman-preview-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.craftsman-preview-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  padding: 0.25rem;
+  border-radius: 50%;
+}
+
+.craftsman-preview-remove:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.info-card {
+  align-content: start;
+  padding: 1.25rem;
+}
+
+.info-card p,
+.info-card li {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.info-card ul {
+  margin: 0;
+  padding-inline-start: 1.15rem;
+}
+
+@media (max-width: 992px) {
+  .create-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .back-link,
+  .submit-btn {
+    width: 100%;
+    text-align: center;
+    justify-self: stretch;
+  }
+}
