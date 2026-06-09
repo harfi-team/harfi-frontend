@@ -1,0 +1,97 @@
+<div class="review-card mt-5">
+  <!-- ══ Thank You ══ -->
+  <div *ngIf="isSubmitted" class="done-screen">
+    <div class="done-icon">✅</div>
+    <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
+    <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
+  </div>
+
+  <!-- ══ Form ══ -->
+  <div *ngIf="!isSubmitted">
+    <div class="form-title">{{ 'REVIEWS.FORM.TITLE' | translate }}</div>
+
+    <div *ngIf="errorMessage" class="alert-error">
+      {{ errorMessage }}
+    </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- ── Stars ── -->
+      <div class="mb-4">
+        <label class="form-label">
+          <!-- ✅ translate pipe -->
+          {{ 'REVIEWS.FORM.STARS_LABEL' | translate }}
+          <span style="color: var(--error)">
+            {{ 'COMMON.REQUIRED' | translate }}
+          </span>
+        </label>
+
+        <div class="stars-row" (mouseleave)="resetHover()">
+          <span
+            *ngFor="let star of starsArray"
+            class="star"
+            [class.active]="isStarActive(star)"
+            (mouseenter)="hoverStar(star)"
+            (click)="selectStar(star)"
+          >
+            ★
+          </span>
+        </div>
+
+        <small class="star-label">
+          <ng-container [ngSwitch]="starsControl?.value">
+            <span *ngSwitchCase="1">{{ 'REVIEWS.FORM.STAR_1' | translate }}</span>
+            <span *ngSwitchCase="2">{{ 'REVIEWS.FORM.STAR_2' | translate }}</span>
+            <span *ngSwitchCase="3">{{ 'REVIEWS.FORM.STAR_3' | translate }}</span>
+            <span *ngSwitchCase="4">{{ 'REVIEWS.FORM.STAR_4' | translate }}</span>
+            <span *ngSwitchCase="5">{{ 'REVIEWS.FORM.STAR_5' | translate }}</span>
+            <span *ngSwitchDefault>{{ 'REVIEWS.FORM.STARS_PLACEHOLDER' | translate }}</span>
+          </ng-container>
+        </small>
+
+        <div *ngIf="starsControl?.invalid && starsControl?.touched" class="error-text">
+          {{ 'REVIEWS.FORM.STARS_REQUIRED' | translate }}
+        </div>
+      </div>
+
+      <!-- ── Comment ── -->
+      <div class="mb-4">
+        <label class="form-label">
+          {{ 'REVIEWS.FORM.COMMENT_LABEL' | translate }}
+          <span style="color: var(--text-secondary); font-weight: 400">
+            {{ 'COMMON.OPTIONAL' | translate }}
+          </span>
+        </label>
+
+        <textarea
+          class="form-control"
+          formControlName="comment"
+          rows="4"
+          [placeholder]="'REVIEWS.FORM.COMMENT_PLACEHOLDER' | translate"
+        >
+        </textarea>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 4px">
+          <span *ngIf="commentControl?.hasError('maxlength')" class="error-text">
+            {{ 'REVIEWS.FORM.COMMENT_MAX_LENGTH' | translate }}
+          </span>
+          <span class="char-count" style="margin-right: auto">
+            {{ commentControl?.value?.length || 0 }} / 1000
+          </span>
+        </div>
+      </div>
+
+      <!-- ── Submit ── -->
+
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ (isLoading ? 'REVIEWS.FORM.SUBMITTING_BTN' : 'REVIEWS.FORM.SUBMIT_BTN') | translate }}
+      </button>
+      <p
+        *ngIf="isLoading"
+        class="text-center mt-2"
+        style="color: var(--text-secondary); font-size: 0.85rem"
+      >
+        جارٍ حفظ تقييمك...
+      </p>
+    </form>
+  </div>
+</div>
