@@ -11,7 +11,7 @@ import { CraftsmanReviewsResponse } from '../../../../core/models/review.models'
   standalone: true,
   imports: [CommonModule, TranslateModule],
   templateUrl: './craftsman-reviews.component.html',
-  styleUrls: ['./craftsman-reviews.comp.css'],
+  styleUrls: ['./craftsman-reviews.component.css'],
 })
 export class CraftsmanReviewsComponent implements OnInit {
   /**
@@ -42,7 +42,7 @@ export class CraftsmanReviewsComponent implements OnInit {
     this.hasError = false;
 
     this.reviewsService
-      .getCraftsmanReviews(1022)
+      .getCraftsmanReviews(this.craftsmanId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
