@@ -178,27 +178,40 @@
         <h3 class="section-title">{{ 'HOME.RECENT_ORDERS' | translate }}</h3>
         <a class="section-link" routerLink="/jobs">{{ 'HOME.ORDER_HISTORY' | translate }}</a>
       </div>
-      <div class="orders-list">
-        @for (order of orders; track order.titleKey) {
-          <div class="order-card">
-            <div class="order-info">
-              <div class="order-icon-wrap">
-                <span class="material-symbols-outlined">{{ order.icon }}</span>
-              </div>
-              <div>
-                <div class="order-title">{{ order.titleKey | translate }}</div>
-                <div class="order-meta">
-                  {{ order.date | translate }} • {{ order.craftsman | translate }}
+      @if (loadingOrders()) {
+        <div class="featured-state">
+          <span class="loading-spinner"></span>
+          <p>{{ 'LOADING' | translate }}</p>
+        </div>
+      } @else if (recentOrders().length === 0) {
+        <div class="featured-state empty">
+          <p>{{ 'HOME.NO_ORDERS' | translate }}</p>
+        </div>
+      } @else {
+        <div class="orders-list">
+          @for (order of recentOrders(); track order.id) {
+            <div class="order-card">
+              <div class="order-info">
+                <div class="order-icon-wrap">
+                  <span class="material-symbols-outlined">{{ getServiceIcon(order.service) }}</span>
+                </div>
+                <div>
+                  <div class="order-title">{{ order.description }}</div>
+                  <div class="order-meta">
+                    {{ order.createdAt | date:'shortDate' }} • {{ isCraftsman ? order.customerName : order.craftsmanName }}
+                  </div>
                 </div>
               </div>
+              <div class="order-right">
+                <span [class]="getStatusClass(order.status)">{{ getStatusLabelKey(order.status) | translate }}</span>
+                @if (order.budget) {
+                  <span class="order-price">{{ order.budget }} {{ 'HOME.CURRENCY' | translate }}</span>
+                }
+              </div>
             </div>
-            <div class="order-right">
-              <span class="order-status">{{ order.statusKey | translate }}</span>
-              <span class="order-price">{{ order.price }} {{ 'HOME.CURRENCY' | translate }}</span>
-            </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
+      }
     </section>
 
     <div class="page-bottom"></div>

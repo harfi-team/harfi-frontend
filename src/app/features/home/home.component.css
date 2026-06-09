@@ -798,6 +798,27 @@
   padding: 5px 14px;
   border-radius: 999px;
 }
+
+.order-status--open {
+  background: color-mix(in srgb, #f59e0b 18%, transparent);
+  color: #b45309;
+}
+
+.order-status--in-progress {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+
+.order-status--done {
+  background: color-mix(in srgb, #22c55e 18%, transparent);
+  color: #15803d;
+}
+
+.order-status--rejected {
+  background: color-mix(in srgb, #ef4444 18%, transparent);
+  color: #b91c1c;
+}
+
 .order-price { font-size: 17px; font-weight: 700; color: var(--text-primary); }
 
 /* ─── bottom spacing ─────────────────────────────────────────────────── */

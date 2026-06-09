@@ -6,21 +6,14 @@ import { LanguageService } from '../../core/services/language.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CraftsmanDto } from '../../core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman/craftsman.service';
+import { JobsService } from '../jobs/jobs.service';
+import { JobDto, JobStatus } from '@core/models/job.models';
 
 interface Service {
   icon: string;
   labelKey: string;
   variant: string;
   slug: string;
-}
-
-interface Order {
-  icon: string;
-  titleKey: string;
-  date: string;
-  craftsman: string;
-  statusKey: string;
-  price: string;
 }
 
 @Component({
@@ -35,10 +28,14 @@ export class HomeComponent implements OnInit {
   languageService = inject(LanguageService);
   private router = inject(Router);
   private craftsmanService = inject(CraftsmanService);
+  private jobsService = inject(JobsService);
 
   loadingCraftsmen = signal(true);
+  loadingOrders = signal(false);
   featuredCraftsmen = signal<CraftsmanDto[]>([]);
+  recentOrders = signal<JobDto[]>([]);
   readonly isCustomer = this.auth.getRole() === 'customer';
+  readonly isCraftsman = this.auth.getRole() === 'craftsman';
 
   get greeting(): string {
     const hour = new Date().getHours();
@@ -61,27 +58,77 @@ export class HomeComponent implements OnInit {
     { icon: 'more_horiz',          labelKey: 'SERVICES.MORE',        variant: 'neutral',   slug: '' },
   ];
 
-  orders: Order[] = [
-    {
-      icon: 'plumbing',
-      titleKey: 'ORDERS.LEAK',
-      date: 'ORDERS.DATE1',
-      craftsman: 'CRAFTSMEN.MAHMOUD',
-      statusKey: 'ORDERS.COMPLETED',
-      price: '150',
-    },
-    {
-      icon: 'electrical_services',
-      titleKey: 'ORDERS.CHANDELIER',
-      date: 'ORDERS.DATE2',
-      craftsman: 'CRAFTSMEN.SAEED',
-      statusKey: 'ORDERS.COMPLETED',
-      price: '80',
-    },
-  ];
-
   ngOnInit(): void {
     this.loadFeaturedCraftsmen();
+    this.loadRecentOrders();
+  }
+
+  loadRecentOrders(): void {
+    const userId = this.auth.getUserId();
+    if (!userId) {
+      this.recentOrders.set([]);
+      return;
+    }
+
+    this.loadingOrders.set(true);
+    const request = this.isCraftsman
+      ? this.jobsService.getCraftsmanJobs(userId)
+      : this.jobsService.getCustomerJobs(userId);
+
+    request.subscribe({
+      next: (jobs) => {
+        const sorted = [...jobs].sort(
+          (a, b) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
+        );
+        this.recentOrders.set(sorted.slice(0, 5));
+        this.loadingOrders.set(false);
+      },
+      error: () => {
+        this.recentOrders.set([]);
+        this.loadingOrders.set(false);
+      },
+    });
+  }
+
+  getStatusLabelKey(status: JobStatus): string {
+    switch (status) {
+      case 'open':
+        return 'JOBS.STATUS_OPEN';
+      case 'in-progress':
+        return 'JOBS.STATUS_IN_PROGRESS';
+      case 'done':
+        return 'JOBS.STATUS_DONE';
+      case 'rejected':
+        return 'JOBS.STATUS_REJECTED';
+      default:
+        return 'JOBS.STATUS_OPEN';
+    }
+  }
+
+  getStatusClass(status: JobStatus): string {
+    return `order-status order-status--${status}`;
+  }
+
+  getServiceIcon(serviceType: string): string {
+    const iconMap: Record<string, string> = {
+      'سباك': 'plumbing',
+      'كهربائي': 'electrical_services',
+      'نجار': 'carpenter',
+      'نقاش': 'format_paint',
+      'تكييف': 'ac_unit',
+      'نظافة': 'cleaning_services',
+      'نقل': 'local_shipping',
+      'مكافحة حشرات': 'pest_control',
+      'plumbing': 'plumbing',
+      'electrical': 'electrical_services',
+      'carpentry': 'carpenter',
+      'painting': 'format_paint',
+      'ac': 'ac_unit',
+      'cleaning': 'cleaning_services',
+      'moving': 'local_shipping',
+      'pest': 'pest_control',
+    };
+    return iconMap[serviceType] ?? 'handyman';
   }
 
   loadFeaturedCraftsmen(): void {
