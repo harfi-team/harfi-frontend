@@ -44,17 +44,14 @@ export interface ResendCodeDto {
 }
 
 export interface SendPhoneVerificationDto {
-  email: string;
   phoneNumber: string;
 }
 
 export interface VerifyPhoneDto {
-  email: string;
   phoneNumber: string;
   code: string;
 }
 
 export interface ResendPhoneCodeDto {
-  email: string;
   phoneNumber: string;
 }

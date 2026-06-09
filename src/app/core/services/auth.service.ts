@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService } from './token.service';
 import {
@@ -59,6 +59,14 @@ export class AuthService {
 
   me(): Observable<UserInfoDto> {
     return this.http.get<UserInfoDto>(`${this.base}/me`);
+  }
+
+  loadCurrentUser(): Observable<UserInfoDto | null> {
+    if (!this.tokenService.getAccessToken()) return of(null);
+    return this.http.get<UserInfoDto>(`${this.base}/me`).pipe(
+      tap(user => this.tokenService.setUser(user)),
+      catchError(() => of(null)),
+    );
   }
 
   refreshToken(): Observable<AuthResponseDto> {
