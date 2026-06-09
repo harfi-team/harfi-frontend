@@ -91,6 +91,28 @@
   "NAV_CONTACT": "Contact Us",
   "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
+
+  "CRAFTSMEN_FILTER": {
+    "PAGE_LABEL": "Craftsmen Search",
+    "TITLE": "Craftsmen for",
+    "SUBTITLE": "Browse verified craftsmen, refine the filters, and book the right expert for the job.",
+    "BACK_HOME": "Back Home",
+    "SEARCH": "Search by name or specialty",
+    "SEARCH_PLACEHOLDER": "e.g. plumber, electrician...",
+    "SERVICE": "Service",
+    "CITY": "City",
+    "CITY_PLACEHOLDER": "e.g. Cairo, Giza...",
+    "MIN_RATING": "Minimum Rating",
+    "MIN_EXPERIENCE": "Minimum Experience",
+    "APPLY": "Apply Filters",
+    "CLEAR": "Clear",
+    "BOOK_NOW": "Assign a Job",
+    "ALL_SERVICES": "All Services",
+    "NO_RESULTS_TITLE": "No craftsmen found",
+    "NO_RESULTS_DESC": "Try a different service or relax the filters to see more results.",
+    "REVIEWS": "reviews",
+    "YEARS": "years"
+  },
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
     "HOME": "Home",
@@ -104,6 +126,61 @@
     "LOGOUT": "Logout",
     "BOOK_NOW": "Book Now"
   },
+  "JOBS": {
+    "PAGE_LABEL": "Bookings",
+    "PAGE_TITLE": "My Jobs",
+    "PAGE_SUBTITLE": "Track service requests, manage progress, and keep every job organized.",
+    "CREATE_TITLE": "Create a Job",
+    "CREATE_SUBTITLE": "Send a request now and follow the job lifecycle from one place.",
+    "CREATE_JOB": "Create Job",
+    "SUBMIT_REQUEST": "Submit Request",
+    "BACK_TO_JOBS": "Back to Jobs",
+    "SERVICE": "Service",
+    "DESCRIPTION": "Description",
+    "CITY": "City",
+    "ADDRESS": "Address",
+    "SCHEDULED_AT": "Preferred Date",
+    "CREATED_AT": "Created",
+    "PROBLEM_IMAGE": "Problem Photo",
+    "BUDGET": "Budget",
+    "CRAFTSMAN_ID": "Craftsman ID",
+    "CRAFTSMAN_NAME": "Craftsman",
+    "CUSTOMER_NAME": "Customer",
+    "FILTER_ALL": "All",
+    "FILTER_OPEN": "Open",
+    "FILTER_IN_PROGRESS": "In Progress",
+    "FILTER_DONE": "Completed",
+    "FILTER_REJECTED": "Rejected",
+    "NO_JOBS": "No jobs yet",
+    "EMPTY_HINT_CUSTOMER": "Create your first request and start tracking it here.",
+    "EMPTY_HINT_CRAFTSMAN": "No jobs are assigned to you yet.",
+    "NOT_SET": "Not set",
+    "STATUS_OPEN": "Open",
+    "STATUS_IN_PROGRESS": "In Progress",
+    "STATUS_DONE": "Completed",
+    "STATUS_REJECTED": "Rejected",
+    "ACTION_ACCEPT": "Accept",
+    "ACTION_REJECT": "Reject",
+    "ACTION_COMPLETE": "Mark Completed",
+    "SUCCESS_CREATED": "Job created successfully",
+    "SUCCESS_ACCEPTED": "Job accepted successfully",
+    "SUCCESS_REJECTED": "Job rejected successfully",
+    "SUCCESS_COMPLETED": "Job marked as completed",
+    "VALIDATION_REQUIRED": "This field is required",
+    "VALIDATION_DESCRIPTION": "Add at least 10 characters so the request is clear.",
+    "CREATE_GUIDE_TITLE": "What happens next?",
+    "CREATE_GUIDE_DESC": "Once you submit the job, the selected craftsman can review it, accept the request, and move it through the workflow.",
+    "CREATE_GUIDE_1": "Describe the problem clearly...",
+    "CREATE_GUIDE_2": "Add a budget and preferred date only if you already have them.",
+    "CREATE_GUIDE_3": "Leave the craftsman ID empty for a general request.",
+    "UPLOAD_HINT": "Drag and drop an image or click to browse",
+    "STREET_DETAIL": "Street / Building Details",
+    "NO_CRAFTSMAN_SELECTED": "No craftsman selected yet",
+    "VISIT_FEE": "Visit Fee",
+    "ESTIMATED_TOTAL": "Estimated Total",
+    "CONFIRM_BOOKING": "Confirm Booking",
+    "SECURE_INFO": "Private & secure information"
+  },
   "HOME": {
     "USER": "User",
     "SUBTITLE": "Ready to get things done today?",
@@ -114,9 +191,12 @@
     "POPULAR_SERVICES": "Popular Services",
     "VIEW_ALL": "View All",
     "FEATURED_CRAFTSMEN": "Top Craftsmen Near You",
+    "NO_CRAFTSMEN": "No craftsmen found right now.",
     "KM": "km",
     "REVIEWS": "reviews",
     "VIEW_PROFILE": "View Profile",
+    "APPLY_NOW": "Assign a Job",
+    "YEARS": "years",
     "HOW_TITLE": "How does Harfi work?",
     "HOW_STEP1_TITLE": "1. Find a Service",
     "HOW_STEP1_DESC": "Choose the service you need from dozens of available categories.",
@@ -126,7 +206,15 @@
     "HOW_STEP3_DESC": "Pay securely through the app and enjoy a quality guarantee on all work.",
     "RECENT_ORDERS": "Recent Orders",
     "ORDER_HISTORY": "Order History",
+    "NO_ORDERS": "No orders yet",
     "CURRENCY": "EGP"
+  },
+  "CRAFTSMAN_PROFILE": {
+    "ABOUT": "About",
+    "DETAILS": "Details",
+    "EXPERIENCE": "Experience",
+    "PRICE_RANGE": "Price Range",
+    "SERVICES": "Services"
   },
   "SERVICES": {
     "PLUMBING": "Plumbing",
@@ -138,7 +226,8 @@
     "MOVING": "Moving",
     "PEST": "Pest Control",
     "ROOFING": "Roofing",
-    "MORE": "More"
+    "MORE": "More",
+    "OTHER": "Other"
   },
   "CRAFTSMEN": {
     "MAHMOUD": "Mahmoud Khaled",
@@ -154,6 +243,124 @@
     "DATE1": "Thursday, Oct 12",
     "DATE2": "Sunday, Oct 8",
     "COMPLETED": "Completed"
+  },
+
+  "REVIEWS": {
+    "FORM": {
+      "TITLE": "Rate Your Experience with the Craftsman",
+      "STARS_LABEL": "Rating",
+      "STARS_REQUIRED": "Please select a star rating",
+      "STARS_PLACEHOLDER": "Choose your rating",
+      "STAR_1": "Very Bad",
+      "STAR_2": "Bad",
+      "STAR_3": "Average",
+      "STAR_4": "Good",
+      "STAR_5": "Excellent",
+      "COMMENT_LABEL": "Your Comment",
+      "COMMENT_OPTIONAL": "(Optional)",
+      "COMMENT_PLACEHOLDER": "Share your experience with the craftsman...",
+      "COMMENT_MAX_LENGTH": "Comment must not exceed 1000 characters",
+      "SUBMIT_BTN": "Submit Review",
+      "SUBMITTING_BTN": "Submitting...",
+      "GENERIC_ERROR": "An error occurred, please try again"
+    },
+    "CRAFTSMAN": {
+  "TITLE": "Reviews",
+  "REVIEWS_COUNT": "reviews",
+  "NO_REVIEWS": "No reviews yet",
+  "NO_COMMENT": "No comment",
+  "SHOW_MORE": "Show more",
+  "SHOW_LESS": "Show less",
+  "LOAD_ERROR": "Failed to load reviews",
+  "RETRY_BTN": "Try again"
+},
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "Thank you for your review!",
+      "SUBTITLE": "Your feedback helps craftsmen improve their service"
+    },
+    "FEEDBACK": {
+      "QUESTION": "Did this content help you?",
+      "HELPFUL_BTN": "Yes, it helped",
+      "NEED_CRAFTSMAN_BTN": "I still need a craftsman",
+      "DONE_MESSAGE": "Thank you for your feedback 🙏",
+      "INVALID_TYPE_ERROR": "Invalid feedback type",
+      "DUPLICATE_ERROR": "You have already submitted feedback on this content",
+      "RAG_NOT_FOUND_ERROR": "AI document not found"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "Job not found",
+      "JOB_NOT_DONE": "You can only review a completed job",
+      "NOT_YOUR_JOB": "You are not the customer of this job",
+      "ALREADY_REVIEWED": "You have already submitted a review for this job",
+      "INVALID_STARS": "Rating must be between 1 and 5 stars",
+      "COMMENT_TOO_LONG": "Comment must not exceed 1000 characters"
+    }
+  },
+  "JOB_SUMMARY": {
+    "FORM": {
+      "TITLE": "Job Summary",
+      "SUBTITLE": "Write a clear description of the problem and how you solved it",
+      "PROBLEM_LABEL": "Problem Description",
+      "PROBLEM_PLACEHOLDER": "Example: There was a water leak under the sink due to a damaged rubber connector...",
+      "PROBLEM_REQUIRED": "Problem description is required",
+      "PROBLEM_MIN_LENGTH": "Description is too short — write at least 20 characters",
+      "SOLUTION_LABEL": "Solution Description",
+      "SOLUTION_PLACEHOLDER": "Example: I replaced the damaged rubber connector and secured the pipe, then tested the water flow...",
+      "SOLUTION_REQUIRED": "Solution description is required",
+      "SOLUTION_MIN_LENGTH": "Description is too short — write at least 20 characters",
+      "SUBMIT_BTN": "Submit Summary",
+      "SUBMITTING_BTN": "AI is evaluating...",
+      "GENERIC_ERROR": "An error occurred, please try again",
+      "REQUIRED_MARK": "*"
+    },
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "Summary Accepted!",
+      "SUBTITLE": "Your summary has been added to the knowledge base and will help future customers",
+      "CHROMA_BADGE": "Saved to ChromaDB"
+    },
+    "REJECTION": {
+      "TITLE": "Summary Not Accepted:",
+      "HINT": "Please rewrite with more specific details"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "Job not found",
+      "NOT_YOUR_JOB": "You are not the craftsman assigned to this job",
+      "JOB_NOT_DONE": "Summary can only be submitted after job completion is confirmed",
+      "ALREADY_SUBMITTED": "A summary has already been submitted for this job",
+      "PROBLEM_TOO_SHORT": "Problem description is too short — write at least 20 characters",
+      "SOLUTION_TOO_SHORT": "Solution description is too short — write at least 20 characters"
+    }
+  },
+  "AI_CHAT": {
+    "HEADER": {
+      "NAME": "Harfi AI Assistant",
+      "STATUS": "Online"
+    },
+    "INPUT": {
+      "PLACEHOLDER": "Describe your problem here...",
+      "SEND_BTN": "Send"
+    },
+    "MESSAGES": {
+      "DEFAULT_WELCOME": "Hello! How can I help you today?",
+      "GENERIC_ERROR": "An error occurred, please try again",
+      "THINKING": "Thinking..."
+    },
+    "FEEDBACK": {
+      "QUESTION": "Did this content help you?",
+      "HELPFUL_BTN": "✓ Yes, it helped",
+      "NEED_CRAFTSMAN_BTN": "I still need a craftsman",
+      "DONE": "Thank you for your feedback 🙏"
+    }
+  },
+  "COMMON": {
+    "REQUIRED": "*",
+    "OPTIONAL": "(Optional)",
+    "CHAR_COUNT": "{{current}} / {{max}}",
+    "LOADING": "Loading...",
+    "UNAUTHORIZED": "Invalid authentication token",
+    "SERVER_ERROR": "Server error occurred. Please try again"
   },
   "ALL": "All",
   "OF": "of",
@@ -431,3 +638,5 @@
     "CAIRO": "Cairo"
   }
 }
+
+

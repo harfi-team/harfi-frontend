@@ -89,8 +89,30 @@
   "NAV_HOW": "كيف يعمل",
   "NAV_CRAFTSMEN": "الحرفيون",
   "NAV_CONTACT": "تواصل معنا",
+
   "NOTIFICATIONS": "الإشعارات",
   "AI_ASSISTANT": "المساعد الذكي",
+  "CRAFTSMEN_FILTER": {
+    "PAGE_LABEL": "بحث الحرفيين",
+    "TITLE": "حرفيون لخدمة",
+    "SUBTITLE": "تصفح الحرفيين الموثقين، وعدّل الفلاتر، واحجز الخبير المناسب للعمل.",
+    "BACK_HOME": "العودة للرئيسية",
+    "SEARCH": "البحث بالاسم أو التخصص",
+    "SEARCH_PLACEHOLDER": "مثال: سباك، كهربائي...",
+    "SERVICE": "الخدمة",
+    "CITY": "المدينة",
+    "CITY_PLACEHOLDER": "مثال: القاهرة، الجيزة...",
+    "MIN_RATING": "أقل تقييم",
+    "MIN_EXPERIENCE": "أقل خبرة",
+    "APPLY": "تطبيق الفلاتر",
+    "CLEAR": "مسح",
+    "BOOK_NOW": "كلّفه بعمل",
+    "ALL_SERVICES": "كل الخدمات",
+    "NO_RESULTS_TITLE": "لا يوجد حرفيون",
+    "NO_RESULTS_DESC": "جرّب خدمة أخرى أو خفف الفلاتر لعرض نتائج أكثر.",
+    "REVIEWS": "تقييم",
+    "YEARS": "سنوات"
+  },
   "NAV": {
     "TAGLINE": "منصة الحرفيين",
     "HOME": "الرئيسية",
@@ -104,6 +126,61 @@
     "LOGOUT": "خروج",
     "BOOK_NOW": "احجز الآن"
   },
+  "JOBS": {
+    "PAGE_LABEL": "الحجوزات",
+    "PAGE_TITLE": "طلباتي",
+    "PAGE_SUBTITLE": "تابع طلبات الخدمة، وراقب التقدم، ونظم كل طلب في مكان واحد.",
+    "CREATE_TITLE": "إنشاء طلب",
+    "CREATE_SUBTITLE": "أرسل طلبك الآن وتابع دورة العمل من مكان واحد.",
+    "CREATE_JOB": "إنشاء طلب",
+    "SUBMIT_REQUEST": "إرسال الطلب",
+    "BACK_TO_JOBS": "العودة إلى الطلبات",
+    "SERVICE": "الخدمة",
+    "DESCRIPTION": "الوصف",
+    "CITY": "المدينة",
+    "ADDRESS": "العنوان",
+    "SCHEDULED_AT": "التاريخ المفضل",
+    "CREATED_AT": "تاريخ الإنشاء",
+    "PROBLEM_IMAGE": "صورة المشكلة",
+    "BUDGET": "الميزانية",
+    "CRAFTSMAN_ID": "رقم الحرفي",
+    "CRAFTSMAN_NAME": "الحرفي",
+    "CUSTOMER_NAME": "العميل",
+    "FILTER_ALL": "الكل",
+    "FILTER_OPEN": "مفتوح",
+    "FILTER_IN_PROGRESS": "قيد التنفيذ",
+    "FILTER_DONE": "مكتمل",
+    "FILTER_REJECTED": "مرفوض",
+    "NO_JOBS": "لا توجد طلبات حتى الآن",
+    "EMPTY_HINT_CUSTOMER": "أنشئ أول طلب لك وابدأ متابعته من هنا.",
+    "EMPTY_HINT_CRAFTSMAN": "لا توجد طلبات مخصصة لك حتى الآن.",
+    "NOT_SET": "غير محدد",
+    "STATUS_OPEN": "مفتوح",
+    "STATUS_IN_PROGRESS": "قيد التنفيذ",
+    "STATUS_DONE": "مكتمل",
+    "STATUS_REJECTED": "مرفوض",
+    "ACTION_ACCEPT": "قبول",
+    "ACTION_REJECT": "رفض",
+    "ACTION_COMPLETE": "تم الإنجاز",
+    "SUCCESS_CREATED": "تم إنشاء الطلب بنجاح",
+    "SUCCESS_ACCEPTED": "تم قبول الطلب بنجاح",
+    "SUCCESS_REJECTED": "تم رفض الطلب بنجاح",
+    "SUCCESS_COMPLETED": "تم تحديد الطلب كمكتمل",
+    "VALIDATION_REQUIRED": "هذا الحقل مطلوب",
+    "VALIDATION_DESCRIPTION": "أضف 10 حروف على الأقل حتى يكون الطلب واضحاً.",
+    "CREATE_GUIDE_TITLE": "ماذا يحدث بعد ذلك؟",
+    "CREATE_GUIDE_DESC": "بعد إرسال الطلب، يمكن للحرفي المختار مراجعته وقبوله ونقله عبر مراحل التنفيذ.",
+    "CREATE_GUIDE_1": "اوصف المشكلة بوضوح...",
+    "CREATE_GUIDE_2": "أضف الميزانية والتاريخ المفضل فقط إذا كانا متوفرين.",
+    "CREATE_GUIDE_3": "اترك رقم الحرفي فارغاً إذا كان الطلب عاماً.",
+    "UPLOAD_HINT": "اسحب وأفلت صورة أو اضغط للاختيار",
+    "STREET_DETAIL": "الشارع / تفاصيل المبنى",
+    "NO_CRAFTSMAN_SELECTED": "لم يتم اختيار حرفي بعد",
+    "VISIT_FEE": "رسوم الزيارة",
+    "ESTIMATED_TOTAL": "الإجمالي المتوقع",
+    "CONFIRM_BOOKING": "تأكيد الحجز",
+    "SECURE_INFO": "معلوماتك خاصة وآمنة"
+  },
   "HOME": {
     "USER": "مستخدم",
     "SUBTITLE": "جاهز لإنجاز مهامك اليوم؟",
@@ -114,9 +191,12 @@
     "POPULAR_SERVICES": "الخدمات الشائعة",
     "VIEW_ALL": "عرض الكل",
     "FEATURED_CRAFTSMEN": "حرفيون مميزون بالقرب منك",
+    "NO_CRAFTSMEN": "لا يوجد حرفيون متاحون حالياً.",
     "KM": "كم",
     "REVIEWS": "تقييم",
     "VIEW_PROFILE": "عرض الملف",
+    "APPLY_NOW": "كلّفه بعمل",
+    "YEARS": "سنوات",
     "HOW_TITLE": "كيف يعمل حرفي؟",
     "HOW_STEP1_TITLE": "١. ابحث عن الخدمة",
     "HOW_STEP1_DESC": "اختر الخدمة التي تحتاجها من بين عشرات التصنيفات المتاحة.",
@@ -126,7 +206,15 @@
     "HOW_STEP3_DESC": "ادفع بأمان عبر التطبيق واستمتع بضمان على جودة العمل المنجز.",
     "RECENT_ORDERS": "آخر طلباتي",
     "ORDER_HISTORY": "سجل الطلبات",
+    "NO_ORDERS": "لا توجد طلبات حتى الآن",
     "CURRENCY": "ر.س"
+  },
+  "CRAFTSMAN_PROFILE": {
+    "ABOUT": "نبذة",
+    "DETAILS": "التفاصيل",
+    "EXPERIENCE": "سنوات الخبرة",
+    "PRICE_RANGE": "نطاق السعر",
+    "SERVICES": "الخدمات"
   },
   "SERVICES": {
     "PLUMBING": "سباكة",
@@ -138,7 +226,8 @@
     "MOVING": "نقل عفش",
     "PEST": "مكافحة حشرات",
     "ROOFING": "عزل أسطح",
-    "MORE": "المزيد"
+    "MORE": "المزيد",
+    "OTHER": "أخرى"
   },
   "CRAFTSMEN": {
     "MAHMOUD": "محمود خالد",
@@ -155,6 +244,125 @@
     "DATE2": "الأحد، 8 أكتوبر",
     "COMPLETED": "مكتمل"
   },
+
+  "REVIEWS": {
+    "FORM": {
+      "TITLE": "قيّم تجربتك مع الحرفي",
+      "STARS_LABEL": "التقييم",
+      "STARS_REQUIRED": "يرجى اختيار عدد النجوم",
+      "STARS_PLACEHOLDER": "اختر تقييمك",
+      "STAR_1": "سيء جداً",
+      "STAR_2": "سيء",
+      "STAR_3": "مقبول",
+      "STAR_4": "جيد",
+      "STAR_5": "ممتاز",
+      "COMMENT_LABEL": "تعليقك",
+      "COMMENT_OPTIONAL": "(اختياري)",
+      "COMMENT_PLACEHOLDER": "شاركنا تجربتك مع الحرفي...",
+      "COMMENT_MAX_LENGTH": "التعليق لا يجب أن يتجاوز 1000 حرف",
+      "SUBMIT_BTN": "إرسال التقييم",
+      "SUBMITTING_BTN": "جارٍ الإرسال...",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى"
+    },
+    "CRAFTSMAN": {
+  "TITLE": "التقييمات",
+  "REVIEWS_COUNT": "تقييم",
+  "NO_REVIEWS": "لا توجد تقييمات بعد",
+  "NO_COMMENT": "بدون تعليق",
+  "SHOW_MORE": "عرض المزيد",
+  "SHOW_LESS": "عرض أقل",
+  "LOAD_ERROR": "حدث خطأ في تحميل التقييمات",
+  "RETRY_BTN": "إعادة المحاولة"
+},
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "شكراً على تقييمك!",
+      "SUBTITLE": "رأيك يساعد الحرفيين الآخرين على التطور"
+    },
+    "FEEDBACK": {
+      "QUESTION": "هل ساعدك هذا المحتوى؟",
+      "HELPFUL_BTN": "ساعدني",
+      "NEED_CRAFTSMAN_BTN": "ما زلت بحاجة لحرفي",
+      "DONE_MESSAGE": "شكراً على رأيك 🙏",
+      "INVALID_TYPE_ERROR": "نوع الرأي غير صحيح",
+      "DUPLICATE_ERROR": "لقد قدمت رأيك على هذا المحتوى من قبل",
+      "RAG_NOT_FOUND_ERROR": "وثيقة الذكاء الاصطناعي غير موجودة"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "الطلب غير موجود",
+      "JOB_NOT_DONE": "لا يمكن تقديم تقييم إلا بعد اكتمال الشغل",
+      "NOT_YOUR_JOB": "أنت لست العميل صاحب هذا الطلب",
+      "ALREADY_REVIEWED": "لقد قدمت تقييماً لهذا الطلب من قبل",
+      "INVALID_STARS": "التقييم يجب أن يكون بين 1 و 5 نجوم",
+      "COMMENT_TOO_LONG": "التعليق لا يجب أن يتجاوز 1000 حرف"
+    }
+  },
+  "JOB_SUMMARY": {
+    "FORM": {
+      "TITLE": "ملخص الشغل",
+      "SUBTITLE": "اكتب وصفاً واضحاً للمشكلة وكيف حللتها بالعربي",
+      "PROBLEM_LABEL": "وصف المشكلة",
+      "PROBLEM_PLACEHOLDER": "مثال: كان في تسريب في أنبوب المياه تحت الحوض بسبب تلف الوصلة المطاطية...",
+      "PROBLEM_REQUIRED": "وصف المشكلة مطلوب",
+      "PROBLEM_MIN_LENGTH": "الوصف قصير جداً — اكتب على الأقل 20 حرف",
+      "SOLUTION_LABEL": "وصف الحل",
+      "SOLUTION_PLACEHOLDER": "مثال: قمت باستبدال الوصلة المطاطية التالفة وربط الأنبوب بشكل محكم وتجربة المياه...",
+      "SOLUTION_REQUIRED": "وصف الحل مطلوب",
+      "SOLUTION_MIN_LENGTH": "الوصف قصير جداً — اكتب على الأقل 20 حرف",
+      "SUBMIT_BTN": "إرسال الملخص",
+      "SUBMITTING_BTN": "جارٍ التقييم بالذكاء الاصطناعي...",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى",
+      "REQUIRED_MARK": "*"
+    },
+    "SUCCESS": {
+      "ICON": "✅",
+      "TITLE": "تم قبول الملخص!",
+      "SUBTITLE": "تمت إضافة ملخصك لقاعدة المعرفة وسيساعد العملاء القادمين",
+      "CHROMA_BADGE": "تم الحفظ في ChromaDB"
+    },
+    "REJECTION": {
+      "TITLE": "لم يُقبل الملخص:",
+      "HINT": "يرجى إعادة الكتابة بتفاصيل أوضح"
+    },
+    "VALIDATION": {
+      "JOB_NOT_FOUND": "الطلب غير موجود",
+      "NOT_YOUR_JOB": "أنت لست الحرفي المخصص لهذا الطلب",
+      "JOB_NOT_DONE": "الملخص يكتب فقط بعد تأكيد اكتمال الطلب",
+      "ALREADY_SUBMITTED": "تم تقديم ملخص لهذا الطلب مسبقاً",
+      "PROBLEM_TOO_SHORT": "وصف المشكلة قصير جداً — اكتب على الأقل 20 حرف",
+      "SOLUTION_TOO_SHORT": "وصف الحل قصير جداً — اكتب على الأقل 20 حرف"
+    }
+  },
+  "AI_CHAT": {
+    "HEADER": {
+      "NAME": "مساعد حرفي الذكي",
+      "STATUS": "متاح الآن"
+    },
+    "INPUT": {
+      "PLACEHOLDER": "اكتب مشكلتك هنا...",
+      "SEND_BTN": "إرسال"
+    },
+    "MESSAGES": {
+      "DEFAULT_WELCOME": "أهلاً! كيف يمكنني مساعدتك اليوم؟",
+      "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى",
+      "THINKING": "جارٍ التفكير..."
+    },
+    "FEEDBACK": {
+      "QUESTION": "هل ساعدك هذا المحتوى؟",
+      "HELPFUL_BTN": "✓ نعم، ساعدني",
+      "NEED_CRAFTSMAN_BTN": "ما زلت بحاجة لحرفي",
+      "DONE": "شكراً على رأيك 🙏"
+    }
+  },
+  "COMMON": {
+    "REQUIRED": "*",
+    "OPTIONAL": "(اختياري)",
+    "CHAR_COUNT": "{{current}} / {{max}}",
+    "LOADING": "جارٍ التحميل...",
+    "UNAUTHORIZED": "رمز المصادقة غير صالح",
+    "SERVER_ERROR": "حدث خطأ في الخادم. يرجى المحاولة مرة أخرى"
+  }
+,
   "ALL": "الكل",
   "OF": "من",
   "SHOWING": "عرض",
@@ -424,10 +632,6 @@
   },
   "CITY_RIYADH": "الرياض",
   "CITY_JEDDAH": "جدة",
-  "CURRENCY": "رس",
-  "CITY": {
-    "RIYADH": "الرياض",
-    "JEDDAH": "جدة",
-    "CAIRO": "القاهرة"
-  }
+  "CURRENCY": "رس"
+
 }
