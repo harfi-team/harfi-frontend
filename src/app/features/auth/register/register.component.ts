@@ -57,7 +57,13 @@ export class RegisterComponent {
     this.loading = true;
     this.authService.register(this.form.value as any).subscribe({
       next: (res) => {
-        this.router.navigate(['/auth/verify-email'], { queryParams: { email: res.user.email } });
+        if (res.requiresPhoneVerification) {
+          const queryParams: Record<string, string> = { email: res.user.email };
+          if (res.user?.phone) queryParams['phone'] = res.user.phone;
+          this.router.navigate(['/auth/verify-phone'], { queryParams });
+        } else {
+          this.router.navigate(['/auth/verify-email'], { queryParams: { email: res.user.email } });
+        }
       },
       error: (err) => {
         this.errorHandler.handle(err);

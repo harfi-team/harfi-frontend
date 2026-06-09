@@ -19,6 +19,7 @@ export interface AuthResponseDto {
   refreshToken: string;
   expiresAt: string;
   user: UserInfoDto;
+  requiresPhoneVerification?: boolean;
 }
 
 export interface UserInfoDto {

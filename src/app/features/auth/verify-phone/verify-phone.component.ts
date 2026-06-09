@@ -40,6 +40,13 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
       this.email = params['email'] || '';
       if (!this.email) {
         this.router.navigate(['/auth/login']);
+        return;
+      }
+      const phone = params['phone'] || '';
+      if (phone) {
+        this.phoneNumber = phone;
+        this.step = 'code';
+        this.countdown = 0;
       }
     });
   }
