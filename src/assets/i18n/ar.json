@@ -177,6 +177,16 @@
       "SUBMITTING_BTN": "جارٍ الإرسال...",
       "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى"
     },
+    "CRAFTSMAN": {
+  "TITLE": "التقييمات",
+  "REVIEWS_COUNT": "تقييم",
+  "NO_REVIEWS": "لا توجد تقييمات بعد",
+  "NO_COMMENT": "بدون تعليق",
+  "SHOW_MORE": "عرض المزيد",
+  "SHOW_LESS": "عرض أقل",
+  "LOAD_ERROR": "حدث خطأ في تحميل التقييمات",
+  "RETRY_BTN": "إعادة المحاولة"
+},
     "SUCCESS": {
       "ICON": "✅",
       "TITLE": "شكراً على تقييمك!",
@@ -349,5 +359,6 @@
   "CITY_RIYADH": "الرياض",
   "CITY_JEDDAH": "جدة",
   "CURRENCY": "رس"
+
 }
 

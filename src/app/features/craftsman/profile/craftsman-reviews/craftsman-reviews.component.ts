@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,7 +11,7 @@ import { CraftsmanReviewsResponse } from '../../../../core/models/review.models'
   standalone: true,
   imports: [CommonModule, TranslateModule],
   templateUrl: './craftsman-reviews.component.html',
-  styleUrls: ['./craftsman-reviews.component.css'],
+  styleUrls: ['./craftsman-reviews.comp.css'],
 })
 export class CraftsmanReviewsComponent implements OnInit {
   /**
@@ -22,6 +22,7 @@ export class CraftsmanReviewsComponent implements OnInit {
 
   private reviewsService = inject(ReviewsService);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef); // ← زود دي
 
   // UI state
   data: CraftsmanReviewsResponse | null = null;
@@ -41,16 +42,18 @@ export class CraftsmanReviewsComponent implements OnInit {
     this.hasError = false;
 
     this.reviewsService
-      .getCraftsmanReviews(this.craftsmanId)
+      .getCraftsmanReviews(1022)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
           this.data = res;
           this.isLoading = false;
+          this.cdr.detectChanges(); // ← زود دي
         },
         error: () => {
           this.isLoading = false;
           this.hasError = true;
+          this.cdr.detectChanges(); // ← زود دي
         },
       });
   }

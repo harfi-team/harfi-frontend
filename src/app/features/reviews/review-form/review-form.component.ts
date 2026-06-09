@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +17,7 @@ export class ReviewFormComponent implements OnInit {
    * Example: <review-form [jobId]="5" />
    */
   @Input() jobId!: number;
+  private cdr = inject(ChangeDetectorRef); // ← زود دي
 
   private reviewsService = inject(ReviewsService);
 
@@ -70,11 +71,13 @@ export class ReviewFormComponent implements OnInit {
         next: () => {
           this.isLoading = false;
           this.isSubmitted = true;
+          this.cdr.detectChanges(); // ← زود دي
         },
         error: (err) => {
           this.isLoading = false;
           this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
           this.form.enable();
+          this.cdr.detectChanges(); // ← زود دي
         },
       });
   }

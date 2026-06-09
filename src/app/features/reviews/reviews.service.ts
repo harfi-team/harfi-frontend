@@ -6,12 +6,11 @@ import {
   CreateReviewRequest,
   CreateRagFeedbackRequest,
   ReviewResponse,
-  CraftsmanReviewsResponse
+  CraftsmanReviewsResponse,
 } from '../../core/models/review.models';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewsService {
-
   private http = inject(HttpClient);
 
   private readonly baseUrl = `${environment.apiBaseUrl}/reviews`;
@@ -20,37 +19,22 @@ export class ReviewsService {
   //  Called by: ReviewFormComponent
   //  Who calls it: Customer after job status = done
   // ════════════════════════════════════════════════════════════
-  submitReview(
-    data: CreateReviewRequest
-  ): Observable<{ message: string; data: ReviewResponse }> {
-    return this.http.post<{ message: string; data: ReviewResponse }>(
-      this.baseUrl,
-      data
-    );
+  submitReview(data: CreateReviewRequest): Observable<{ message: string; data: ReviewResponse }> {
+    return this.http.post<{ message: string; data: ReviewResponse }>(this.baseUrl, data);
   }
   // ════════════════════════════════════════════════════════════
   //  GET /api/reviews/craftsman/{craftsmanId}
   //  Called by: Craftsman profile page
-  //  Who calls it: Anyone (AllowAnonymous on backend)
   // ════════════════════════════════════════════════════════════
-  getCraftsmanReviews(
-    craftsmanId: number
-  ): Observable<CraftsmanReviewsResponse> {
-    return this.http.get<CraftsmanReviewsResponse>(
-      `${this.baseUrl}/craftsman/${craftsmanId}`
-    );
+  getCraftsmanReviews(craftsmanId: number): Observable<CraftsmanReviewsResponse> {
+    return this.http.get<CraftsmanReviewsResponse>(`${this.baseUrl}/craftsman/${craftsmanId}`);
   }
   // ════════════════════════════════════════════════════════════
   //  POST /api/reviews/rag-feedback
   //  Called by: AiChatComponent (after AI guide shown)
   //  Who calls it: Any logged-in user
   // ════════════════════════════════════════════════════════════
-  submitRagFeedback(
-    data: CreateRagFeedbackRequest
-  ): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(
-      `${this.baseUrl}/rag-feedback`,
-      data
-    );
+  submitRagFeedback(data: CreateRagFeedbackRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/rag-feedback`, data);
   }
 }

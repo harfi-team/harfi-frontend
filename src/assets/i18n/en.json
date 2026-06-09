@@ -177,6 +177,16 @@
       "SUBMITTING_BTN": "Submitting...",
       "GENERIC_ERROR": "An error occurred, please try again"
     },
+    "CRAFTSMAN": {
+  "TITLE": "Reviews",
+  "REVIEWS_COUNT": "reviews",
+  "NO_REVIEWS": "No reviews yet",
+  "NO_COMMENT": "No comment",
+  "SHOW_MORE": "Show more",
+  "SHOW_LESS": "Show less",
+  "LOAD_ERROR": "Failed to load reviews",
+  "RETRY_BTN": "Try again"
+},
     "SUCCESS": {
       "ICON": "✅",
       "TITLE": "Thank you for your review!",
