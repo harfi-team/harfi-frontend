@@ -1,0 +1,113 @@
+<div class="profile-page">
+
+  <div class="page-header">
+    <a class="back-btn" routerLink="/craftsmen">
+      <span class="material-symbols-outlined">arrow_back</span>
+      <span>{{ 'CRAFTSMEN_FILTER.BACK_HOME' | translate }}</span>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="state-card">
+      <span class="spinner"></span>
+      <p>{{ 'LOADING' | translate }}</p>
+    </div>
+  } @else if (!craftsman()) {
+    <div class="state-card empty-card">
+      <span class="material-symbols-outlined state-icon">person_off</span>
+      <h2>{{ 'ERROR_404' | translate }}</h2>
+    </div>
+  } @else {
+    <div class="profile-layout">
+
+      <!-- Left: identity card -->
+      <aside class="identity-card">
+        <div class="avatar-wrap">
+          @if (craftsman()!.avatarUrl) {
+            <img class="avatar-img" [src]="craftsman()!.avatarUrl" [alt]="craftsman()!.name" />
+          } @else {
+            <span class="material-symbols-outlined avatar-icon">person</span>
+          }
+        </div>
+
+        <h1 class="craftsman-name">{{ craftsman()!.name }}</h1>
+        <span class="specialty-badge">{{ craftsman()!.specialty }}</span>
+
+        <div class="rating-row">
+          <span class="material-symbols-outlined star-icon">star</span>
+          <span class="rating-val">{{ craftsman()!.rating }}</span>
+          <span class="rating-count">({{ craftsman()!.reviewsCount }} {{ 'CRAFTSMEN_FILTER.REVIEWS' | translate }})</span>
+        </div>
+
+        @if (isCustomer) {
+          <button type="button" class="assign-btn" (click)="assignJob(craftsman()!)">
+            <span class="material-symbols-outlined">add_circle</span>
+            <span>{{ 'HOME.APPLY_NOW' | translate }}</span>
+          </button>
+        }
+      </aside>
+
+      <!-- Right: details -->
+      <section class="details-card">
+
+        <!-- Bio -->
+        @if (craftsman()!.bio) {
+          <div class="detail-section">
+            <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}</h2>
+            <p class="bio-text">{{ craftsman()!.bio }}</p>
+          </div>
+        }
+
+        <!-- Stats -->
+        <div class="detail-section">
+          <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.DETAILS' | translate }}</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="material-symbols-outlined stat-icon">location_on</span>
+              <div>
+                <span class="stat-label">{{ 'CITY' | translate }}</span>
+                <span class="stat-value">{{ craftsman()!.city || ('JOBS.NOT_SET' | translate) }}</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <span class="material-symbols-outlined stat-icon">work_history</span>
+              <div>
+                <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.EXPERIENCE' | translate }}</span>
+                <span class="stat-value">{{ craftsman()!.experienceYears }} {{ 'HOME.YEARS' | translate }}</span>
+              </div>
+            </div>
+            @if (getPriceRange(craftsman()!)) {
+              <div class="stat-item">
+                <span class="material-symbols-outlined stat-icon">payments</span>
+                <div>
+                  <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.PRICE_RANGE' | translate }}</span>
+                  <span class="stat-value">{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }}</span>
+                </div>
+              </div>
+            }
+            <div class="stat-item">
+              <span class="material-symbols-outlined stat-icon">build</span>
+              <div>
+                <span class="stat-label">{{ 'SPECIALTY' | translate }}</span>
+                <span class="stat-value">{{ getServiceLabel(craftsman()!) | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services -->
+        @if (craftsman()!.services.length) {
+          <div class="detail-section">
+            <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.SERVICES' | translate }}</h2>
+            <div class="chips">
+              @for (service of craftsman()!.services; track service) {
+                <span class="chip">{{ 'SERVICES.' + service.toUpperCase() | translate }}</span>
+              }
+            </div>
+          </div>
+        }
+
+      </section>
+    </div>
+  }
+</div>

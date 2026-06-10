@@ -4,7 +4,12 @@ import { roleGuard } from './core/guards/role.guard';
 import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/splash/splash.component').then(m => m.SplashComponent),
+    pathMatch: 'full',
+  },
   {
     path: 'welcome',
     canActivate: [guestGuard],

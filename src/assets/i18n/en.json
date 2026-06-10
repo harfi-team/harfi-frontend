@@ -90,7 +90,6 @@
   "NAV_CRAFTSMEN": "Craftsmen",
   "NAV_CONTACT": "Contact Us",
 
-
   "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
   "CRAFTSMEN_FILTER": {
@@ -129,6 +128,61 @@
     "LOGOUT": "Logout",
     "BOOK_NOW": "Book Now"
   },
+  "JOBS": {
+    "PAGE_LABEL": "Bookings",
+    "PAGE_TITLE": "My Jobs",
+    "PAGE_SUBTITLE": "Track service requests, manage progress, and keep every job organized.",
+    "CREATE_TITLE": "Create a Job",
+    "CREATE_SUBTITLE": "Send a request now and follow the job lifecycle from one place.",
+    "CREATE_JOB": "Create Job",
+    "SUBMIT_REQUEST": "Submit Request",
+    "BACK_TO_JOBS": "Back to Jobs",
+    "SERVICE": "Service",
+    "DESCRIPTION": "Description",
+    "CITY": "City",
+    "ADDRESS": "Address",
+    "SCHEDULED_AT": "Preferred Date",
+    "CREATED_AT": "Created",
+    "PROBLEM_IMAGE": "Problem Photo",
+    "BUDGET": "Budget",
+    "CRAFTSMAN_ID": "Craftsman ID",
+    "CRAFTSMAN_NAME": "Craftsman",
+    "CUSTOMER_NAME": "Customer",
+    "FILTER_ALL": "All",
+    "FILTER_OPEN": "Open",
+    "FILTER_IN_PROGRESS": "In Progress",
+    "FILTER_DONE": "Completed",
+    "FILTER_REJECTED": "Rejected",
+    "NO_JOBS": "No jobs yet",
+    "EMPTY_HINT_CUSTOMER": "Create your first request and start tracking it here.",
+    "EMPTY_HINT_CRAFTSMAN": "No jobs are assigned to you yet.",
+    "NOT_SET": "Not set",
+    "STATUS_OPEN": "Open",
+    "STATUS_IN_PROGRESS": "In Progress",
+    "STATUS_DONE": "Completed",
+    "STATUS_REJECTED": "Rejected",
+    "ACTION_ACCEPT": "Accept",
+    "ACTION_REJECT": "Reject",
+    "ACTION_COMPLETE": "Mark Completed",
+    "SUCCESS_CREATED": "Job created successfully",
+    "SUCCESS_ACCEPTED": "Job accepted successfully",
+    "SUCCESS_REJECTED": "Job rejected successfully",
+    "SUCCESS_COMPLETED": "Job marked as completed",
+    "VALIDATION_REQUIRED": "This field is required",
+    "VALIDATION_DESCRIPTION": "Add at least 10 characters so the request is clear.",
+    "CREATE_GUIDE_TITLE": "What happens next?",
+    "CREATE_GUIDE_DESC": "Once you submit the job, the selected craftsman can review it, accept the request, and move it through the workflow.",
+    "CREATE_GUIDE_1": "Describe the problem clearly...",
+    "CREATE_GUIDE_2": "Add a budget and preferred date only if you already have them.",
+    "CREATE_GUIDE_3": "Leave the craftsman ID empty for a general request.",
+    "UPLOAD_HINT": "Drag and drop an image or click to browse",
+    "STREET_DETAIL": "Street / Building Details",
+    "NO_CRAFTSMAN_SELECTED": "No craftsman selected yet",
+    "VISIT_FEE": "Visit Fee",
+    "ESTIMATED_TOTAL": "Estimated Total",
+    "CONFIRM_BOOKING": "Confirm Booking",
+    "SECURE_INFO": "Private & secure information"
+  },
   "HOME": {
     "USER": "User",
     "SUBTITLE": "Ready to get things done today?",
@@ -139,9 +193,12 @@
     "POPULAR_SERVICES": "Popular Services",
     "VIEW_ALL": "View All",
     "FEATURED_CRAFTSMEN": "Top Craftsmen Near You",
+    "NO_CRAFTSMEN": "No craftsmen found right now.",
     "KM": "km",
     "REVIEWS": "reviews",
     "VIEW_PROFILE": "View Profile",
+    "APPLY_NOW": "Assign a Job",
+    "YEARS": "years",
     "HOW_TITLE": "How does Harfi work?",
     "HOW_STEP1_TITLE": "1. Find a Service",
     "HOW_STEP1_DESC": "Choose the service you need from dozens of available categories.",
@@ -151,7 +208,15 @@
     "HOW_STEP3_DESC": "Pay securely through the app and enjoy a quality guarantee on all work.",
     "RECENT_ORDERS": "Recent Orders",
     "ORDER_HISTORY": "Order History",
+    "NO_ORDERS": "No orders yet",
     "CURRENCY": "EGP"
+  },
+  "CRAFTSMAN_PROFILE": {
+    "ABOUT": "About",
+    "DETAILS": "Details",
+    "EXPERIENCE": "Experience",
+    "PRICE_RANGE": "Price Range",
+    "SERVICES": "Services"
   },
   "SERVICES": {
     "PLUMBING": "Plumbing",
@@ -163,7 +228,8 @@
     "MOVING": "Moving",
     "PEST": "Pest Control",
     "ROOFING": "Roofing",
-    "MORE": "More"
+    "MORE": "More",
+    "OTHER": "Other"
   },
   "CRAFTSMEN": {
     "MAHMOUD": "Mahmoud Khaled",
@@ -179,8 +245,7 @@
     "DATE1": "Thursday, Oct 12",
     "DATE2": "Sunday, Oct 8",
     "COMPLETED": "Completed"
-  }
-
+  },
 
   "REVIEWS": {
     "FORM": {
