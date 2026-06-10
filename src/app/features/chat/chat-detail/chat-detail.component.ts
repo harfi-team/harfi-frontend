@@ -9,8 +9,7 @@ import {
   computed,
   effect,
   inject,
-  signal,
-  untracked,
+  signal
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
@@ -107,7 +106,6 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   private scrollAdjustRafId: number | null = null;
   private markAsReadInFlight = false;
   private isDestroyed = false;
-  private hasConnected = false;
 
   readonly messageControl = new FormControl('', [Validators.maxLength(2000)]);
 
@@ -240,18 +238,6 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     if (this.isDestroyed) return;
 
     try {
-      if (!this.hasConnected) {
-        await this.chatHub.connect();
-        this.hasConnected = true;
-      } else {
-        await this.chatHub.connect(false);
-      }
-
-      if (this.isDestroyed) {
-        this.chatHub.release();
-        return;
-      }
-
       await this.chatHub.joinConversation(id);
       await this.chatHub.markAsRead(id);
     } catch {
@@ -727,10 +713,6 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     this.clearPendingImages();
 
     this.teardownRealtime();
-
-    if (this.hasConnected) {
-      this.chatHub.release();
-    }
   }
 
   private teardownRealtime(): void {
@@ -743,8 +725,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
   private async ensureConnectedToConversation(id: number): Promise<void> {
     if (!this.chatHub.isConnected()) {
-      await this.chatHub.connect();
-      this.hasConnected = true;
+      throw new Error('Chat hub is not connected');
     }
     await this.chatHub.joinConversation(id);
   }

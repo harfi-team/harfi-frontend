@@ -10,7 +10,7 @@ import { TokenService } from '../../../core/services/token.service';
 import { RelativeTimePipe } from '../../../shared/pipes/relative-time.pipe';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
       
-const BACKGROUND_REFRESH_INTERVAL_MS = 15000;
+const BACKGROUND_REFRESH_INTERVAL_MS = 10000;
 const REFRESH_THROTTLE_MS = 1200;
 
 @Component({
@@ -58,23 +58,18 @@ export class ChatListComponent implements OnDestroy {
 
   constructor() {
     this.loadConversations();
-    
-    // فتح الاتصال بأمان
-    this.chatHub.connect().catch(() => {
-      if (!this.isDestroyed) this.startBackgroundRefresh();
-    });
 
     this.chatHub.connectionState$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(state => {
         if (this.isDestroyed) return;
         if (state === 'connected') {
-          this.stopBackgroundRefresh();
           this.scheduleRefresh(0);
-        } else if (state === 'disconnected') {
-          this.startBackgroundRefresh();
         }
       });
+
+    // Refresh conversations periodically to pick up online status changes
+    this.startBackgroundRefresh();
 
     // 2. مراقبة تحديث المحادثات
     this.chatHub.conversationUpdated$
@@ -89,24 +84,24 @@ export class ChatListComponent implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(userId => {
         if (!userId || this.isDestroyed) return;
-        
+
         this.conversations.update(list =>
           list.map(c => c.otherUserId === userId ? { ...c, isOnline: false } : c)
         );
-        
-        this.cdr.markForCheck(); 
+
+        this.cdr.markForCheck();
       });
-      
+
     this.chatHub.userOnline$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(userId => {
         if (!userId || this.isDestroyed) return;
-        
+
         this.conversations.update(list =>
           list.map(c => c.otherUserId === userId ? { ...c, isOnline: true } : c)
         );
-        
-        this.cdr.markForCheck(); // 🌟 إجبار على الرسم فوراً
+
+        this.cdr.markForCheck();
       });
   }
 
@@ -159,14 +154,13 @@ export class ChatListComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.isDestroyed = true; 
+    this.isDestroyed = true;
 
     this.stopBackgroundRefresh();
     if (this.pendingRefreshTimer) {
       clearTimeout(this.pendingRefreshTimer);
       this.pendingRefreshTimer = null;
     }
-    this.chatHub.release();
   }
 
   private applyConversationUpdate(updatedConversation: ConversationDto): void {

@@ -5,7 +5,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
-
+import { ChatHubService } from '../../../core/hubs/chat.hub.service';
+import { RealtimeNotificationOrchestratorService } from '../../../core/services/realtime-notification-orchestrator.service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -17,6 +18,8 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
+  private chatHubService = inject(ChatHubService);
+  private realtime = inject(RealtimeNotificationOrchestratorService);
 
   loading = false;
   showPassword = false;
@@ -31,6 +34,8 @@ export class LoginComponent {
     this.loading = true;
     this.authService.login(this.form.value as any).subscribe({
       next: () => {
+        this.chatHubService.forceReconnect();
+        this.realtime.start();
         const role = this.authService.getRole();
         if (role === 'admin') {
           this.router.navigate(['/admin/dashboard']);

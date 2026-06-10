@@ -29,12 +29,12 @@ export class NotificationsService {
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
-  }
+  return this.http.delete<void>(`${this.base}/${id}`, { responseType: 'text' as 'json' });
+}
 
-  deleteAll(): Observable<void> {
-    return this.http.delete<void>(`${this.base}/clear`);
-  }
+ deleteAll(): Observable<void> {
+  return this.http.delete<void>(`${this.base}/clear`, { responseType: 'text' as 'json' });
+}
 
 
   setUnreadCount(count: number): void {
