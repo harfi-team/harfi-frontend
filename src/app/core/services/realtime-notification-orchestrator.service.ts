@@ -34,13 +34,8 @@ export class RealtimeNotificationOrchestratorService {
       })
     );
 
-    this.notifHub.connect().catch(() => {
-      // keep app usable even if realtime notifications fail
-    });
-
-    this.chatHub.connect().catch(() => {
-      // keep app usable even if realtime chat realtime fails
-    });
+    this.notifHub.connect().catch(() => {});
+    this.chatHub.connect().catch(() => {});
 
     this.subscriptions.add(
       this.notifHub.notification$.subscribe(notif => {
@@ -83,11 +78,12 @@ export class RealtimeNotificationOrchestratorService {
   }
 
   private showToastWithSound(message: string, key: string): void {
-    if (!message || !this.shouldEmitToast(key)) return;
+  if (!this.auth.isLoggedIn()) return;
+  if (!message || !this.shouldEmitToast(key)) return;
 
-    this.errorHandler.info(message);
-    this.playNotificationSound();
-  }
+  this.errorHandler.info(message);
+  this.playNotificationSound();
+}
 
   private shouldEmitToast(key: string): boolean {
     const now = Date.now();
@@ -150,42 +146,67 @@ export class RealtimeNotificationOrchestratorService {
     return Number(match[1]) === conversationId;
   }
 
-  private playNotificationSound(): void {
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
+  private audioCtx: AudioContext | null = null;
 
-      const ctx = new AudioCtx();
-      const master = ctx.createGain();
-      master.gain.value = 0.11;
-      master.connect(ctx.destination);
-
-      const playTone = (freq: number, start: number, duration: number) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, start);
-
-        gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.exponentialRampToValueAtTime(0.16, start + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-        osc.connect(gain);
-        gain.connect(master);
-
-        osc.start(start);
-        osc.stop(start + duration + 0.01);
-      };
-
-      const t = ctx.currentTime;
-      playTone(740, t, 0.12);
-      playTone(988, t + 0.14, 0.16);
-
-      setTimeout(() => void ctx.close(), 500);
-    } catch {
-      // sound is optional
+private getAudioContext(): AudioContext | null {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!this.audioCtx) {
+      this.audioCtx = new AudioCtx();
     }
+    return this.audioCtx;
+  } catch {
+    return null;
   }
 }
 
+unlockAudio(): void {
+  const ctx = this.getAudioContext();
+  if (ctx?.state === 'suspended') {
+    void ctx.resume();
+  }
+}
+
+private playNotificationSound(): void {
+  try {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    if (ctx.state === 'suspended') {
+      void ctx.resume().then(() => this.playTones(ctx));
+      return;
+    }
+
+    this.playTones(ctx);
+  } catch {}
+}
+
+private playTones(ctx: AudioContext): void {
+  const master = ctx.createGain();
+  master.gain.value = 0.18;
+  master.connect(ctx.destination);
+
+  const playTone = (freq: number, start: number, duration: number) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine'; // أوضح من triangle
+    osc.frequency.setValueAtTime(freq, start);
+
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.3, start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(start);
+    osc.stop(start + duration + 0.02);
+  };
+
+  const t = ctx.currentTime;
+  playTone(880, t, 0.1);
+  playTone(1108, t + 0.12, 0.15);
+  playTone(1318, t + 0.27, 0.18);
+}
+}
