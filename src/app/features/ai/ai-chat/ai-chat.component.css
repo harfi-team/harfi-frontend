@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100%;
   max-width: 760px;
   margin: 0 auto;
   background: var(--bg-color);
@@ -961,7 +962,15 @@
 
 
 /* ═══ HISTORY SIDEBAR ═══ */
-.chat-wrapper { position: relative; height: 100vh; overflow: hidden; }
+.chat-wrapper {
+  position: relative;
+  overflow: hidden;
+  /* كسر الـ padding بتاع page-content */
+  margin-left: -24px;
+  margin-right: -24px;
+  margin-bottom: -80px;
+  height: 100vh;
+}
 
 .sidebar-overlay {
   position: fixed; inset: 0;
@@ -1143,3 +1152,133 @@
   cursor: pointer; font-size: .9rem; font-weight: 600;
 }
 .confirm-delete:hover { background: #dc2626; }
+/* ══════════════════════════════════════════════════════════════
+   WhatsApp-style Audio Bubble
+   ══════════════════════════════════════════════════════════════ */
+
+.wa-audio {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse; /* في RTL: الـ play button على اليمين */
+  gap: 8px;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 2px 0;
+}
+
+/* زر Play/Pause */
+.wa-play-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, transform .1s;
+}
+
+/* اللون بيختلف حسب الـ bubble */
+.user-bubble .wa-play-btn {
+  background: rgba(255,255,255,.25);
+  color: #fff;
+}
+.user-bubble .wa-play-btn:hover {
+  background: rgba(255,255,255,.38);
+  transform: scale(1.05);
+}
+.bot-bubble .wa-play-btn {
+  background: var(--brand-gradient, linear-gradient(135deg,#8A2387,#E94057,#F27121));
+  color: #fff;
+}
+.bot-bubble .wa-play-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+/* منطقة الـ waveform + progress */
+.wa-waveform {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  height: 36px;
+  justify-content: center;
+  direction: ltr; /* الـ waveform والـ slider من اليمين لليسار */
+}
+
+/* الـ bars الجماليّة */
+.wa-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.wa-bars span {
+  flex-shrink: 0;
+  width: 3px;
+  border-radius: 2px;
+  display: block;
+  min-height: 4px;
+}
+
+.user-bubble .wa-bars span {
+  background: rgba(255,255,255,.55);
+}
+.bot-bubble .wa-bars span {
+  background: var(--text-secondary, #888);
+  opacity: .6;
+}
+
+/* الـ range slider بيتركب فوق الـ waveform بشفافية */
+.wa-progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.wa-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.user-bubble .wa-slider {
+  accent-color: rgba(255,255,255,.9);
+}
+.bot-bubble .wa-slider {
+  accent-color: #E94057;
+}
+
+.wa-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -4px;
+}
+.user-bubble .wa-slider::-webkit-slider-thumb { background: #fff; }
+.bot-bubble  .wa-slider::-webkit-slider-thumb { background: #E94057; }
+
+/* مدة الوقت */
+.wa-duration {
+  flex-shrink: 0;
+  font-size: .72rem;
+  font-family: 'Cairo', sans-serif;
+  min-width: 28px;
+  text-align: left;
+  opacity: .8;
+}

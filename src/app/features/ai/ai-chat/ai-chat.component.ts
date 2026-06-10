@@ -32,6 +32,8 @@ interface Chat3Response {
   lastProblemDescription: string | null;
   result: QueryResult | null;
   latencyMs: number;
+    extractedDistrict: string | null;  // ← جديد
+
 }
 
 interface QueryResult {
@@ -55,6 +57,8 @@ interface Chat3Request {
   solutionSteps: string[];
   userId: number | null;
   sessionId: string;
+    extractedDistrict: string | null;  // ← جديد
+
 }
 
 interface ConversationState {
@@ -69,6 +73,8 @@ interface ConversationState {
   followUpState: number;
   lastProblemDescription: string | null;
   solutionSteps: string[];
+  extractedDistrict: string | null;  // ← جديد
+
 }
 
 type OptionsType = 'intent' | 'services' | 'cities' | 'steps' | 'solved' | 'feedback' | 'craftsmen';
@@ -81,7 +87,10 @@ interface ExtendedChatMessage extends ChatMessage {
   detectedService?: string | null;
   detectedCity?: string | null;
     images?: string[];  // ← أضف ده
-
+    audioUrl?: string; // ← رابط الأوديو للبلاير
+    _audioPlaying?: boolean;
+    _audioProgress?: number;
+    _audioDuration?: string;
 }
 
 // ── Component ─────────────────────────────────────────────────
@@ -100,7 +109,7 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   sessions: AiSessionSummary[] = [];
   sessionsLoading = false;
 currentSessionId: string = crypto.randomUUID();
-
+private readonly backendBase = 'https://localhost:5108';
   // ── Chat state ────────────────────────────────────────
   userInput = '';
   isLoading = false;
@@ -158,7 +167,8 @@ ngOnInit() {
   }
   this.loadSessions();
 }
-  ngAfterViewChecked() { this.scrollDown(); }
+  private shouldScroll = false;
+  ngAfterViewChecked() { if (this.shouldScroll) { this.scrollDown(); this.shouldScroll = false; } }
 
   // ════════════════════════════════════════════════════════════
   //  HISTORY SIDEBAR
@@ -200,15 +210,18 @@ openSession(sessionId: string) {
 
       for (const m of d.messages) {
         const role = m.role as 'user' | 'assistant';
-        let display = m.content;
-        if (m.audio) display = `🎤 تسجيل صوتي\n` + display;
 
         this.conversationHistory.push({ role, content: m.content });
         this.chatMessages.push({
           role,
-          content: display.trim() || '...',
+          content: m.audio ? '' : (m.content || ''),
           timestamp: new Date(m.createdAt),
-          images: m.images?.length ? m.images : undefined
+          audioUrl: m.audio
+            ? (m.audio.startsWith('http') ? m.audio : this.backendBase + m.audio)
+            : undefined,
+          images: m.images?.length
+            ? m.images.map((img: string) => img.startsWith('http') ? img : this.backendBase + img)
+            : undefined
         });
       }
 
@@ -380,6 +393,8 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
   }
 
   private addUserMessage(text: string) {
+    this.shouldScroll = true;
+
     this.chatMessages.push({ role: 'user', content: text, timestamp: new Date() });
     this.conversationHistory.push({ role: 'user', content: text });
     this.persistMessage('user', text);   // ← حفظ في الـ DB
@@ -391,6 +406,8 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
   // ════════════════════════════════════════════════════════════
   private sendRequest() {
     this.isLoading = true;
+    this.shouldScroll = true;
+
     this.chatMessages.push({ role: 'assistant', content: '', isLoading: true, timestamp: new Date() });
     this.cdr.detectChanges();
 
@@ -409,6 +426,8 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
       solutionSteps: this.state.solutionSteps,
       userId: this.userId,
       sessionId: this.currentSessionId,
+        extractedDistrict: this.state.extractedDistrict,  // ← جديد
+
     };
 
     this.chatSvc.sendChat3(request).subscribe({
@@ -431,14 +450,19 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
 
     if (this.state.followUpState > 0 || this.state.problemClarificationAttempts > 0)
       this.state.intent = 2;
+if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     // ── حفظ رد الـ assistant في الـ DB
     if (r.message) this.persistMessage('assistant', r.message);
 
     // ── RAG complete ──
     if (r.isComplete && r.result) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.conversationHistory.push({ role: 'assistant', content: r.message });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'craftsmen',
@@ -464,7 +488,11 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
     this.conversationHistory.push({ role: 'assistant', content: r.message });
 
     if (r.showFeedbackQuestion) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: 'هل كانت خطوات الحل مفيدة؟ 🤔',
         timestamp: new Date(),
@@ -476,10 +504,14 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
 
     if (r.solutionSteps?.length > 0) {
       this.state.solutionSteps = r.solutionSteps;
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: r.message, timestamp: new Date(),
         optionsType: 'steps', options: r.solutionSteps, isDisabled: false
       });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: 'هل تمكّنت الخطوات دي من حل المشكلة؟ 🤔',
         timestamp: new Date(),
@@ -492,7 +524,11 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
     }
 
     if (r.showSolvedQuestion) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: 'هل المشكلة اتحلت؟ 🤔',
         timestamp: new Date(),
@@ -505,7 +541,11 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
     }
 
     if (r.showIntentChoice) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'intent', options: ['craftsman', 'steps'], isDisabled: false
@@ -514,7 +554,11 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
     }
 
     if (r.showServicesList && r.servicesList?.length > 0) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'services', options: r.servicesList, isDisabled: false
@@ -527,13 +571,20 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
       && !r.extractedCity && !this.state.extractedCity;
 
     if (isCityQ) {
+      this.shouldScroll = true;
+
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
+      this.shouldScroll = true;
+
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'cities', options: r.citiesList, isDisabled: false
       });
       return;
     }
+
+    this.shouldScroll = true;
+
 
     this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
     if (this.state.followUpState === 0 && this.state.problemClarificationAttempts === 0)
@@ -543,6 +594,8 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
   private onError() {
     this.chatMessages = this.chatMessages.filter(m => !m.isLoading);
     this.isLoading = false;
+    this.shouldScroll = true;
+
     this.chatMessages.push({
       role: 'assistant', content: 'عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.', timestamp: new Date()
     });
@@ -654,6 +707,91 @@ onImageSelected(event: Event) {
 
   removeAudio() { this.recordedAudio = null; }
 
+  // ── WhatsApp-style audio player ──────────────────────────────
+  private activeAudioEl: HTMLAudioElement | null = null;
+  private activeAudioMsg: ExtendedChatMessage | null = null;
+
+  waveformBars(audioUrl: string): number[] {
+    // bars ثابتة بناءً على الـ URL كـ seed عشان يبقوا consistent
+    let seed = 0;
+    for (let i = 0; i < audioUrl.length; i++) seed += audioUrl.charCodeAt(i);
+    const rng = (n: number) => { seed = (seed * 9301 + 49297) % 233280; return (seed / 233280) * n; };
+    return Array.from({ length: 30 }, (_, i) => {
+      const h = 4 + Math.round(rng(20));
+      return h;
+    });
+  }
+
+  toggleAudio(event: Event, msg: any) {
+    const el = (event.currentTarget as HTMLElement)
+      .closest('.wa-audio')?.querySelector('audio') as HTMLAudioElement | null;
+    if (!el) return;
+
+    // لو في تاني بيشتغل، وقّفه
+    if (this.activeAudioEl && this.activeAudioEl !== el) {
+      this.activeAudioEl.pause();
+      this.activeAudioEl.currentTime = 0;
+      if (this.activeAudioMsg) {
+        this.activeAudioMsg._audioPlaying = false;
+        this.activeAudioMsg._audioProgress = 0;
+      }
+    }
+
+    if (el.paused) {
+      el.play();
+      msg._audioPlaying = true;
+      this.activeAudioEl = el;
+      this.activeAudioMsg = msg;
+    } else {
+      el.pause();
+      msg._audioPlaying = false;
+    }
+    this.cdr.markForCheck();
+  }
+
+  onAudioTimeUpdate(event: Event, msg: any) {
+    const el = event.target as HTMLAudioElement;
+    if (el.duration) {
+      msg._audioProgress = (el.currentTime / el.duration) * 100;
+      const rem = el.duration - el.currentTime;
+      msg._audioDuration = this.fmtTime(rem);
+    }
+    this.cdr.markForCheck();
+  }
+
+  onAudioEnded(msg: any) {
+    msg._audioPlaying = false;
+    msg._audioProgress = 0;
+    const el = this.activeAudioEl;
+    if (el) el.currentTime = 0;
+    this.activeAudioEl = null;
+    this.activeAudioMsg = null;
+    this.cdr.markForCheck();
+  }
+
+  onAudioMeta(event: Event, msg: any) {
+    const el = event.target as HTMLAudioElement;
+    msg._audioDuration = this.fmtTime(el.duration);
+    this.cdr.markForCheck();
+  }
+
+  seekAudio(event: Event, msg: any) {
+    const el = (event.target as HTMLElement)
+      .closest('.wa-audio')?.querySelector('audio') as HTMLAudioElement | null;
+    if (!el || !el.duration) return;
+    const val = +(event.target as HTMLInputElement).value;
+    el.currentTime = (val / 100) * el.duration;
+    msg._audioProgress = val;
+    this.cdr.markForCheck();
+  }
+
+  private fmtTime(sec: number): string {
+    if (!isFinite(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
   sendMedia() {
     if (this.selectedImages.length === 0 && !this.recordedAudio) return;
     if (this.isLoading) return;
@@ -664,16 +802,19 @@ onImageSelected(event: Event) {
     if (this.selectedImages.length > 0) parts.push(`📷 ${this.selectedImages.length} صورة`);
     if (this.recordedAudio) parts.push('🎤 تسجيل صوتي');
     if (text) parts.push(text);
-this.chatMessages.push({
-  role: 'user',
-  content: text,           // ← بس النص، مش الـ parts
-  timestamp: new Date(),
-  images: imagePreviews
-});
-
-
     const imgs = [...this.selectedImages];
     const aud = this.recordedAudio;
+
+this.shouldScroll = true;
+
+
+this.chatMessages.push({
+  role: 'user',
+  content: text,
+  timestamp: new Date(),
+  images: imagePreviews,
+  audioUrl: aud ? URL.createObjectURL(aud) : undefined
+});
     const userText = text || null;
 
     this.selectedImages = [];
@@ -682,6 +823,8 @@ this.chatMessages.push({
     this.userInput = '';
 
     this.isLoading = true;
+    this.shouldScroll = true;
+
     this.chatMessages.push({ role: 'assistant', content: '', isLoading: true, timestamp: new Date() });
 
     // الـ backend بيحفظ كل حاجة لوحده في analyze-media
@@ -741,7 +884,8 @@ this.chatMessages.push({
 
   private freshState(city: string | null = null): ConversationState {
     return {
-      extractedService: null, extractedCity: city, extractedCount: null,
+      extractedService: null, extractedCity: city,    extractedDistrict: null,  // ← جديد
+ extractedCount: null,
       failedServiceAttempts: 0, failedCityAttempts: 0, failedCountAttempts: 0,
       intent: 0, problemClarificationAttempts: 0, followUpState: 0,
       lastProblemDescription: null, solutionSteps: []
