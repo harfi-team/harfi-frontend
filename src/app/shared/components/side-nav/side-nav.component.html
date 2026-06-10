@@ -109,30 +109,32 @@
   </div>
 </nav>
 
-<nav class="bottom-nav">
-  <a
-    class="bottom-nav-item"
-    routerLink="/home"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
-    <span class="material-symbols-outlined">home</span>
-    <span>{{ 'NAV.HOME' | translate }}</span>
-  </a>
-  <a class="bottom-nav-item" routerLink="/craftsmen" routerLinkActive="active">
-    <span class="material-symbols-outlined">search</span>
-    <span>{{ 'NAV.SEARCH' | translate }}</span>
-  </a>
-  <a class="bottom-nav-item" routerLink="/jobs" routerLinkActive="active">
-    <span class="material-symbols-outlined">calendar_today</span>
-    <span>{{ 'NAV.BOOKINGS' | translate }}</span>
-  </a>
-  <a class="bottom-nav-item" routerLink="/chat" routerLinkActive="active">
-    <span class="material-symbols-outlined">chat</span>
-    <span>{{ 'NAV.CHAT' | translate }}</span>
-  </a>
-  <a class="bottom-nav-item" routerLink="/user" routerLinkActive="active">
-    <span class="material-symbols-outlined">person</span>
-    <span>{{ 'NAV.MY_ACCOUNT' | translate }}</span>
-  </a>
-</nav>
+@if (!isAdmin) {
+  <nav class="bottom-nav">
+    <a
+      class="bottom-nav-item"
+      routerLink="/home"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="material-symbols-outlined">home</span>
+      <span>{{ 'NAV.HOME' | translate }}</span>
+    </a>
+    <a class="bottom-nav-item" routerLink="/craftsmen" routerLinkActive="active">
+      <span class="material-symbols-outlined">search</span>
+      <span>{{ 'NAV.SEARCH' | translate }}</span>
+    </a>
+    <a class="bottom-nav-item" routerLink="/jobs" routerLinkActive="active">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <span>{{ 'NAV.BOOKINGS' | translate }}</span>
+    </a>
+    <a class="bottom-nav-item" routerLink="/chat" routerLinkActive="active">
+      <span class="material-symbols-outlined">chat</span>
+      <span>{{ 'NAV.CHAT' | translate }}</span>
+    </a>
+    <a class="bottom-nav-item" routerLink="/user" routerLinkActive="active">
+      <span class="material-symbols-outlined">person</span>
+      <span>{{ 'NAV.MY_ACCOUNT' | translate }}</span>
+    </a>
+  </nav>
+}

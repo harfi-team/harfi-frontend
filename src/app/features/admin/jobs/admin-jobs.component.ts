@@ -146,10 +146,13 @@ export class AdminJobsComponent {
     });
   }
 
-  exportJobs(): void {
+  async exportJobs(): Promise<void> {
     this.adminService.exportData('jobs').subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
+      next: async (blob) => {
+        const text = await blob.text();
+        const BOM = '\uFEFF';
+        const newBlob = new Blob([BOM + text], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(newBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `jobs-export-${new Date().toISOString().slice(0, 10)}.csv`;

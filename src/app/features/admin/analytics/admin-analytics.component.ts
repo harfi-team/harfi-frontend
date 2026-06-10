@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, AfterViewInit, OnDestroy, effect } from '@angular/core';
+import { Component, inject, signal, computed, AfterViewInit, OnDestroy, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -45,6 +45,7 @@ const CHART_COLORS = [COLORS.brand, COLORS.purple, COLORS.orange, COLORS.blue, C
 export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   private adminService = inject(AdminService);
   private errorHandler = inject(ErrorHandlerService);
+  private cdr = inject(ChangeDetectorRef);
 
   activeTab = signal<TabId>('overview');
   loading = signal(false);
@@ -159,6 +160,7 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
     effect(() => {
       const tab = this.activeTab();
       setTimeout(() => {
+        this.cdr.detectChanges();
         if (tab === 'craftsmen') {
           this.initCraftsmanCharts();
         } else if (tab === 'jobs') {
@@ -199,6 +201,8 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
         this.reviewAnalytics.set(data.reviews);
         this.aiAnalytics.set(data.ai);
         this.loading.set(false);
+        this.cdr.detectChanges();
+        setTimeout(() => this.initCurrentTabCharts(), 0);
       },
       error: (err) => {
         this.loading.set(false);
@@ -213,11 +217,14 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
     this.activeTab.set(tab);
   }
 
-  exportData(type: string): void {
+  async exportData(type: string): Promise<void> {
     this.exporting.set(true);
     this.adminService.exportData(type).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
+      next: async (blob) => {
+        const text = await blob.text();
+        const BOM = '\uFEFF';
+        const newBlob = new Blob([BOM + text], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(newBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `harfi-${type}-${new Date().toISOString().slice(0, 10)}.csv`;
@@ -398,6 +405,19 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
           },
         },
       });
+    }
+  }
+
+  private initCurrentTabCharts(): void {
+    const tab = this.activeTab();
+    if (tab === 'craftsmen') {
+      this.initCraftsmanCharts();
+    } else if (tab === 'jobs') {
+      this.initJobCharts();
+    } else if (tab === 'reviews') {
+      this.initReviewChart();
+    } else if (tab === 'ai') {
+      this.initAiChart();
     }
   }
 
