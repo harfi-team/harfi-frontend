@@ -1,0 +1,70 @@
+<div class="chat-list-container page-content">
+
+  <div class="chat-list-header">
+    <h2 class="gradient-text">{{ 'CHAT.TITLE' | translate }}</h2>
+  </div>
+
+  <app-spinner *ngIf="loading()" />
+
+  <div
+    *ngIf="!loading() && conversations().length === 0"
+    class="empty-state"
+    role="status">
+    <span class="empty-icon" aria-hidden="true">💬</span>
+    <p>{{ 'CHAT.NO_CONVERSATIONS' | translate }}</p>
+  </div>
+
+  <div class="conversations-list" *ngIf="!loading()">
+    <button
+      type="button"
+      class="conversation-card harfi-card"
+      *ngFor="let conv of conversations(); trackBy: trackById"
+      (click)="openChat(conv.id)"
+      (keydown)="onCardKeydown($event, conv.id)"
+      [attr.aria-label]="conv.otherUserName">
+
+      <div class="conv-avatar">
+        <img *ngIf="conv.otherUserAvatar" [src]="conv.otherUserAvatar" [alt]="conv.otherUserName" />
+        <div *ngIf="!conv.otherUserAvatar" class="conv-avatar-initials" aria-hidden="true">
+          {{ initials(conv.otherUserName) }}
+        </div>
+        <span class="online-dot" *ngIf="conv.isOnline" [attr.aria-label]="'CHAT.CONNECTION_ONLINE' | translate"></span>
+        <span
+          class="unread-badge"
+          *ngIf="conv.unreadCount > 0"
+          [attr.aria-label]="conv.unreadCount + ' unread'">
+          {{ conv.unreadCount }}
+        </span>
+      </div>
+
+      <div class="conv-info">
+        <div class="conv-top">
+          <span class="conv-name">{{ conv.otherUserName }}</span>
+          <span class="conv-time" *ngIf="conv.lastMessageAt">
+            {{ conv.lastMessageAt | relativeTime }}
+          </span>
+        </div>
+        <p class="conv-last-msg">
+          <ng-container *ngIf="isImageLastMessage(conv); else checkVoicePreview">
+            📷 {{ 'CHAT.IMAGE' | translate }}
+          </ng-container>
+          <ng-template #checkVoicePreview>
+            <ng-container *ngIf="isVoiceLastMessage(conv); else checkLocationPreview">
+              🎤 {{ 'CHAT.VOICE' | translate }}
+            </ng-container>
+          </ng-template>
+          <ng-template #checkLocationPreview>
+            <ng-container *ngIf="isLocationLastMessage(conv); else textPreview">
+              📍 {{ 'CHAT.LOCATION' | translate }}
+            </ng-container>
+          </ng-template>
+          <ng-template #textPreview>
+            {{ getConversationPreview(conv) || ('CHAT.NO_MESSAGES' | translate) }}
+          </ng-template>
+        </p>
+      </div>
+
+    </button>
+  </div>
+
+</div>

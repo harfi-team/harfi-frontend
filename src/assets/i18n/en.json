@@ -92,7 +92,6 @@
 
   "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
-<<<<<<< HEAD
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "Craftsmen Search",
     "TITLE": "Craftsmen for",
@@ -115,9 +114,7 @@
     "YEARS": "years"
   },
   
-=======
 
->>>>>>> dev
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
     "HOME": "Home",
@@ -449,7 +446,79 @@
   },
   "CITY_RIYADH": "Riyadh",
   "CITY_JEDDAH": "Jeddah",
-  "CURRENCY": "SAR"
+  "CURRENCY": "SAR",
+
+   "CHAT": {
+    "TITLE": "Conversations",
+    "NO_CONVERSATIONS": "No conversations yet",
+    "NO_MESSAGES": "No messages yet",
+    "CONVERSATION": "Conversation",
+    "TYPING": "Typing...",
+    "TYPE_MESSAGE": "Type a message...",
+    "SEND": "Send",
+    "BACK": "Back",
+    "ATTACH_IMAGE": "Attach Image",
+    "IMAGE": "Image",
+    "VOICE": "Voice message",
+    "LOCATION": "Location",
+    "SEND_FAILED": "Failed to send message",
+    "CONNECTION_OFFLINE": "OFFLINE",
+    "INVALID_IMAGE_TYPE": "Invalid image type. Please use JPG, PNG or WebP",
+    "IMAGE_TOO_LARGE": "Image is too large (max 5MB)",
+    "IMAGE_UPLOAD_FAILED": "Failed to upload image",
+    "NO_MORE_MESSAGES": "No more messages",
+    "RECORD_VOICE": "Record voice message",
+    "START_RECORDING": "Start recording",
+    "STOP_RECORDING": "Stop recording",
+    "SEND_LOCATION": "Send location",
+    "OPEN_LOCATION": "Open on Google Maps",
+    "MIC_DENIED": "Microphone access was denied",
+    "LOCATION_DENIED": "Location access was denied",
+    "LOCATION_NOT_SUPPORTED": "Your browser does not support location",
+    "VOICE_TOO_LARGE": "Voice message is too large (max 10MB)",
+    "VOICE_UPLOAD_FAILED": "Failed to upload voice message",
+        "PLAY_VOICE": "Play voice message",
+    "PAUSE_VOICE": "Pause voice message",
+    "CONNECTION_ONLINE": "Online",
+    "CONNECTION_CONNECTING": "Connecting...",
+        "DELETE_MESSAGE": "Delete message",
+    "DELETE_SHORT": "Delete",
+    "DELETE_FAILED": "Failed to delete message",
+        "DELETE_CONFIRM_TITLE": "Confirm message deletion",
+    "DELETE_CONFIRM_TEXT": "Are you sure you want to delete this message? This action cannot be undone.",
+    "REMOVE_SELECTED_IMAGE": "Remove selected image",
+    "CLEAR_SELECTED_IMAGES": "Clear all selected images",
+    "CLOSE_IMAGE": "Close image preview"
+  },
+
+
+    "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "EMPTY": "No notifications",
+    "MARK_ALL_READ": "Mark all as read",
+    "LOAD_FAILED": "Failed to load notifications",
+    "MARK_FAILED": "Failed to mark as read",
+        "MARK_ALL_FAILED": "Failed to mark all as read",
+    "DELETE": "Delete",
+    "CLEAR_ALL": "Delete all",
+    "DELETE_FAILED": "Failed to delete notification",
+    "CLEAR_FAILED": "Failed to delete all notifications",
+    "JOB_STATUS_CHANGED": "Job status has been updated",
+    "NEW_MESSAGE_IMAGE": "📷 Sent an image",
+    "NEW_MESSAGE_VOICE": "🎤 Sent a voice message",
+    "NEW_MESSAGE_LOCATION": "📍 Sent a location"
+  },
+  "PROFILE": {
+    "EDIT": "Edit Profile",
+    "NAME": "Name",
+    "PHONE": "Phone Number",
+    "EMAIL": "Email",
+    "JOINED": "Joined on",
+    "SAVE": "Save Changes",
+    "SAVING": "Saving...",
+    "SAVED": "Changes saved successfully",
+    "NAME_REQUIRED": "Name is required",
+    "PHONE_INVALID": "Invalid phone number",
+    "IMAGE_URL": "Profile Picture URL"
+  }
 }
-
-
