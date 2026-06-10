@@ -4,6 +4,7 @@ import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -14,6 +15,8 @@ import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 })
 export class MainLayoutComponent {
   private router = inject(Router);
+    private auth = inject(AuthService);
+
 
   pageTitle = signal('NAV.HOME');
   isAdminRoute = signal(false);
@@ -61,6 +64,11 @@ export class MainLayoutComponent {
 
   toggleMobileNav(): void {
     this.mobileNavOpen.update(v => !v);
+  }
+   goToProfile(): void {
+    const id = this.auth.getUserId();
+    if (!id) return;
+    this.router.navigate(['/user/profile', id]);
   }
 
   closeMobileNav(): void {

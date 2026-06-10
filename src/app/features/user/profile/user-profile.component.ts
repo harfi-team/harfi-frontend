@@ -38,14 +38,16 @@ export class UserProfileComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.userId = +this.route.snapshot.paramMap.get('id')!;
-    const currentId = this.tokenSvc.getUser()?.id;
-    if (currentId && this.userId !== currentId) {
-      this.errorMessage = 'يمكنك فقط تعديل ملفك الشخصي';
-      this.loading = false;
-      return;
-    }
-    this.loadProfile();
+     const currentId = this.tokenSvc.getUser()?.id ?? null;
+  const routeIdParam = this.route.snapshot.paramMap.get('id');
+  const routeId = routeIdParam ? Number(routeIdParam) : null;
+  if (!currentId) {
+    this.errorMessage = 'يرجى تسجيل الدخول أولاً';
+    this.loading = false;
+    return;
+  }
+  this.userId = routeId && routeId === currentId ? routeId : currentId;
+  this.loadProfile();
   }
 
   loadProfile(): void {
