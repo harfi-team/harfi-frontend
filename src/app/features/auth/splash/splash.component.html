@@ -1,0 +1,136 @@
+<!-- NAVBAR (full width, above split) -->
+<nav class="splash-nav" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+  <div class="splash-nav-right">
+    <img src="assets/images/harfi_logo.png" height="36" alt="حرفي" class="nav-logo-img" />
+    <span class="nav-brand-name gradient-text">{{ 'APP_NAME' | translate }}</span>
+  </div>
+  <div class="splash-nav-center">
+    <a class="nav-link">{{ 'NAV_HOME' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_HOW' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_CRAFTSMEN' | translate }}</a>
+    <a class="nav-link">{{ 'NAV_CONTACT' | translate }}</a>
+  </div>
+  <div class="splash-nav-left">
+    <button class="nav-ctrl-btn" (click)="theme.toggle()">
+      {{ isDark ? '☀️' : '🌙' }}
+    </button>
+    <button class="nav-ctrl-btn" (click)="lang.toggle()">
+      🌐 {{ isArabic ? 'EN' : 'ع' }}
+    </button>
+    <button class="nav-login-btn" (click)="goToLogin()">
+      {{ 'LOGIN' | translate }}
+    </button>
+    <button class="nav-start-btn gradient-btn" (click)="goToRegister()">
+      {{ 'ONBOARDING_START' | translate }}
+    </button>
+  </div>
+</nav>
+
+<!-- SPLIT BODY -->
+<div class="splash-body" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+
+  <!-- RIGHT PANEL: slides -->
+  <div class="splash-right" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+    <div class="slide-badge">
+      <span class="badge-dot"></span>
+      {{ 'SPLASH_BADGE' | translate }}
+    </div>
+
+    @for (slide of slides; track slide.id) {
+      @if (currentSlide === slide.id) {
+        <div class="slide-content animate-fade">
+          <div class="slide-icon-box">{{ slide.icon }}</div>
+          <h2 class="slide-title" [innerHTML]="getSlideTitle(slide)"></h2>
+          <p class="slide-desc">{{ slide.desc | translate }}</p>
+        </div>
+      }
+    }
+
+    <div class="slide-actions">
+      <div class="action-row">
+        @if (currentSlide < 2) {
+          <button class="btn-next gradient-btn" (click)="nextSlide()">
+            {{ 'ONBOARDING_NEXT' | translate }} {{ isArabic ? '←' : '→' }}
+          </button>
+          <button class="btn-skip-inline" (click)="skip()">
+            {{ 'ONBOARDING_SKIP' | translate }}
+          </button>
+        } @else {
+          <button class="btn-next gradient-btn" (click)="goToRegister()">
+            {{ 'ONBOARDING_START' | translate }} {{ isArabic ? '←' : '→' }}
+          </button>
+          <button class="btn-skip-inline" (click)="skip()">
+            {{ 'ONBOARDING_SKIP' | translate }}
+          </button>
+        }
+      </div>
+      <div class="slide-dots" [style.justifyContent]="isArabic ? 'flex-start' : 'flex-end'">
+        @for (slide of slides; track slide.id) {
+          <span class="dot" [class.active]="currentSlide === slide.id"
+                (click)="currentSlide = slide.id"></span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- LEFT PANEL: dark outer + inner gradient card -->
+  <div class="splash-left" [style.direction]="isArabic ? 'rtl' : 'ltr'">
+    <div class="splash-brand-card">
+      <div class="brand-logo-circle">
+        <img src="assets/images/harfi_logo.png" alt="حرفي" class="brand-logo-img" />
+      </div>
+      <h1 class="brand-title">{{ 'SPLASH_BRAND_TITLE' | translate }}</h1>
+      <p class="brand-subtitle">{{ 'WELCOME_TAGLINE' | translate }}</p>
+      <div class="brand-stats">
+        <div class="stat-item">
+          <span class="stat-num">10k+</span>
+          <span class="stat-label">{{ 'STAT_CRAFTSMEN' | translate }}</span>
+        </div>
+        <div class="stat-sep">|</div>
+        <div class="stat-item">
+          <span class="stat-num">4.9</span>
+          <span class="stat-label">{{ 'STAT_RATING' | translate }}</span>
+        </div>
+        <div class="stat-sep">|</div>
+        <div class="stat-item">
+          <span class="stat-num">50+</span>
+          <span class="stat-label">{{ 'STAT_SPECIALTIES' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE FULL-SCREEN (< 768px) -->
+<div class="splash-mobile">
+  <div class="mobile-top-bar">
+    <button class="nav-ctrl-btn" (click)="theme.toggle()">{{ isDark ? '☀️' : '🌙' }}</button>
+    <button class="nav-ctrl-btn" (click)="lang.toggle()">🌐</button>
+    <button class="btn-skip-mobile" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
+  </div>
+  <div class="mobile-content">
+    <img src="assets/images/harfi_logo.png" alt="حرفي" class="mobile-logo" />
+    @for (slide of slides; track slide.id) {
+      @if (currentSlide === slide.id) {
+        <div class="mobile-slide animate-fade">
+          <h2>{{ slide.title | translate }}</h2>
+          <p>{{ slide.desc | translate }}</p>
+        </div>
+      }
+    }
+  </div>
+  <div class="mobile-bottom">
+    <div class="slide-dots">
+      @for (slide of slides; track slide.id) {
+        <span class="dot" [class.active]="currentSlide === slide.id"></span>
+      }
+    </div>
+    @if (currentSlide < 2) {
+      <button class="btn-mobile-next" (click)="nextSlide()">{{ 'ONBOARDING_NEXT' | translate }}</button>
+    } @else {
+      <button class="btn-mobile-start gradient-btn" (click)="goToRegister()">{{ 'ONBOARDING_START' | translate }}</button>
+      <button class="btn-mobile-login" (click)="goToLogin()">{{ 'HAVE_ACCOUNT' | translate }} {{ 'LOGIN' | translate }}</button>
+    }
+  </div>
+</div>

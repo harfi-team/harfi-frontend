@@ -1,39 +1,102 @@
-<nav class="navbar navbar-expand-lg" dir="auto">
+<nav class="navbar" dir="auto">
   <div class="container">
-    <a class="navbar-brand fw-bold" routerLink="/">{{ 'APP_NAME' | translate }}</a>
+    <a class="navbar-brand" routerLink="/">
+      <img src="assets/images/harfi_logo.png" height="36" alt="حرفي" />
+      <span class="brand-text">{{ 'APP_NAME' | translate }}</span>
+    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="nav-actions">
+      <button
+        class="nav-icon-btn"
+        (click)="theme.toggle()"
+        [attr.aria-label]="(theme.current() === 'dark' ? 'THEME_LIGHT' : 'THEME_DARK') | translate"
+      >
+        @if (theme.current() === 'dark') {
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        } @else {
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        }
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/craftsmen/search">{{ 'SEARCH' | translate }}</a>
-        </li>
-      </ul>
+      <button class="nav-icon-btn" (click)="language.toggle()">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path
+            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+          />
+        </svg>
+        <span class="lang-label">{{ language.current() === 'ar' ? 'EN' : 'AR' }}</span>
+      </button>
 
-      <div class="d-flex align-items-center gap-2">
-        <button class="icon-btn" (click)="theme.toggle()" [attr.aria-label]="(theme.current() === 'dark' ? 'THEME_LIGHT' : 'THEME_DARK') | translate">
-          @if (theme.current() === 'dark') {
-            <span>☀️</span>
-          } @else {
-            <span>🌙</span>
+      @if (auth.isLoggedIn()) {
+        <button
+          class="nav-icon-btn notif-btn"
+          (click)="openNotifications()"
+          [attr.aria-label]="'NOTIFICATIONS.TITLE' | translate"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
           }
         </button>
-
-        <button class="icon-btn" (click)="language.toggle()">
-          {{ language.current() === 'ar' ? 'EN' : 'AR' }}
-        </button>
-
-        @if (auth.isLoggedIn()) {
-          <span class="nav-user-name">{{ auth.getUserName() }}</span>
-          <button class="btn btn-outline btn-sm" (click)="auth.logout()">{{ 'LOGOUT' | translate }}</button>
-        } @else {
-          <a class="btn btn-primary btn-sm" routerLink="/auth/login">{{ 'LOGIN' | translate }}</a>
-          <a class="btn btn-outline btn-sm" routerLink="/auth/register">{{ 'REGISTER' | translate }}</a>
-        }
-      </div>
+        <span class="nav-user-name">{{ auth.getUserName() }}</span>
+        <button class="btn-outline-sm" (click)="onLogout()">{{ 'LOGOUT' | translate }}</button>
+      } @else {
+        <a class="btn-outline-sm" routerLink="/auth/login">{{ 'LOGIN' | translate }}</a>
+        <a class="btn-gradient-sm" routerLink="/auth/register">{{ 'REGISTER' | translate }}</a>
+      }
     </div>
   </div>
 </nav>

@@ -1,0 +1,161 @@
+<div class="craftsmen-page">
+  <div class="stats-row">
+    <div class="stat-card stat-card--red">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">person</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ totalCount | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--orange">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">hourglass_empty</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ allPending().length | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.PENDING_APPROVAL' | translate }}</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--green">
+      <div class="stat-card__icon">
+        <span class="material-symbols-outlined" style="font-size:24px;line-height:1">check_circle</span>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">{{ allApproved().length | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.ACTIVE' | translate }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <div class="search-input-wrapper">
+      <span class="material-symbols-outlined search-ico">search</span>
+      <input type="text" class="filter-search" [placeholder]="'ADMIN.SEARCH_CRAFTSMAN' | translate" [(ngModel)]="search" />
+    </div>
+    <select class="filter-select" [(ngModel)]="cityFilter">
+      <option value="">{{ 'ADMIN.ALL_CITIES' | translate }}</option>
+      @for (c of cities(); track c.id) {
+        <option [value]="c.nameAr">{{ c.nameAr }}</option>
+      }
+    </select>
+    <select class="filter-select" [(ngModel)]="specialtyFilter">
+      <option value="">{{ 'ADMIN.ALL_SPECIALTIES' | translate }}</option>
+      @for (s of serviceTypes(); track s.id) {
+        <option [value]="s.nameAr">{{ s.nameAr }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="tab-pills">
+    <button class="tab-pill" [class.active]="activeTab() === 'all'" (click)="setTab('all')">{{ 'ALL' | translate }} ({{ totalCount }})</button>
+    <button class="tab-pill" [class.active]="activeTab() === 'pending'" (click)="setTab('pending')">{{ 'ADMIN.PENDING_APPROVAL' | translate }} ({{ allPending().length }})</button>
+    <button class="tab-pill" [class.active]="activeTab() === 'approved'" (click)="setTab('approved')">{{ 'ADMIN.APPROVED' | translate }} ({{ allApproved().length }})</button>
+    <button class="tab-pill" [class.active]="activeTab() === 'rejected'" (click)="setTab('rejected')">{{ 'ADMIN.REJECTED_STATUS' | translate }} ({{ allRejected().length }})</button>
+  </div>
+
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4,5]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (filteredItems.length === 0) {
+      <div class="empty-state">
+        <p>{{ emptyMessage() | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'CRAFTSMAN' | translate }}</th>
+              <th>{{ 'SPECIALTY' | translate }}</th>
+              <th>{{ 'CITY' | translate }}</th>
+              <th>{{ 'REGISTRATION_DATE' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of filteredItems; track c.id) {
+              <tr [class.row-deleted]="c.isDeleted">
+                <td>
+                  <div class="craftsman-cell">
+                    <div class="avatar-circle">{{ c.fullName.charAt(0) || '?' }}</div>
+                    <div class="craftsman-info">
+                      <span class="craftsman-name">{{ c.fullName }}</span>
+                      <span class="craftsman-phone">{{ c.phone }}</span>
+                      @if (c.rejectionReason) {
+                        <span class="rejection-tooltip" [title]="c.rejectionReason">
+                          <span class="material-symbols-outlined" style="font-size:14px;line-height:1">info</span>
+                          {{ c.rejectionReason }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td><span class="harfi-chip">{{ c.serviceType }}</span></td>
+                <td>{{ c.city }}</td>
+                <td>{{ c.createdAt | date:'d MMM, y' }}</td>
+                <td>
+                  <span class="status-dot-badge status-dot-badge--{{ getBadge(c).cssClass }}">
+                    <span class="dot"></span>
+                    {{ getBadge(c).label | translate }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-btns">
+                    @if (showActions(c).view) {
+                      <button class="action-icon-btn" (click)="viewDetail(c.id)" title="{{ 'VIEW' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                      </button>
+                    }
+                    @if (showActions(c).approve) {
+                      <button class="action-icon-btn action-approve" (click)="openAction('approve', c.id)" title="{{ 'APPROVE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+                      </button>
+                    }
+                    @if (showActions(c).reject) {
+                      <button class="action-icon-btn action-reject" (click)="openAction('reject', c.id)" title="{{ 'REJECT' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">cancel</span>
+                      </button>
+                    }
+                    @if (showActions(c).suspend) {
+                      <button class="action-icon-btn action-reject" (click)="openAction('suspend', c.id)" title="{{ 'ADMIN.SUSPEND' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">pause_circle</span>
+                      </button>
+                    }
+                    @if (showActions(c).reactivate) {
+                      <button class="action-icon-btn action-approve" (click)="openAction('reactivate', c.id)" title="{{ 'ADMIN.REACTIVATE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+                      </button>
+                    }
+                    @if (showActions(c).delete) {
+                      <button class="action-icon-btn action-delete" (click)="openAction('delete', c.id)" title="{{ 'DELETE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-confirm-dialog
+  [visible]="dialogVisible()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [requireReason]="dialogRequireReason()"
+  [reasonLabel]="dialogReasonLabel()"
+  (confirmed)="onDialogConfirmed($event)"
+  (dismissed)="dialogVisible.set(false)"
+/>

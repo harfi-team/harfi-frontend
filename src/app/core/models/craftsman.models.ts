@@ -1,3 +1,46 @@
+// ─── Service Slugs ────────────────────────────────────────────────────────────
+
+export type CraftsmanServiceSlug =
+  | 'plumbing'
+  | 'electrical'
+  | 'carpentry'
+  | 'painting'
+  | 'ac'
+  | 'cleaning'
+  | 'moving'
+  | 'pest'
+  | 'roofing';
+
+// ─── Main Craftsman DTO (used in search results & profile) ────────────────────
+
+export interface CraftsmanDto {
+  id: string;
+  name: string;
+  city: string;
+  neighborhood?: string;        // restored — API returns this field
+  specialty: string;
+  services: CraftsmanServiceSlug[];
+  rating: number;
+  reviewsCount: number;
+  experienceYears: number;
+  bio: string;
+  avatarUrl?: string;
+  priceMin?: number;
+  priceMax?: number;
+  minPrice?: number;
+}
+
+// ─── Search Params ─────────────────────────────────────────────────────────────
+
+export interface CraftsmanSearchParams {
+  service?: CraftsmanServiceSlug | '';
+  search?: string;
+  city?: string;
+  minRating?: number | '';
+  minExperience?: number | '';
+}
+
+// ─── Registration (POST /api/craftsmen/register) ──────────────────────────────
 
 export interface CraftsmanRegistrationDto {
   userId: number;
@@ -11,50 +54,8 @@ export interface CraftsmanRegistrationDto {
   nationalIdUrl: string;
 }
 
-// الفلاتر المرسلة للباك اند بناءً على السويجر
-export interface CraftsmanSearchFilters {
-  serviceType?: string;
-  city?: string;
-  minRating?: number;
-  minExperience?: number;
-  searchTerm?: string; // للبحث النصي العلوي في الفرونت اند
-}
+// ─── Reviews (GET /api/reviews/craftsman/{craftsmanId}) ───────────────────────
 
-// داتا الحرفي العائدة في نتائج البحث لعرضها بالكارت
-export interface CraftsmanCardDto {
-  id: number;
-  fullName: string;
-  photoUrl: string;
-  serviceType: string;
-  city: string;
-  rating: number;
-  priceRangeMin: number;
-  priceRangeMax: number;
-  experience: number;
-  bio: string;
-}
-// ... (الأكواد الحالية الخاصة بالـ Registration والـ Search زي ما هي)
-
-// داتا البروفايل الراجعة من GET /api/Craftsmen/{id}
-export interface CraftsmanProfileDto {
-  id: number;
-  fullName: string;
-  profileImageUrl: string;
-  city: string;
-  neighborhood: string;
-  priceRangeMin: number;
-  priceRangeMax: number;
-  experience: number;
-  bio: string;
-  // خصائص إضافية نحتاجها للـ UI (قد تحتاجين إضافتها للـ Backend أو حسابها)
-  serviceType?: string; 
-  rating?: number;
-  completedJobs?: number;
-  skills?: string[];
-  previousWorks?: string[];
-}
-
-// داتا التقييمات الراجعة من GET /api/reviews/craftsman/{craftsmanId}
 export interface ReviewItemDto {
   id: number;
   jobId: number;
@@ -71,8 +72,9 @@ export interface ReviewsResponseDto {
   reviews: ReviewItemDto[];
 }
 
-// داتا إنشاء محادثة جديدة POST /api/Conversations
+// ─── Conversations (POST /api/conversations) ──────────────────────────────────
+
 export interface StartConversationDto {
-  jobId: number; // حسب الـ Swagger يحتاج jobId، ممكن ترسلي 0 لو المحادثة عامة
+  jobId: number;
   craftsmanId: number;
 }

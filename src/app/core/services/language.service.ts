@@ -5,14 +5,21 @@ export type Language = 'ar' | 'en';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
-  current = signal<Language>('ar');
+  current = signal<Language>(
+    (() => {
+      const saved = localStorage.getItem('harfi_lang') as Language | null;
+      if (saved === 'ar' || saved === 'en') return saved;
+      localStorage.setItem('harfi_lang', 'ar');
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = 'ar';
+      return 'ar';
+    })()
+  );
+
   private translate = inject(TranslateService);
 
   constructor() {
-    const saved = localStorage.getItem('harfi_lang') as Language | null;
-    const lang = saved || 'ar';
-    this.current.set(lang);
-    this.apply(lang);
+    this.apply(this.current());
   }
 
   switchTo(lang: Language): void {

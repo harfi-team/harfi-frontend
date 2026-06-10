@@ -40,6 +40,13 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
       this.email = params['email'] || '';
       if (!this.email) {
         this.router.navigate(['/auth/login']);
+        return;
+      }
+      const phone = params['phone'] || '';
+      if (phone) {
+        this.phoneNumber = phone;
+        this.step = 'code';
+        this.countdown = 0;
       }
     });
   }
@@ -52,7 +59,7 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
     if (this.phoneForm.invalid) return;
     this.loading = true;
     const phoneNumber = this.phoneForm.value.phoneNumber!;
-    this.authService.sendPhoneCode({ email: this.email, phoneNumber }).subscribe({
+    this.authService.sendPhoneCode({ phoneNumber }).subscribe({
       next: () => {
         this.phoneNumber = phoneNumber;
         this.step = 'code';
@@ -60,6 +67,7 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
         this.startCountdown();
       },
       error: (err) => {
+        console.error('sendCode error:', err);
         this.errorHandler.handle(err);
         this.loading = false;
       },
@@ -69,8 +77,8 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
   verifyCode(): void {
     if (this.codeForm.invalid) return;
     this.loading = true;
-    this.authService.verifyPhone({ email: this.email, phoneNumber: this.phoneNumber, code: this.codeForm.value.code! }).subscribe({
-      next: () => this.router.navigate(['/']),
+    this.authService.verifyPhone({ phoneNumber: this.phoneNumber, code: this.codeForm.value.code! }).subscribe({
+      next: () => this.router.navigate(['/home']),
       error: (err) => {
         this.errorHandler.handle(err);
         this.loading = false;
@@ -81,7 +89,7 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
   resendCode(): void {
     if (this.countdown > 0) return;
     this.resendLoading = true;
-    this.authService.resendPhoneCode({ email: this.email, phoneNumber: this.phoneNumber }).subscribe({
+    this.authService.resendPhoneCode({ phoneNumber: this.phoneNumber }).subscribe({
       next: () => {
         this.resendLoading = false;
         this.startCountdown();

@@ -1,88 +1,74 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { CraftsmanDto } from '../../../core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman.service';
-import { CraftsmanProfileDto, ReviewsResponseDto } from '../../../core/models/craftsman.models';
-import{DatePipe} from '@angular/common';
+
 @Component({
   selector: 'app-craftsman-profile',
   standalone: true,
-  imports: [DatePipe],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './craftsman-profile.component.html',
-  styleUrls: ['./craftsman-profile.component.css']
+  styleUrl: './craftsman-profile.component.css',
 })
 export class CraftsmanProfileComponent implements OnInit {
-  craftsmanId!: number;
-  profile!: CraftsmanProfileDto;
-  reviewsData!: ReviewsResponseDto;
-  isLoading: boolean = true;
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private craftsmanService = inject(CraftsmanService);
+  private auth = inject(AuthService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private craftsmanService: CraftsmanService,
-    private router: Router
-  ) {}
+  loading = signal(true);
+  craftsman = signal<CraftsmanDto | null>(null);
+  reviews = signal<any[]>([]);
+  averageRating = signal<number>(0);
+  totalReviews = signal<number>(0);
+  readonly isCustomer = this.auth.getRole() === 'customer';
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.craftsmanId = +id;
-        this.loadProfileData();
-      }
-    });
-  }
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
 
-  loadProfileData(): void {
-    this.isLoading = true;
-    
-    // استخدام forkJoin لجلب البروفايل والتقييمات في نفس الوقت
+    // Restored from HEAD: load profile and reviews in parallel via forkJoin
     forkJoin({
-      profile: this.craftsmanService.getCraftsmanProfile(this.craftsmanId),
-      reviews: this.craftsmanService.getCraftsmanReviews(this.craftsmanId)
+      craftsman: this.craftsmanService.getCraftsman(id),
+      reviews: this.craftsmanService.getCraftsmanReviews(id),
     }).subscribe({
-      next: (res) => {
-        this.profile = res.profile;
-        this.reviewsData = res.reviews;
-        
-        // Mocking missing data for UI matching Figma if backend doesn't send it yet
-        this.profile.serviceType = this.profile.serviceType || 'صنايعي عام';
-        this.profile.rating = res.reviews.averageStars || 0;
-        this.profile.skills = ['تفصيل مطابخ', 'غرف نوم', 'أبواب خشبية', 'صيانة وتجديد'];
-        this.profile.previousWorks = [
-          'assets/images/work1.jpg', 'assets/images/work2.jpg', 'assets/images/work3.jpg'
-        ];
-        
-        this.isLoading = false;
+      next: ({ craftsman, reviews }) => {
+        this.craftsman.set(craftsman);
+        this.reviews.set(reviews?.reviews ?? []);
+        this.averageRating.set(reviews?.averageStars ?? 0);
+        this.totalReviews.set(reviews?.totalReviews ?? 0);
+        this.loading.set(false);
       },
-      error: (err) => {
-        console.error('حدث خطأ في تحميل البيانات', err);
-        this.isLoading = false;
-      }
+      error: () => {
+        this.craftsman.set(null);
+        this.loading.set(false);
+      },
     });
   }
 
-  onBookNow(): void {
-    this.craftsmanService.bookJob(this.craftsmanId).subscribe({
-      next: () => {
-        alert('تم إرسال طلب الحجز بنجاح!');
+  assignJob(craftsman: CraftsmanDto): void {
+    const service = this.craftsmanService.getPrimaryService(craftsman);
+    this.router.navigate(['/jobs/create'], {
+      queryParams: {
+        craftsmanId: craftsman.id,
+        craftsmanName: craftsman.name,
+        service: service || undefined,
       },
-      error: (err) => alert('حدث خطأ أثناء الحجز.')
     });
   }
 
-  onContact(): void {
-    const payload = { craftsmanId: this.craftsmanId, jobId: 0 }; // 0 if no specific job is assigned yet
-    this.craftsmanService.startConversation(payload).subscribe({
-      next: () => {
-        alert('تم فتح نافذة المحادثة!');
-        // this.router.navigate(['/chat']);
-      },
-      error: (err) => alert('حدث خطأ أثناء محاولة التواصل.')
-    });
+  getPriceRange(craftsman: CraftsmanDto): string {
+    return this.craftsmanService.getPriceRange(craftsman);
   }
-  
-  // لإنشاء مصفوفة للنجوم في الـ HTML
+
+  getServiceLabel(craftsman: CraftsmanDto): string {
+    const service = this.craftsmanService.getPrimaryService(craftsman);
+    return service ? `SERVICES.${service.toUpperCase()}` : craftsman.specialty;
+  }
+
   getStars(rating: number): number[] {
     return Array(Math.round(rating)).fill(0);
   }
