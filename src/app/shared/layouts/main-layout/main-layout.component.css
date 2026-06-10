@@ -122,7 +122,46 @@
   overflow-x: auto;
 }
 
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 4px;
+  margin-inline-end: 8px;
+  border-radius: 8px;
+  transition: background 0.18s;
+}
+
+.hamburger-btn:hover {
+  background: var(--bg-color);
+}
+
+.hamburger-btn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 150;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (max-width: 767px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
   .search-box {
     width: 160px;
   }

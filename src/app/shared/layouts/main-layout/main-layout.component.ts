@@ -18,6 +18,7 @@ export class MainLayoutComponent {
   pageTitle = signal('NAV.HOME');
   isAdminRoute = signal(false);
   isAiRoute = signal(false);
+  mobileNavOpen = signal(false);
 
   constructor() {
     this.router.events
@@ -54,6 +55,15 @@ export class MainLayoutComponent {
         this.pageTitle.set(key);
         this.isAdminRoute.set(admin);
         this.isAiRoute.set(ai);
+        this.mobileNavOpen.set(false);
       });
+  }
+
+  toggleMobileNav(): void {
+    this.mobileNavOpen.update(v => !v);
+  }
+
+  closeMobileNav(): void {
+    this.mobileNavOpen.set(false);
   }
 }

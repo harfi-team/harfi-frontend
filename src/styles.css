@@ -277,3 +277,144 @@ body {
     background-position: -200% 0;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ADMIN GLOBAL RESPONSIVE — applied across all admin pages
+═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  /* ── Stats grids: stack 2 columns then 1 on very small ── */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .stats-grid--9,
+  .stats-grid--6,
+  .stats-grid--4,
+  .stats-grid--3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* ── Charts & tables grids: single column ── */
+  .charts-row,
+  .tables-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Filter rows: stack vertically ── */
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .filter-row .search-input-wrapper,
+  .filter-row .filter-select,
+  .filter-row .filter-group,
+  .filter-row .filter-search {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Tables: ensure horizontal scroll on mobile ── */
+  .admin-table {
+    min-width: 600px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Grid forms (detail pages) ── */
+  .detail-grid,
+  .info-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Tab pills: scrollable ── */
+  .tab-pills,
+  .tabs-group {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .tab-pill,
+  .filter-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Stat cards: compact padding ── */
+  .stat-card {
+    padding: 14px !important;
+  }
+
+  .stat-card__value {
+    font-size: 22px !important;
+  }
+
+  /* ── Pagination: stack vertically ── */
+  .pagination,
+  .pagination-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .pagination-info {
+    text-align: center;
+  }
+
+  /* ── Headers: stack ── */
+  .page-header,
+  .dashboard-header,
+  .analytics-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* ── Action buttons: allow wrap ── */
+  .action-btns {
+    flex-wrap: wrap;
+  }
+
+  /* ── Cards with flex rows ── */
+  .chart-card__header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .stats-grid--9,
+  .stats-grid--6,
+  .stats-grid--4,
+  .stats-grid--3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stat-card__value {
+    font-size: 20px !important;
+  }
+
+  .chart-container {
+    max-width: 100% !important;
+  }
+}
+
+/* ── Detail page image grid ── */
+@media (max-width: 767px) {
+  .images-grid,
+  .media-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

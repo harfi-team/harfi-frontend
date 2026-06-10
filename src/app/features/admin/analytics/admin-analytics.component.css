@@ -262,12 +262,15 @@
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+  min-height: 200px;
 }
 
 .chart-container canvas {
+  display: block;
   width: 100% !important;
   height: auto !important;
   max-height: 280px;
+  min-height: 180px;
 }
 
 .chart-container--wide {
@@ -379,5 +382,35 @@
   .tabs-group {
     width: 100%;
     justify-content: center;
+    overflow-x: auto;
+    border-radius: 12px;
+    flex-wrap: nowrap;
+    padding: 4px 8px;
+  }
+
+  .filter-tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .analytics-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid--9,
+  .stats-grid--6,
+  .stats-grid--4,
+  .stats-grid--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container {
+    max-width: 100%;
+    min-height: 180px;
   }
 }

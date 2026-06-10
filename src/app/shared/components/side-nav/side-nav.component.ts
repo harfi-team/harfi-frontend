@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, output, HostBinding } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
@@ -19,6 +19,12 @@ export class SideNavComponent {
   languageService = inject(LanguageService);
 
   showAddButton = input<boolean>(false);
+  isDrawerOpen = input<boolean>(false);
+  drawerClosed = output<void>();
+
+  @HostBinding('class.drawer-open') get drawerOpenClass(): boolean {
+    return this.isDrawerOpen();
+  }
 
   get isAdmin(): boolean {
     return this.auth.getRole() === 'admin';
@@ -36,6 +42,10 @@ export class SideNavComponent {
   }
   toggleLanguage(): void {
     this.languageService.switchTo(this.languageService.current() === 'ar' ? 'en' : 'ar');
+  }
+
+  closeDrawer(): void {
+    this.drawerClosed.emit();
   }
 
   navigateToAddCraftsman(): void {

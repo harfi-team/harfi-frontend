@@ -274,3 +274,70 @@
 :host-context([data-theme='dark']) .bottom-nav-item.active {
   background: #3d1020;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DRAWER MODE (Mobile overlay)
+══════════════════════════════════════════════════════════════════════════ */
+.drawer-close-btn {
+  display: none;
+}
+
+:host.drawer-open .drawer-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--nav-hover-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.18s;
+}
+
+:host.drawer-open .drawer-close-btn:hover {
+  background: var(--border-color);
+}
+
+@media (max-width: 767px) {
+  :host.drawer-open .side-nav {
+    display: flex;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100dvh;
+    width: 280px;
+    z-index: 200;
+    flex-direction: column;
+    padding: 24px;
+    padding-top: 56px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+    animation: slideInRight 0.25s ease-out;
+    overflow-y: auto;
+  }
+
+  :host-context([lang='en']) :host.drawer-open .side-nav {
+    right: auto;
+    left: 0;
+    border-left: none;
+    border-right: 1px solid var(--border-color);
+    animation-name: slideInLeft;
+  }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}

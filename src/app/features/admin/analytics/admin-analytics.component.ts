@@ -60,6 +60,7 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   error = signal<string | null>(null);
 
   private charts: Chart[] = [];
+  private resizeObservers: ResizeObserver[] = [];
 
   readonly craftsmanStatusChartData = computed(() => {
     const d = this.craftsmanAnalytics();
@@ -251,6 +252,8 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   private destroyCharts(): void {
     for (const c of this.charts) c.destroy();
     this.charts = [];
+    for (const r of this.resizeObservers) r.disconnect();
+    this.resizeObservers = [];
   }
 
   private createChart(canvasId: string, config: any): void {
@@ -260,6 +263,24 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
 
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     if (!canvas) return;
+
+    const parent = canvas.parentElement;
+    if (parent && parent.offsetWidth === 0) {
+      const ro = new ResizeObserver(() => {
+        if (parent.offsetWidth > 0) {
+          ro.disconnect();
+          this.initCanvasChart(canvas, config);
+        }
+      });
+      ro.observe(parent);
+      this.resizeObservers.push(ro);
+      return;
+    }
+
+    this.initCanvasChart(canvas, config);
+  }
+
+  private initCanvasChart(canvas: HTMLCanvasElement, config: any): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const chart = new Chart(ctx, config);
