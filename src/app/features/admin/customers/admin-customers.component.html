@@ -1,24 +1,15 @@
 <div class="customers-page">
-  <!-- Header -->
   <div class="page-header">
     <h2 class="page-title">{{ 'ADMIN.MANAGE_CUSTOMERS' | translate }}</h2>
   </div>
 
-  <!-- Search -->
   <div class="search-row">
     <div class="search-input-wrapper">
       <span class="material-symbols-outlined search-ico">search</span>
-      <input
-        type="text"
-        class="filter-search"
-        [placeholder]="'SEARCH' | translate"
-        [(ngModel)]="search"
-        (ngModelChange)="onSearch()"
-      />
+      <input type="text" class="filter-search" [placeholder]="'SEARCH' | translate" [(ngModel)]="search" (ngModelChange)="onSearch()" />
     </div>
   </div>
 
-  <!-- Table -->
   <div class="harfi-card table-card">
     @if (loading()) {
       <div class="skeleton-table">
@@ -26,37 +17,70 @@
           <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
         }
       </div>
-    } @else if (customers().length === 0) {
+    } @else if (users().length === 0) {
       <div class="empty-state">
-        <p>{{ 'NO_DATA' | translate }}</p>
+        <p>{{ 'ADMIN.EMPTY_USERS' | translate }}</p>
       </div>
     } @else {
       <div class="table-responsive">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>{{ 'NAME' | translate }}</th>
+              <th>{{ 'CUSTOMER' | translate }}</th>
               <th>{{ 'PHONE' | translate }}</th>
-              <th>{{ 'EMAIL' | translate }}</th>
-              <th>{{ 'CITY' | translate }}</th>
-              <th>{{ 'JOIN_DATE' | translate }}</th>
-              <th>{{ 'TOTAL_JOBS' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'REGISTRATION_DATE' | translate }}</th>
               <th>{{ 'ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>
-            @for (c of customers(); track c.id) {
-              <tr>
-                <td>{{ c.name }}</td>
-                <td>{{ c.phone }}</td>
-                <td>{{ c.email }}</td>
-                <td>{{ c.city }}</td>
-                <td>{{ c.joinDate }}</td>
-                <td>{{ c.totalJobs | number }}</td>
+            @for (u of users(); track u.id) {
+              <tr [class.row-deleted]="u.isDeleted">
+                <td>
+                  <div class="craftsman-cell">
+                    <div class="avatar-circle">{{ u.name.charAt(0) || '?' }}</div>
+                    <div class="craftsman-info">
+                      <span class="craftsman-name">{{ u.name }}</span>
+                      <span class="craftsman-phone">{{ u.email }}</span>
+                      @if (u.isDeleted && u.deletedAt) {
+                        <span class="deleted-date-hint" [title]="'تم الحذف: ' + (u.deletedAt | date:'medium')">
+                          <span class="material-symbols-outlined" style="font-size:14px;line-height:1">schedule</span>
+                          {{ u.deletedAt | date:'d MMM, y' }}
+                        </span>
+                      } @else if (!u.isActive && !u.isDeleted && u.updatedAt) {
+                        <span class="inactive-hint">{{ 'ADMIN.DEACTIVATED' | translate }}</span>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>{{ u.phone || '-' }}</td>
+                <td>
+                  <span class="status-dot-badge status-dot-badge--{{ getBadge(u).cssClass }}">
+                    <span class="dot"></span>
+                    {{ getBadge(u).label | translate }}
+                  </span>
+                </td>
+                <td>{{ u.createdAt | date:'d MMM, y' }}</td>
                 <td>
                   <div class="action-btns">
-                    <button class="action-icon-btn" title="{{ 'VIEW' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span></button>
-                    <button class="action-icon-btn action-delete" (click)="deleteCustomer(c.id)" title="{{ 'DELETE' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span></button>
+                    <button class="action-icon-btn" (click)="viewDetail(u.id)" title="{{ 'VIEW' | translate }}">
+                      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                    </button>
+                    @if (showActions(u).deactivate) {
+                      <button class="action-icon-btn action-reject" (click)="openAction('deactivate', u.id)" title="{{ 'ADMIN.DEACTIVATE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">block</span>
+                      </button>
+                    }
+                    @if (showActions(u).reactivate) {
+                      <button class="action-icon-btn action-approve" (click)="openAction('reactivate', u.id)" title="{{ 'ADMIN.REACTIVATE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+                      </button>
+                    }
+                    @if (showActions(u).delete) {
+                      <button class="action-icon-btn action-delete" (click)="openAction('delete', u.id)" title="{{ 'DELETE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>
@@ -65,7 +89,6 @@
         </table>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination">
         <div class="pagination-info">
           {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }}
@@ -73,9 +96,7 @@
         <div class="pagination-controls">
           <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
           @for (p of [].constructor(totalPages); track $index) {
-            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
-              {{ $index + 1 }}
-            </button>
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
           }
           <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
         </div>
@@ -83,3 +104,14 @@
     }
   </div>
 </div>
+
+<app-confirm-dialog
+  [visible]="dialogVisible()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [requireReason]="dialogRequireReason()"
+  [reasonLabel]="dialogReasonLabel()"
+  (confirmed)="onDialogConfirmed($event)"
+  (dismissed)="dialogVisible.set(false)"
+/>

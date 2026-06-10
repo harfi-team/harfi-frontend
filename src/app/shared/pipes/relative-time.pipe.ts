@@ -12,9 +12,10 @@ export class RelativeTimePipe implements PipeTransform {
   transform(value: string | Date | undefined | null): string {
     if (!value) return '';
 
-    const dateStr = typeof value === 'string' && !value.endsWith('Z') && !value.includes('+')
-      ? value + 'Z'
-      : value;
+    const dateStr =
+      typeof value === 'string' && !value.endsWith('Z') && !value.includes('+')
+        ? value + 'Z'
+        : value;
     const now = Date.now();
     const date = new Date(dateStr).getTime();
     const diffMs = now - date;

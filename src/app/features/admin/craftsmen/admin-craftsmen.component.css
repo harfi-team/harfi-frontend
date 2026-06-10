@@ -263,6 +263,41 @@
 }
 .status-dot-badge--rejected .dot { background: var(--error); }
 
+.status-dot-badge--deleted {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+}
+.status-dot-badge--deleted .dot { background: #6B7280; }
+
+.status-dot-badge--suspended {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+.status-dot-badge--suspended .dot { background: var(--error); }
+
+.row-deleted {
+  opacity: 0.6;
+}
+
+.rejection-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--error);
+  cursor: help;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-icon-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .action-btns {
   display: flex;
   gap: 4px;

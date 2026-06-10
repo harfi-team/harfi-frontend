@@ -44,7 +44,7 @@
 
 .card-icon {
   font-size: 1.4rem;
-  color: #D946EF;
+  color: #d946ef;
 }
 
 /* ───── Service Chips ───── */
@@ -61,9 +61,9 @@
   gap: 0.4rem;
   padding: 0.55rem 1rem;
   border-radius: 999px;
-  border: 1.5px solid #E9D5F5;
-  background: #FAF5FF;
-  color: #7C3AED;
+  border: 1.5px solid #e9d5f5;
+  background: #faf5ff;
+  color: #7c3aed;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -76,13 +76,13 @@
 }
 
 .service-chip:hover {
-  border-color: #D946EF;
-  background: #F3E8FF;
+  border-color: #d946ef;
+  background: #f3e8ff;
 }
 
 .service-chip.active {
-  background: #D946EF;
-  border-color: #D946EF;
+  background: #d946ef;
+  border-color: #d946ef;
   color: #fff;
 }
 
@@ -120,7 +120,7 @@
 
 .input-field:focus {
   outline: none;
-  border-color: #D946EF;
+  border-color: #d946ef;
   box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.08);
 }
 
@@ -146,16 +146,18 @@
 
 /* ───── Upload Zone ───── */
 .upload-zone {
-  border: 2px dashed #E9D5F5;
+  border: 2px dashed #e9d5f5;
   border-radius: 16px;
-  background: #FBF7FF;
-  transition: border-color 0.2s, background 0.2s;
+  background: #fbf7ff;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
   overflow: hidden;
 }
 
 .upload-zone:hover {
-  border-color: #D946EF;
-  background: #F5EDFF;
+  border-color: #d946ef;
+  background: #f5edff;
 }
 
 .upload-label {
@@ -171,13 +173,13 @@
 
 .upload-icon {
   font-size: 2.5rem;
-  color: #D946EF;
+  color: #d946ef;
   opacity: 0.7;
 }
 
 .upload-text {
   font-weight: 600;
-  color: #7C3AED;
+  color: #7c3aed;
   font-size: 0.92rem;
 }
 
@@ -213,7 +215,7 @@
   cursor: pointer;
 }
 
-[dir="rtl"] .remove-image-btn {
+[dir='rtl'] .remove-image-btn {
   right: auto;
   left: 1rem;
 }
@@ -249,13 +251,13 @@
 }
 
 .day-card:hover {
-  border-color: #D946EF;
-  background: #FBF7FF;
+  border-color: #d946ef;
+  background: #fbf7ff;
 }
 
 .day-card.active {
-  border-color: #D946EF;
-  background: #F3E8FF;
+  border-color: #d946ef;
+  background: #f3e8ff;
 }
 
 .day-name {
@@ -271,7 +273,7 @@
 }
 
 .day-card.active .day-number {
-  color: #D946EF;
+  color: #d946ef;
 }
 
 .day-month {
@@ -300,12 +302,12 @@
 }
 
 .time-pill:hover {
-  border-color: #D946EF;
+  border-color: #d946ef;
 }
 
 .time-pill.active {
-  background: #D946EF;
-  border-color: #D946EF;
+  background: #d946ef;
+  border-color: #d946ef;
   color: #fff;
 }
 
@@ -344,7 +346,7 @@
   height: 56px;
   border-radius: 50%;
   overflow: hidden;
-  background: #F3E8FF;
+  background: #f3e8ff;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -358,7 +360,7 @@
 
 .avatar-placeholder {
   font-size: 1.8rem;
-  color: #D946EF;
+  color: #d946ef;
 }
 
 .craftsman-info {
@@ -390,7 +392,7 @@
 
 .star-icon {
   font-size: 1rem;
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .rating-value {
@@ -465,8 +467,12 @@
   animation: shimmer 1.5s infinite;
 }
 
-.w-60 { width: 60%; }
-.w-40 { width: 40%; }
+.w-60 {
+  width: 60%;
+}
+.w-40 {
+  width: 40%;
+}
 
 /* ───── Summary Details ───── */
 .summary-details {
@@ -519,14 +525,14 @@
 .amount-number {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #D946EF;
+  color: #d946ef;
   line-height: 1;
 }
 
 .amount-currency {
   font-size: 1rem;
   font-weight: 600;
-  color: #D946EF;
+  color: #d946ef;
 }
 
 /* ───── Confirm Button ───── */
@@ -539,13 +545,15 @@
   padding: 1rem;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #D946EF, #A855F7);
+  background: linear-gradient(135deg, #d946ef, #a855f7);
   color: #fff;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(217, 70, 239, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   font-family: inherit;
 }
 
@@ -568,8 +576,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ───── Trust Signal ───── */
@@ -605,24 +617,24 @@
 }
 
 .back-link:hover {
-  border-color: #D946EF;
-  color: #D946EF;
+  border-color: #d946ef;
+  color: #d946ef;
 }
 
 .back-link .material-symbols-outlined {
   font-size: 1.1rem;
 }
 
-[dir="rtl"] .back-link .material-symbols-outlined {
+[dir='rtl'] .back-link .material-symbols-outlined {
   transform: rotate(180deg);
 }
 
 /* ───── RTL Adjustments ───── */
-[dir="rtl"] .booking-forms {
+[dir='rtl'] .booking-forms {
   order: 2;
 }
 
-[dir="rtl"] .booking-sidebar {
+[dir='rtl'] .booking-sidebar {
   order: 1;
 }
 
@@ -632,7 +644,7 @@
     grid-template-columns: 1fr;
   }
 
-  [dir="rtl"] .booking-page {
+  [dir='rtl'] .booking-page {
     grid-template-columns: 1fr;
   }
 
@@ -645,11 +657,11 @@
     position: static;
   }
 
-  [dir="rtl"] .booking-forms {
+  [dir='rtl'] .booking-forms {
     order: 1;
   }
 
-  [dir="rtl"] .booking-sidebar {
+  [dir='rtl'] .booking-sidebar {
     order: 2;
   }
 }
@@ -684,7 +696,13 @@
 }
 
 @keyframes shimmer {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }

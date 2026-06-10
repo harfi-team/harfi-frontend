@@ -1,0 +1,233 @@
+<div class="reports-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">{{ 'ADMIN.REPORTS' | translate }}</h2>
+    @if (!loading() && total() > 0) {
+      <span class="stat-badge">{{ total() }}</span>
+    }
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-row">
+    <div class="filter-group">
+      <label class="filter-label">{{ 'STATUS' | translate }}</label>
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+        <option value="">{{ 'ALL' | translate }}</option>
+        <option value="pending">{{ 'ADMIN.PENDING' | translate }}</option>
+        <option value="resolved">{{ 'ADMIN.RESOLVED' | translate }}</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">{{ 'ADMIN.TARGET_TYPE' | translate }}</label>
+      <select class="filter-select" [(ngModel)]="typeFilter" (ngModelChange)="onFilterChange()">
+        <option value="">{{ 'ALL' | translate }}</option>
+        <option value="craftsman">{{ 'ADMIN.CRAFTSMAN' | translate }}</option>
+        <option value="user">{{ 'ADMIN.USER' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="harfi-card table-card">
+    @if (loading()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (reports().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'ADMIN.REPORT_ID' | translate }}</th>
+              <th>{{ 'ADMIN.REPORTER' | translate }}</th>
+              <th>{{ 'ADMIN.TARGET_TYPE' | translate }}</th>
+              <th>{{ 'ADMIN.REASON' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'DATE' | translate }}</th>
+              <th>{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of reports(); track r.id) {
+              <tr>
+                <td class="id-cell">#{{ r.id }}</td>
+                <td>{{ r.reportedByUserName }}</td>
+                <td>
+                  <span class="target-chip" [class.chip-craftsman]="r.targetType === 'craftsman'" [class.chip-user]="r.targetType === 'user'">
+                    {{ r.targetType === 'craftsman' ? ('ADMIN.CRAFTSMAN' | translate) : ('ADMIN.USER' | translate) }}
+                  </span>
+                </td>
+                <td class="reason-cell" title="{{ r.reason }}">{{ truncate(r.reason) }}</td>
+                <td>
+                  @if (r.status === 'pending') {
+                    <span class="status-badge pending">{{ 'ADMIN.PENDING' | translate }}</span>
+                  } @else {
+                    <span class="status-badge resolved">{{ 'ADMIN.RESOLVED' | translate }}</span>
+                  }
+                </td>
+                <td class="date-cell">{{ r.createdAt }}</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-icon-btn" (click)="openView(r)" title="{{ 'VIEW' | translate }}">
+                      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                    </button>
+                    @if (r.status === 'pending') {
+                      <button class="action-icon-btn action-resolve" (click)="openResolve(r)" title="{{ 'ADMIN.RESOLVE' | translate }}">
+                        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          {{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }}
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">&lt;</button>
+          @for (p of [].constructor(totalPages); track $index) {
+            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">
+              {{ $index + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">&gt;</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- View Detail Modal -->
+@if (viewReport(); as r) {
+  <div class="modal-overlay" (click)="closeView()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.REPORT_DETAILS' | translate }}</h3>
+        <button class="modal-close" (click)="closeView()">
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.REPORT_ID' | translate }}</span>
+          <span class="detail-value">#{{ r.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.REPORTER' | translate }}</span>
+          <span class="detail-value">{{ r.reportedByUserName }} <span class="text-muted">(ID: {{ r.reportedByUserId }})</span></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.TARGET_TYPE' | translate }}</span>
+          <span class="detail-value">
+            <span class="target-chip" [class.chip-craftsman]="r.targetType === 'craftsman'" [class.chip-user]="r.targetType === 'user'">
+              {{ r.targetType === 'craftsman' ? ('ADMIN.CRAFTSMAN' | translate) : ('ADMIN.USER' | translate) }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.TARGET_ID' | translate }}</span>
+          <span class="detail-value">{{ r.targetId }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.REASON' | translate }}</span>
+          <span class="detail-value">{{ r.reason }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'STATUS' | translate }}</span>
+          <span class="detail-value">
+            @if (r.status === 'pending') {
+              <span class="status-badge pending">{{ 'ADMIN.PENDING' | translate }}</span>
+            } @else {
+              <span class="status-badge resolved">{{ 'ADMIN.RESOLVED' | translate }}</span>
+            }
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'ADMIN.CREATED_AT' | translate }}</span>
+          <span class="detail-value">{{ r.createdAt }}</span>
+        </div>
+        @if (r.status === 'resolved') {
+          <div class="detail-divider"></div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'ADMIN.RESOLVED_AT' | translate }}</span>
+            <span class="detail-value">{{ r.resolvedAt }}</span>
+          </div>
+          @if (r.resolvedByAdminId) {
+            <div class="detail-row">
+              <span class="detail-label">{{ 'ADMIN.RESOLVED_BY' | translate }}</span>
+              <span class="detail-value">Admin ID: {{ r.resolvedByAdminId }}</span>
+            </div>
+          }
+          @if (r.resolutionNotes) {
+            <div class="detail-row">
+              <span class="detail-label">{{ 'ADMIN.RESOLUTION_NOTES' | translate }}</span>
+              <span class="detail-value">{{ r.resolutionNotes }}</span>
+            </div>
+          }
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeView()">{{ 'CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Resolve Modal -->
+@if (resolveReportData(); as r) {
+  <div class="modal-overlay" (click)="closeResolve()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.RESOLVE_REPORT' | translate }} #{{ r.id }}</h3>
+        <button class="modal-close" (click)="closeResolve()">
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.ACTION' | translate }} <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-input"
+            [(ngModel)]="resolveAction"
+            [placeholder]="'ADMIN.ACTION_PLACEHOLDER' | translate"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.NOTES' | translate }} <span class="required">*</span></label>
+          <textarea
+            class="form-textarea"
+            rows="4"
+            [(ngModel)]="resolveNotes"
+            [placeholder]="'ADMIN.NOTES_PLACEHOLDER' | translate"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeResolve()">{{ 'CANCEL' | translate }}</button>
+        <button
+          class="btn-confirm gradient-btn"
+          [disabled]="!resolveAction().trim() || !resolveNotes().trim() || resolving()"
+          (click)="confirmResolve()"
+        >
+          @if (resolving()) {
+            <span class="btn-spinner"></span>
+          }
+          {{ 'ADMIN.CONFIRM_RESOLVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -5,12 +5,13 @@ import { roleGuard } from '../../core/guards/role.guard';
 export const jobsRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./job-list/job-list.component').then(m => m.JobListComponent),
+    loadComponent: () => import('./job-list/job-list.component').then((m) => m.JobListComponent),
     canActivate: [roleGuard(['customer', 'craftsman'])],
   },
   {
     path: 'create',
-    loadComponent: () => import('./job-create/job-create.component').then(m => m.JobCreateComponent),
+    loadComponent: () =>
+      import('./job-create/job-create.component').then((m) => m.JobCreateComponent),
     canActivate: [roleGuard(['customer'])],
   },
 ];

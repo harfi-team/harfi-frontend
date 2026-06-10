@@ -8,15 +8,15 @@ type ApiListResponse<T> = T[] | { items?: T[]; data?: T[]; result?: T[] };
 type ApiItemResponse<T> = T | { item?: T; data?: T; result?: T; job?: T };
 
 const STATUS_MAP: Record<string, JobStatus> = {
-  'مفتوح': 'open',
+  مفتوح: 'open',
   'قيد التنفيذ': 'in-progress',
-  'مكتمل': 'done',
-  'مرفوض': 'rejected',
-  'ملغى': 'rejected',
-  'open': 'open',
+  مكتمل: 'done',
+  مرفوض: 'rejected',
+  ملغى: 'rejected',
+  open: 'open',
   'in-progress': 'in-progress',
-  'done': 'done',
-  'rejected': 'rejected',
+  done: 'done',
+  rejected: 'rejected',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -46,15 +46,15 @@ export class JobsService {
 
   getCustomerJobs(customerId: number | string): Observable<JobDto[]> {
     return this.http.get<ApiListResponse<any>>(`${this.base}/customer/${customerId}`).pipe(
-      map(response => this.extractList(response)),
-      map(items => items.map(item => this.normalizeJob(item))),
+      map((response) => this.extractList(response)),
+      map((items) => items.map((item) => this.normalizeJob(item))),
     );
   }
 
   getCraftsmanJobs(craftsmanId: number | string): Observable<JobDto[]> {
     return this.http.get<ApiListResponse<any>>(`${this.base}/craftsman/${craftsmanId}`).pipe(
-      map(response => this.extractList(response)),
-      map(items => items.map(item => this.normalizeJob(item))),
+      map((response) => this.extractList(response)),
+      map((items) => items.map((item) => this.normalizeJob(item))),
     );
   }
 
@@ -120,7 +120,10 @@ export class JobsService {
       return response[0] ?? null;
     }
 
-    if (typeof response === 'object' && ('item' in response || 'data' in response || 'result' in response || 'job' in response)) {
+    if (
+      typeof response === 'object' &&
+      ('item' in response || 'data' in response || 'result' in response || 'job' in response)
+    ) {
       return response.item ?? response.data ?? response.result ?? response.job ?? null;
     }
 

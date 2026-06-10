@@ -1,36 +1,27 @@
 <div class="jobs-page">
-  <!-- Stats Row -->
   <div class="stats-grid">
     <div class="stat-card stat-card--gradient">
       <div class="stat-card__top">
-        <span class="growth-badge">+12%</span>
         <div class="stat-card__icon"><span class="material-symbols-outlined" style="font-size:28px;line-height:1">calendar_today</span></div>
       </div>
-      <div class="stat-card__value">{{ 1248 | number }}</div>
+      <div class="stat-card__value">{{ (jobsAnalytics()?.totalJobs || 0) | number }}</div>
       <div class="stat-card__label">{{ 'ADMIN.TOTAL_JOBS' | translate }}</div>
-      <div class="stat-card__sublabel">{{ 'ADMIN.LAST_MONTH' | translate }}</div>
     </div>
 
     <div class="stat-card stat-card--white">
       <div class="stat-card__icon-row">
-        <div class="stat-card__value">{{ 342 | number }}</div>
+        <div class="stat-card__value">{{ (jobsAnalytics()?.inProgress || 0) | number }}</div>
         <div class="stat-card__icon"><span class="material-symbols-outlined" style="font-size:28px;line-height:1">settings</span></div>
       </div>
       <div class="stat-card__label">{{ 'ADMIN.IN_PROGRESS' | translate }}</div>
-      <div class="stat-card__progress">
-        <div class="progress-bar progress-bar--orange" style="width:27%"></div>
-      </div>
     </div>
 
     <div class="stat-card stat-card--white">
       <div class="stat-card__icon-row">
-        <div class="stat-card__value">{{ 856 | number }}</div>
+        <div class="stat-card__value">{{ (jobsAnalytics()?.completed || 0) | number }}</div>
         <div class="stat-card__icon"><span class="material-symbols-outlined" style="font-size:28px;line-height:1">check_circle</span></div>
       </div>
       <div class="stat-card__label">{{ 'ADMIN.COMPLETED' | translate }}</div>
-      <div class="stat-card__progress">
-        <div class="progress-bar progress-bar--gradient" style="width:68%"></div>
-      </div>
     </div>
 
     <div class="stat-card stat-card--danger">
@@ -38,31 +29,29 @@
         <div class="stat-card__label">{{ 'ADMIN.DISPUTED' | translate }}</div>
         <div class="stat-card__icon stat-card__icon--warning"><span class="material-symbols-outlined" style="font-size:28px;line-height:1;color:var(--error)">warning</span></div>
       </div>
-      <div class="stat-card__value stat-card__value--red">{{ 12 | number }}</div>
-      <span class="review-badge">{{ 'ADMIN.REVIEW' | translate }}</span>
+      <div class="stat-card__value stat-card__value--red">{{ (jobsAnalytics()?.disputed || 0) | number }}</div>
       <div class="stat-card__sublabel stat-card__sublabel--red">{{ 'ADMIN.REQUIRES_ATTENTION' | translate }}</div>
     </div>
   </div>
 
-  <!-- Filter/Action Row -->
   <div class="filter-row">
     <div class="tabs-group">
       <button class="filter-tab" [class.active]="activeTab() === 'all'" (click)="setTab('all')">{{ 'ALL' | translate }}</button>
       <button class="filter-tab" [class.active]="activeTab() === 'open'" (click)="setTab('open')">{{ 'OPEN' | translate }}</button>
       <button class="filter-tab" [class.active]="activeTab() === 'in-progress'" (click)="setTab('in-progress')">{{ 'ADMIN.IN_PROGRESS' | translate }}</button>
-      <button class="filter-tab" [class.active]="activeTab() === 'done'" (click)="setTab('done')">{{ 'ADMIN.COMPLETED' | translate }}</button>
+      <button class="filter-tab" [class.active]="activeTab() === 'completed'" (click)="setTab('completed')">{{ 'ADMIN.COMPLETED' | translate }}</button>
       <button class="filter-tab filter-tab--danger" [class.active]="activeTab() === 'disputed'" (click)="setTab('disputed')">
-        <span class="dispute-badge">12</span>
+        <span class="dispute-badge">{{ disputedCount }}</span>
         {{ 'ADMIN.DISPUTED' | translate }}
       </button>
     </div>
     <div class="action-btns">
-      <button class="btn-filter">{{ 'ADMIN.FILTER' | translate }} ▼</button>
+      <input type="date" class="filter-date-input" [value]="fromDate()" (change)="fromDate.set($any($event.target).value); onDateChange()" title="من تاريخ" />
+      <input type="date" class="filter-date-input" [value]="toDate()" (change)="toDate.set($any($event.target).value); onDateChange()" title="إلى تاريخ" />
       <button class="btn-export gradient-btn" (click)="exportJobs()">↑ {{ 'ADMIN.EXPORT' | translate }}</button>
     </div>
   </div>
 
-  <!-- Table -->
   <div class="harfi-card table-card">
     @if (loading()) {
       <div class="skeleton-table">
@@ -70,7 +59,7 @@
           <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
         }
       </div>
-    } @else if (jobs().length === 0) {
+    } @else if (filteredJobs.length === 0) {
       <div class="empty-state">
         <p>{{ 'NO_DATA' | translate }}</p>
       </div>
@@ -90,13 +79,13 @@
             </tr>
           </thead>
           <tbody>
-            @for (job of jobs(); track job.id) {
-              <tr [class.row--disputed]="job.hasDispute">
-                <td class="order-id-cell">{{ job.id }}</td>
+            @for (job of filteredJobs; track job.id) {
+              <tr [class.row--disputed]="job.isDisputed">
+                <td class="order-id-cell">{{ job.id | jobId }}</td>
                 <td>
                   <div class="person-cell">
-                    <div class="avatar-sm">{{ job.clientName.charAt(0) }}</div>
-                    <span>{{ job.clientName }}</span>
+                    <div class="avatar-sm">{{ job.customerName.charAt(0) }}</div>
+                    <span>{{ job.customerName }}</span>
                   </div>
                 </td>
                 <td>
@@ -105,40 +94,54 @@
                     <span>{{ job.craftsmanName }}</span>
                   </div>
                 </td>
-                <td><span class="harfi-chip">{{ job.service }}</span></td>
-                <td>{{ job.city }}</td>
-                <td>{{ job.date }}</td>
+                <td><span class="harfi-chip">{{ job.serviceType }}</span></td>
+                <td>{{ parseCity(job.address) }}</td>
+                <td>{{ job.createdAt | date:'d MMM, HH:mm' }}</td>
                 <td>
-                  @if (job.hasDispute) {
-                    <span class="status-badge rejected">{{ 'ADMIN.DISPUTED' | translate }}</span>
-                  } @else {
-                    <span class="status-badge {{ getStatusClass(job.status) }}">{{ getStatusLabel(job.status) | translate }}</span>
-                  }
+                  <span class="status-badge {{ getStatusClass(job.status) }}"><span class="dot"></span> {{ getStatusLabel(job.status) | translate }}</span>
                 </td>
                 <td>
-                  @if (job.hasDispute) {
-                    <button class="btn-resolve" (click)="resolveDispute(job.id)">{{ 'ADMIN.RESOLVE_DISPUTE' | translate }}</button>
-                  } @else {
-                    <button class="action-icon-btn" title="{{ 'VIEW' | translate }}"><span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span></button>
-                  }
+                  <div class="action-btns">
+                    <button class="action-icon-btn" (click)="viewJob(job.id)" title="{{ 'VIEW' | translate }}">
+                      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">visibility</span>
+                    </button>
+                    @if (job.isDisputed) {
+                      <button class="btn-resolve" (click)="openResolveDialog(job.id)">{{ 'ADMIN.RESOLVE_DISPUTE' | translate }}</button>
+                    }
+                  </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
-
-      <!-- Pagination -->
-      <div class="pagination-row">
-        <span class="pagination-info">{{ 'SHOWING' | translate }} {{ startEntry | number }}-{{ endEntry | number }} {{ 'OF' | translate }} {{ total() | number }} {{ 'ADMIN.JOBS' | translate }}</span>
-        <div class="pagination-btns">
-          <button class="page-btn" [disabled]="page() <= 1" (click)="changePage(page() - 1)">‹</button>
-          @for (p of [].constructor(totalPages); track $index) {
-            <button class="page-btn" [class.active]="page() === $index + 1" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
-          }
-          <button class="page-btn" [disabled]="page() >= totalPages" (click)="changePage(page() + 1)">›</button>
-        </div>
-      </div>
     }
   </div>
 </div>
+
+@if (dialogVisible()) {
+  <div class="modal-overlay" (click)="dialogVisible.set(false)">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.RESOLVE_DISPUTE' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.RESOLUTION' | translate }}</label>
+          <textarea class="form-textarea" [(ngModel)]="resolution" rows="3" [placeholder]="'ADMIN.RESOLUTION' | translate"></textarea>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">{{ 'ADMIN.FAVORED_PARTY' | translate }}</label>
+          <select class="filter-select" [(ngModel)]="favoredParty" style="width:100%">
+            <option value="customer">{{ 'ADMIN.FAVOR_CUSTOMER' | translate }}</option>
+            <option value="craftsman">{{ 'ADMIN.FAVOR_CRAFTSMAN' | translate }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="dialogVisible.set(false)">{{ 'CANCEL' | translate }}</button>
+        <button class="btn-primary" (click)="resolveDispute()" [disabled]="!resolution().trim()">{{ 'ADMIN.RESOLVE_DISPUTE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}

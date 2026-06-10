@@ -43,16 +43,16 @@ export class JobListComponent implements OnInit {
   readonly visibleJobs = computed(() => {
     const jobs = this.jobs();
     const tab = this.activeTab();
-    return tab === 'all' ? jobs : jobs.filter(job => job.status === tab);
+    return tab === 'all' ? jobs : jobs.filter((job) => job.status === tab);
   });
   readonly counts = computed(() => {
     const jobs = this.jobs();
     return {
       all: jobs.length,
-      open: jobs.filter(job => job.status === 'open').length,
-      progress: jobs.filter(job => job.status === 'in-progress').length,
-      done: jobs.filter(job => job.status === 'done').length,
-      rejected: jobs.filter(job => job.status === 'rejected').length,
+      open: jobs.filter((job) => job.status === 'open').length,
+      progress: jobs.filter((job) => job.status === 'in-progress').length,
+      done: jobs.filter((job) => job.status === 'done').length,
+      rejected: jobs.filter((job) => job.status === 'rejected').length,
     };
   });
 
@@ -61,8 +61,10 @@ export class JobListComponent implements OnInit {
   }
 
   loadJobs(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) {
+    const id = this.isCraftsman()
+      ? this.authService.getCraftsmanId()
+      : this.authService.getUserId();
+    if (!id) {
       this.jobs.set([]);
       this.loading.set(false);
       return;
@@ -70,8 +72,8 @@ export class JobListComponent implements OnInit {
 
     this.loading.set(true);
     const request = this.isCraftsman()
-      ? this.jobsService.getCraftsmanJobs(userId)
-      : this.jobsService.getCustomerJobs(userId);
+      ? this.jobsService.getCraftsmanJobs(id)
+      : this.jobsService.getCustomerJobs(id);
 
     request.subscribe({
       next: (items) => {
@@ -177,13 +179,13 @@ export class JobListComponent implements OnInit {
       moving: 'SERVICES.MOVING',
       pest: 'SERVICES.PEST',
       roofing: 'SERVICES.ROOFING',
-      'سباك': 'SERVICES.PLUMBING',
-      'كهربائي': 'SERVICES.ELECTRICAL',
-      'نجار': 'SERVICES.CARPENTRY',
-      'نقاش': 'SERVICES.PAINTING',
-      'تكييف': 'SERVICES.AC',
-      'نظافة': 'SERVICES.CLEANING',
-      'نقل': 'SERVICES.MOVING',
+      سباك: 'SERVICES.PLUMBING',
+      كهربائي: 'SERVICES.ELECTRICAL',
+      نجار: 'SERVICES.CARPENTRY',
+      نقاش: 'SERVICES.PAINTING',
+      تكييف: 'SERVICES.AC',
+      نظافة: 'SERVICES.CLEANING',
+      نقل: 'SERVICES.MOVING',
       'مكافحة حشرات': 'SERVICES.PEST',
     };
 
@@ -217,23 +219,23 @@ export class JobListComponent implements OnInit {
   getServiceIcon(service: string): string {
     if (!service) return 'handyman';
     const iconMap: Record<string, string> = {
-      'سباك': 'plumbing',
-      'كهربائي': 'electrical_services',
-      'نجار': 'carpenter',
-      'نقاش': 'format_paint',
-      'تكييف': 'ac_unit',
-      'نظافة': 'cleaning_services',
-      'نقل': 'local_shipping',
+      سباك: 'plumbing',
+      كهربائي: 'electrical_services',
+      نجار: 'carpenter',
+      نقاش: 'format_paint',
+      تكييف: 'ac_unit',
+      نظافة: 'cleaning_services',
+      نقل: 'local_shipping',
       'مكافحة حشرات': 'pest_control',
-      'plumbing': 'plumbing',
-      'electrical': 'electrical_services',
-      'carpentry': 'carpenter',
-      'painting': 'format_paint',
-      'ac': 'ac_unit',
-      'cleaning': 'cleaning_services',
-      'moving': 'local_shipping',
-      'pest': 'pest_control',
-      'roofing': 'roofing',
+      plumbing: 'plumbing',
+      electrical: 'electrical_services',
+      carpentry: 'carpenter',
+      painting: 'format_paint',
+      ac: 'ac_unit',
+      cleaning: 'cleaning_services',
+      moving: 'local_shipping',
+      pest: 'pest_control',
+      roofing: 'roofing',
     };
     return iconMap[service.toLowerCase()] ?? iconMap[service] ?? 'handyman';
   }

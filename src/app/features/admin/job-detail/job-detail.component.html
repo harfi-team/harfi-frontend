@@ -1,0 +1,267 @@
+<div class="detail-page">
+  <button class="back-btn" (click)="goBack()">
+    <span class="material-symbols-outlined">arrow_back</span>
+    {{ 'BACK' | translate }}
+  </button>
+
+  @if (loading()) {
+    <div class="skeleton-detail">
+      <div class="skeleton" style="height:200px;border-radius:var(--radius-lg);margin-bottom:16px"></div>
+      <div class="skeleton" style="height:120px;border-radius:var(--radius-lg)"></div>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <span class="material-symbols-outlined empty-icon">error_outline</span>
+      <p>{{ 'ERROR_LOADING' | translate }}</p>
+      <button class="btn btn-primary" (click)="goBack()">{{ 'BACK' | translate }}</button>
+    </div>
+  } @else if (job(); as j) {
+    <div class="detail-grid">
+      <div class="harfi-card info-card">
+        <h3 class="section-title">{{ 'ADMIN.JOB_INFO' | translate }}</h3>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="field-label">{{ 'ORDER_ID' | translate }}</span>
+            <span class="field-value order-id">#{{ j.id }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'STATUS' | translate }}</span>
+            <span class="status-badge {{ getStatusClass(j.status) }}">{{ getStatusLabel(j.status) | translate }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'SERVICE' | translate }}</span>
+            <span class="field-value harfi-chip">{{ j.serviceType }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'CLIENT' | translate }}</span>
+            <div class="person-cell">
+              <div class="avatar-sm">{{ j.customerName.charAt(0) }}</div>
+              <span>{{ j.customerName }}</span>
+            </div>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'CRAFTSMAN' | translate }}</span>
+            <div class="person-cell">
+              <div class="avatar-sm">{{ j.craftsmanName.charAt(0) }}</div>
+              <span>{{ j.craftsmanName }}</span>
+            </div>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADDRESS' | translate }}</span>
+            <span class="field-value">{{ parseAddress(j.address) }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.PREFERRED_DATE' | translate }}</span>
+            <span class="field-value">{{ (j.preferredDate | date:'d MMM, y h:mm a') || '—' }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.CREATED_AT' | translate }}</span>
+            <span class="field-value">{{ j.createdAt | date:'d MMM, y h:mm a' }}</span>
+          </div>
+          @if (j.completedAt) {
+            <div class="info-field">
+              <span class="field-label">{{ 'ADMIN.COMPLETED_AT' | translate }}</span>
+              <span class="field-value">{{ j.completedAt | date:'d MMM, y h:mm a' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="harfi-card desc-card">
+        <h3 class="section-title">{{ 'ADMIN.JOB_DESCRIPTION' | translate }}</h3>
+        <div class="desc-section">
+          <div class="info-field" style="margin-bottom:12px">
+            <span class="field-label">{{ 'ADMIN.PROBLEM_DESCRIPTION' | translate }}</span>
+            <p class="desc-text">{{ j.problemDescription || j.description || '—' }}</p>
+          </div>
+          @if (j.problemImageUrl) {
+            <div class="info-field">
+              <span class="field-label">{{ 'ADMIN.PROBLEM_IMAGE' | translate }}</span>
+              <a [href]="j.problemImageUrl" target="_blank" class="link-btn">
+                <span class="material-symbols-outlined" style="font-size:16px;line-height:1">image</span>
+                {{ 'ADMIN.VIEW_IMAGE' | translate }}
+              </a>
+            </div>
+          }
+          @if (j.solutionDescription) {
+            <div class="info-field" style="margin-top:12px">
+              <span class="field-label">{{ 'ADMIN.SOLUTION_DESCRIPTION' | translate }}</span>
+              <p class="desc-text">{{ j.solutionDescription }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (j.isDisputed) {
+      <div class="harfi-card dispute-card">
+        <div class="dispute-header">
+          <span class="material-symbols-outlined dispute-icon">warning</span>
+          <h3 class="section-title" style="margin:0;border:none;padding:0">{{ 'ADMIN.DISPUTE_INFO' | translate }}</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.DISPUTE_RAISED_AT' | translate }}</span>
+            <span class="field-value">{{ (j.disputeRaisedAt | date:'d MMM, y h:mm a') || '—' }}</span>
+          </div>
+          @if (j.disputeResolvedAt) {
+            <div class="info-field">
+              <span class="field-label">{{ 'ADMIN.DISPUTE_RESOLVED_AT' | translate }}</span>
+              <span class="field-value">{{ j.disputeResolvedAt | date:'d MMM, y h:mm a' }}</span>
+            </div>
+          }
+          @if (j.disputeResolution) {
+            <div class="info-field info-field--full">
+              <span class="field-label">{{ 'ADMIN.DISPUTE_RESOLUTION' | translate }}</span>
+              <span class="field-value">{{ j.disputeResolution }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="action-section">
+      <button class="btn btn-action btn-outline" (click)="openStatusDialog()">
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">update</span>
+        {{ 'ADMIN.UPDATE_STATUS' | translate }}
+      </button>
+      @if (!j.isDisputed) {
+        <button class="btn btn-action btn-flag" (click)="openFlagDialog()">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">flag</span>
+          {{ 'ADMIN.FLAG_DISPUTE' | translate }}
+        </button>
+      }
+      @if (j.isDisputed && !j.disputeResolvedAt) {
+        <button class="btn btn-action btn-resolve-action" (click)="openResolveDialog()">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+          {{ 'ADMIN.RESOLVE_DISPUTE' | translate }}
+        </button>
+      }
+      <button class="btn btn-action btn-chat" (click)="loadChat(j.id)">
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">chat</span>
+        {{ showChat() ? ('ADMIN.HIDE_CHAT' | translate) : ('ADMIN.VIEW_CHAT' | translate) }}
+      </button>
+    </div>
+
+    @if (showChat()) {
+      <div class="harfi-card chat-card">
+        <h3 class="section-title">
+          {{ 'ADMIN.CHAT_CONVERSATION' | translate }}
+          @if (chatMetadata(); as m) {
+            <span class="chat-meta">({{ m.customerName }} & {{ m.craftsmanName }} — {{ m.messageCount }} {{ 'ADMIN.MESSAGES' | translate }})</span>
+          }
+        </h3>
+        @if (loadingChat()) {
+          <div class="skeleton-table">
+            @for (_ of [1,2,3]; track _) {
+              <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+            }
+          </div>
+        } @else if (chatMessages().length === 0) {
+          <div class="empty-state">
+            <p>{{ 'NO_DATA' | translate }}</p>
+          </div>
+        } @else {
+          <div class="chat-messages">
+            @for (msg of chatMessages(); track msg.id) {
+              <div class="chat-msg" [class.chat-msg--customer]="msg.senderId === j.customerId" [class.chat-msg--craftsman]="msg.senderId !== j.customerId">
+                <div class="chat-msg-header">
+                  <div class="avatar-xs">{{ msg.senderName.charAt(0) }}</div>
+                  <span class="chat-sender">{{ msg.senderName }}</span>
+                  <span class="chat-time">{{ msg.sentAt | date:'d MMM, h:mm a' }}</span>
+                </div>
+                <div class="chat-msg-body">{{ msg.content }}</div>
+                @if (!msg.isRead) {
+                  <span class="chat-unread">{{ 'ADMIN.UNREAD' | translate }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+@if (statusDialogVisible()) {
+  <div class="modal-overlay" (click)="statusDialogVisible.set(false)">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.UPDATE_STATUS' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.NEW_STATUS' | translate }} <span class="required">*</span></label>
+          <select class="form-select" [(ngModel)]="newStatus">
+            <option value="">{{ 'ADMIN.SELECT_STATUS' | translate }}</option>
+            <option value="open">{{ 'OPEN' | translate }}</option>
+            <option value="in_progress">{{ 'ADMIN.IN_PROGRESS' | translate }}</option>
+            <option value="completed">{{ 'ADMIN.COMPLETED' | translate }}</option>
+            <option value="cancelled">{{ 'ADMIN.CANCELLED' | translate }}</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">{{ 'ADMIN.JUSTIFICATION' | translate }} <span class="required">*</span></label>
+          <textarea class="form-textarea" [(ngModel)]="statusJustification" rows="3" [placeholder]="'ADMIN.JUSTIFICATION_PLACEHOLDER' | translate"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="statusDialogVisible.set(false)">{{ 'CANCEL' | translate }}</button>
+        <button class="btn-primary" (click)="confirmStatusUpdate()" [disabled]="submitted() || !newStatus() || !statusJustification().trim()">
+          {{ 'ADMIN.CONFIRM' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (flagDialogVisible()) {
+  <div class="modal-overlay" (click)="flagDialogVisible.set(false)">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.FLAG_DISPUTE' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.FLAG_REASON' | translate }} <span class="required">*</span></label>
+          <textarea class="form-textarea" [(ngModel)]="flagReason" rows="3" [placeholder]="'ADMIN.FLAG_REASON_PLACEHOLDER' | translate"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="flagDialogVisible.set(false)">{{ 'CANCEL' | translate }}</button>
+        <button class="btn-primary" (click)="confirmFlagDispute()" [disabled]="submitted() || !flagReason().trim()">
+          {{ 'ADMIN.CONFIRM_FLAG' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (resolveDialogVisible()) {
+  <div class="modal-overlay" (click)="resolveDialogVisible.set(false)">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ 'ADMIN.RESOLVE_DISPUTE' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">{{ 'ADMIN.RESOLUTION' | translate }} <span class="required">*</span></label>
+          <textarea class="form-textarea" [(ngModel)]="resolution" rows="3" [placeholder]="'ADMIN.RESOLUTION_PLACEHOLDER' | translate"></textarea>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">{{ 'ADMIN.FAVORED_PARTY' | translate }}</label>
+          <select class="form-select" [(ngModel)]="favoredParty">
+            <option value="customer">{{ 'ADMIN.FAVOR_CUSTOMER' | translate }}</option>
+            <option value="craftsman">{{ 'ADMIN.FAVOR_CRAFTSMAN' | translate }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="resolveDialogVisible.set(false)">{{ 'CANCEL' | translate }}</button>
+        <button class="btn-primary" (click)="confirmResolveDispute()" [disabled]="submitted() || !resolution().trim()">
+          {{ 'ADMIN.CONFIRM_RESOLVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

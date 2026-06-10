@@ -19,6 +19,7 @@ export interface AuthResponseDto {
   refreshToken: string;
   expiresAt: string;
   user: UserInfoDto;
+  requiresPhoneVerification?: boolean;
 }
 
 export interface UserInfoDto {
@@ -28,6 +29,7 @@ export interface UserInfoDto {
   role: string;
   phone: string;
   profileImageUrl: string;
+  craftsmanId?: number;
 }
 
 export interface RefreshTokenRequestDto {
@@ -44,17 +46,14 @@ export interface ResendCodeDto {
 }
 
 export interface SendPhoneVerificationDto {
-  email: string;
   phoneNumber: string;
 }
 
 export interface VerifyPhoneDto {
-  email: string;
   phoneNumber: string;
   code: string;
 }
 
 export interface ResendPhoneCodeDto {
-  email: string;
   phoneNumber: string;
 }

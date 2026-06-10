@@ -2,7 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CraftsmanDto, CraftsmanSearchParams, CraftsmanServiceSlug } from '../../core/models/craftsman.models';
+import {
+  CraftsmanDto,
+  CraftsmanSearchParams,
+  CraftsmanServiceSlug,
+} from '../../core/models/craftsman.models';
 
 @Injectable({ providedIn: 'root' })
 export class CraftsmanService {
@@ -10,20 +14,20 @@ export class CraftsmanService {
   private base = `${environment.apiBaseUrl}/craftsmen`;
 
   private readonly slugToArabic: Record<string, string> = {
-    plumbing:   'سباك',
+    plumbing: 'سباك',
     electrical: 'كهربائي',
-    carpentry:  'نجار',
-    painting:   'نقاش',
-    ac:         'فني تكييف',
-    cleaning:   'تنظيف',
-    moving:     'نقل',
-    pest:       'مكافحة حشرات',
-    roofing:    'عزل',
+    carpentry: 'نجار',
+    painting: 'نقاش',
+    ac: 'فني تكييف',
+    cleaning: 'تنظيف',
+    moving: 'نقل',
+    pest: 'مكافحة حشرات',
+    roofing: 'عزل',
   };
 
   getCraftsman(id: string): Observable<CraftsmanDto | null> {
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
-      map(response => this.normalizeCraftsman(response)),
+      map((response) => this.normalizeCraftsman(response)),
       catchError(() => of(null)),
     );
   }
@@ -35,12 +39,14 @@ export class CraftsmanService {
       httpParams = httpParams.set('serviceType', arabicType);
     }
     if (params.city) httpParams = httpParams.set('city', params.city);
-    if (params.minRating !== undefined && params.minRating !== '') httpParams = httpParams.set('minRating', params.minRating);
-    if (params.minExperience !== undefined && params.minExperience !== '') httpParams = httpParams.set('minExperience', params.minExperience);
+    if (params.minRating !== undefined && params.minRating !== '')
+      httpParams = httpParams.set('minRating', params.minRating);
+    if (params.minExperience !== undefined && params.minExperience !== '')
+      httpParams = httpParams.set('minExperience', params.minExperience);
 
     return this.http.get<unknown>(`${this.base}/search`, { params: httpParams }).pipe(
-      map(response => this.extractList(response).map(item => this.normalizeCraftsman(item))),
-      map(items => params.search ? this.filterBySearch(items, params.search) : items),
+      map((response) => this.extractList(response).map((item) => this.normalizeCraftsman(item))),
+      map((items) => (params.search ? this.filterBySearch(items, params.search) : items)),
       catchError(() => of([])),
     );
   }
@@ -72,23 +78,51 @@ export class CraftsmanService {
   private normalizeCraftsman(item: unknown): CraftsmanDto {
     const typed = (item ?? {}) as Record<string, unknown>;
     const services = this.normalizeServices(typed);
-    const priceMin = this.pickNumber(typed, ['priceRangeMin', 'PriceRangeMin', 'priceMin', 'minPrice']);
-    const priceMax = this.pickNumber(typed, ['priceRangeMax', 'PriceRangeMax', 'priceMax', 'maxPrice']);
-    const experienceYears = this.pickNumber(typed, ['experience', 'Experience', 'experienceYears', 'ExperienceYears']) ?? 0;
-    const reviewsCount = this.pickNumber(typed, ['reviewsCount', 'ReviewsCount', 'reviewCount', 'ReviewCount']) ?? 0;
+    const priceMin = this.pickNumber(typed, [
+      'priceRangeMin',
+      'PriceRangeMin',
+      'priceMin',
+      'minPrice',
+    ]);
+    const priceMax = this.pickNumber(typed, [
+      'priceRangeMax',
+      'PriceRangeMax',
+      'priceMax',
+      'maxPrice',
+    ]);
+    const experienceYears =
+      this.pickNumber(typed, ['experience', 'Experience', 'experienceYears', 'ExperienceYears']) ??
+      0;
+    const reviewsCount =
+      this.pickNumber(typed, ['reviewsCount', 'ReviewsCount', 'reviewCount', 'ReviewCount']) ?? 0;
     const rating = this.pickNumber(typed, ['rating', 'Rating']) ?? 0;
 
     return {
       id: String(typed['id'] ?? typed['Id'] ?? typed['craftsmanId'] ?? typed['CraftsmanId'] ?? ''),
       name: String(typed['fullName'] ?? typed['FullName'] ?? typed['name'] ?? typed['Name'] ?? ''),
       city: String(typed['city'] ?? typed['City'] ?? ''),
-      specialty: String(typed['serviceType'] ?? typed['ServiceType'] ?? typed['specialty'] ?? typed['Specialty'] ?? ''),
+      specialty: String(
+        typed['serviceType'] ??
+          typed['ServiceType'] ??
+          typed['specialty'] ??
+          typed['Specialty'] ??
+          '',
+      ),
       services,
       rating,
       reviewsCount,
       experienceYears,
-      bio: String(typed['bio'] ?? typed['Bio'] ?? typed['description'] ?? typed['Description'] ?? ''),
-      avatarUrl: this.pickString(typed, ['profileImageUrl', 'ProfileImageUrl', 'avatarUrl', 'AvatarUrl', 'imageUrl', 'ImageUrl']),
+      bio: String(
+        typed['bio'] ?? typed['Bio'] ?? typed['description'] ?? typed['Description'] ?? '',
+      ),
+      avatarUrl: this.pickString(typed, [
+        'profileImageUrl',
+        'ProfileImageUrl',
+        'avatarUrl',
+        'AvatarUrl',
+        'imageUrl',
+        'ImageUrl',
+      ]),
       priceMin: priceMin ?? undefined,
       priceMax: priceMax ?? undefined,
       minPrice: priceMin ?? undefined,
@@ -111,7 +145,7 @@ export class CraftsmanService {
           ];
 
     return values
-      .map(value => this.normalizeServiceSlug(value))
+      .map((value) => this.normalizeServiceSlug(value))
       .filter((value): value is CraftsmanServiceSlug => Boolean(value));
   }
 
@@ -121,31 +155,31 @@ export class CraftsmanService {
     const normalized = value.trim().toLowerCase();
     const map: Record<string, CraftsmanServiceSlug> = {
       plumbing: 'plumbing',
-      'سباكة': 'plumbing',
-      'سباك': 'plumbing',
+      سباكة: 'plumbing',
+      سباك: 'plumbing',
       electrical: 'electrical',
       electricity: 'electrical',
-      'كهرباء': 'electrical',
-      'كهربائي': 'electrical',
+      كهرباء: 'electrical',
+      كهربائي: 'electrical',
       carpentry: 'carpentry',
       carpenter: 'carpentry',
-      'نجارة': 'carpentry',
-      'نجار': 'carpentry',
+      نجارة: 'carpentry',
+      نجار: 'carpentry',
       painting: 'painting',
       painter: 'painting',
-      'دهان': 'painting',
-      'دهانات': 'painting',
-      'دهانة': 'painting',
-      'نقاش': 'painting',
+      دهان: 'painting',
+      دهانات: 'painting',
+      دهانة: 'painting',
+      نقاش: 'painting',
       ac: 'ac',
       'ac repair': 'ac',
-      'تكييف': 'ac',
-      'مكيفات': 'ac',
+      تكييف: 'ac',
+      مكيفات: 'ac',
       'فني تكييف': 'ac',
       cleaning: 'cleaning',
-      'تنظيف': 'cleaning',
+      تنظيف: 'cleaning',
       moving: 'moving',
-      'نقل': 'moving',
+      نقل: 'moving',
       'نقل عفش': 'moving',
       pest: 'pest',
       'pest control': 'pest',
@@ -153,7 +187,7 @@ export class CraftsmanService {
       roofing: 'roofing',
       'عزل أسطح': 'roofing',
       'عزل اسطح': 'roofing',
-      'عزل': 'roofing',
+      عزل: 'roofing',
     };
 
     return map[normalized] ?? '';
@@ -161,7 +195,7 @@ export class CraftsmanService {
 
   private filterBySearch(items: CraftsmanDto[], search: string): CraftsmanDto[] {
     const term = search.toLowerCase();
-    return items.filter(item =>
+    return items.filter((item) =>
       [item.name, item.specialty, item.bio].join(' ').toLowerCase().includes(term),
     );
   }

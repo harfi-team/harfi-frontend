@@ -46,16 +46,26 @@ export class HomeComponent implements OnInit {
   }
 
   services: Service[] = [
-    { icon: 'plumbing',            labelKey: 'SERVICES.PLUMBING',    variant: 'primary',   slug: 'plumbing' },
-    { icon: 'electrical_services', labelKey: 'SERVICES.ELECTRICAL',  variant: 'secondary', slug: 'electrical' },
-    { icon: 'carpenter',           labelKey: 'SERVICES.CARPENTRY',   variant: 'tertiary',  slug: 'carpentry' },
-    { icon: 'format_paint',        labelKey: 'SERVICES.PAINTING',    variant: 'neutral',   slug: 'painting' },
-    { icon: 'ac_unit',             labelKey: 'SERVICES.AC',          variant: 'primary',   slug: 'ac' },
-    { icon: 'cleaning_services',   labelKey: 'SERVICES.CLEANING',    variant: 'error',     slug: 'cleaning' },
-    { icon: 'local_shipping',      labelKey: 'SERVICES.MOVING',      variant: 'secondary', slug: 'moving' },
-    { icon: 'pest_control',        labelKey: 'SERVICES.PEST',        variant: 'tertiary',  slug: 'pest' },
-    { icon: 'roofing',             labelKey: 'SERVICES.ROOFING',     variant: 'primary',   slug: 'roofing' },
-    { icon: 'more_horiz',          labelKey: 'SERVICES.MORE',        variant: 'neutral',   slug: '' },
+    { icon: 'plumbing', labelKey: 'SERVICES.PLUMBING', variant: 'primary', slug: 'plumbing' },
+    {
+      icon: 'electrical_services',
+      labelKey: 'SERVICES.ELECTRICAL',
+      variant: 'secondary',
+      slug: 'electrical',
+    },
+    { icon: 'carpenter', labelKey: 'SERVICES.CARPENTRY', variant: 'tertiary', slug: 'carpentry' },
+    { icon: 'format_paint', labelKey: 'SERVICES.PAINTING', variant: 'neutral', slug: 'painting' },
+    { icon: 'ac_unit', labelKey: 'SERVICES.AC', variant: 'primary', slug: 'ac' },
+    {
+      icon: 'cleaning_services',
+      labelKey: 'SERVICES.CLEANING',
+      variant: 'error',
+      slug: 'cleaning',
+    },
+    { icon: 'local_shipping', labelKey: 'SERVICES.MOVING', variant: 'secondary', slug: 'moving' },
+    { icon: 'pest_control', labelKey: 'SERVICES.PEST', variant: 'tertiary', slug: 'pest' },
+    { icon: 'roofing', labelKey: 'SERVICES.ROOFING', variant: 'primary', slug: 'roofing' },
+    { icon: 'more_horiz', labelKey: 'SERVICES.MORE', variant: 'neutral', slug: '' },
   ];
 
   ngOnInit(): void {
@@ -64,16 +74,16 @@ export class HomeComponent implements OnInit {
   }
 
   loadRecentOrders(): void {
-    const userId = this.auth.getUserId();
-    if (!userId) {
+    const id = this.isCraftsman ? this.auth.getCraftsmanId() : this.auth.getUserId();
+    if (!id) {
       this.recentOrders.set([]);
       return;
     }
 
     this.loadingOrders.set(true);
     const request = this.isCraftsman
-      ? this.jobsService.getCraftsmanJobs(userId)
-      : this.jobsService.getCustomerJobs(userId);
+      ? this.jobsService.getCraftsmanJobs(id)
+      : this.jobsService.getCustomerJobs(id);
 
     request.subscribe({
       next: (jobs) => {
@@ -112,22 +122,22 @@ export class HomeComponent implements OnInit {
   getServiceIcon(serviceType: string): string {
     if (!serviceType) return 'handyman';
     const iconMap: Record<string, string> = {
-      'سباك': 'plumbing',
-      'كهربائي': 'electrical_services',
-      'نجار': 'carpenter',
-      'نقاش': 'format_paint',
-      'تكييف': 'ac_unit',
-      'نظافة': 'cleaning_services',
-      'نقل': 'local_shipping',
+      سباك: 'plumbing',
+      كهربائي: 'electrical_services',
+      نجار: 'carpenter',
+      نقاش: 'format_paint',
+      تكييف: 'ac_unit',
+      نظافة: 'cleaning_services',
+      نقل: 'local_shipping',
       'مكافحة حشرات': 'pest_control',
-      'plumbing': 'plumbing',
-      'electrical': 'electrical_services',
-      'carpentry': 'carpenter',
-      'painting': 'format_paint',
-      'ac': 'ac_unit',
-      'cleaning': 'cleaning_services',
-      'moving': 'local_shipping',
-      'pest': 'pest_control',
+      plumbing: 'plumbing',
+      electrical: 'electrical_services',
+      carpentry: 'carpenter',
+      painting: 'format_paint',
+      ac: 'ac_unit',
+      cleaning: 'cleaning_services',
+      moving: 'local_shipping',
+      pest: 'pest_control',
     };
     return iconMap[serviceType] ?? 'handyman';
   }

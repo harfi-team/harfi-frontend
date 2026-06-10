@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.harfi.com/api',
-  chatHubUrl: 'https://api.harfi.com/hubs/chat',
-  notificationHubUrl: 'https://api.harfi.com/hubs/notifications',
+  apiBaseUrl: 'http://api.harfi.com/api',
+  chatHubUrl: 'http://api.harfi.com/hubs/chat',
+  notificationHubUrl: 'http://api.harfi.com/hubs/notifications',
 };

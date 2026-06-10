@@ -5,12 +5,14 @@ import { authGuard } from '../../core/guards/auth.guard';
 export const craftsmanRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./search/craftsman-search.component').then(m => m.CraftsmanSearchComponent),
+    loadComponent: () =>
+      import('./search/craftsman-search.component').then((m) => m.CraftsmanSearchComponent),
     canActivate: [authGuard],
   },
   {
     path: ':id',
-    loadComponent: () => import('./profile/craftsman-profile.component').then(m => m.CraftsmanProfileComponent),
+    loadComponent: () =>
+      import('./profile/craftsman-profile.component').then((m) => m.CraftsmanProfileComponent),
     canActivate: [authGuard],
   },
 ];
