@@ -1,0 +1,74 @@
+<div class="notif-container page-content">
+
+  <div class="notif-header">
+    <h2 class="gradient-text">{{ 'NOTIFICATIONS.TITLE' | translate }}</h2>
+
+    <div class="notif-header-actions" *ngIf="notifications().length > 0">
+      <button
+        class="mark-all-btn"
+        type="button"
+        (click)="markAllAsRead()">
+        {{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}
+      </button>
+
+      <button
+        class="clear-all-btn"
+        type="button"
+        (click)="clearAllNotifications()">
+        {{ 'NOTIFICATIONS.CLEAR_ALL' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <app-spinner *ngIf="loading()" />
+
+  <div class="error-msg" *ngIf="errorMessage()">
+    {{ errorMessage() | translate }}
+  </div>
+
+  <div *ngIf="!loading() && notifications().length === 0" class="empty-state">
+    <span class="empty-icon">🔔</span>
+    <p>{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+  </div>
+
+  <div class="notif-list" *ngIf="!loading()">
+    <div
+      class="notif-card harfi-card"
+      *ngFor="let notif of notifications()"
+      [class.unread]="!notif.isRead"
+      (click)="markAsRead(notif)">
+
+      <div class="notif-icon">
+        <span>{{ getNotificationIcon(notif.type) }}</span>
+      </div>
+
+      <div class="notif-content">
+        <p class="notif-title">{{ notif.title }}</p>
+
+        <ng-container *ngIf="getNotificationBodyTranslationKey(notif) as bodyKey; else rawBody">
+          <p class="notif-body notif-body-highlight">{{ bodyKey | translate }}</p>
+        </ng-container>
+        <ng-template #rawBody>
+          <p class="notif-body">{{ getNotificationBodyText(notif) }}</p>
+        </ng-template>
+
+        <span class="notif-time">{{ notif.createdAt | relativeTime }}</span>
+      </div>
+
+      <div class="notif-actions">
+        <div class="unread-dot" *ngIf="!notif.isRead"></div>
+
+        <button
+          class="delete-notif-btn"
+          type="button"
+          (click)="deleteNotification(notif, $event)"
+          [attr.aria-label]="'NOTIFICATIONS.DELETE' | translate"
+          [attr.title]="'NOTIFICATIONS.DELETE' | translate">
+          🗑
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
