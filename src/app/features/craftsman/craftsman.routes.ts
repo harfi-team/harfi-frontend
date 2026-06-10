@@ -1,4 +1,10 @@
 import { Routes } from '@angular/router';
+import { CraftsmanRegisterComponent } from './register/craftsman-register.component';
+import { CraftsmanSearchComponent } from './search/craftsman-search.component';
 
-// Owner: Hadeer — Phase 2: Discovery Engine
-export const craftsmanRoutes: Routes = [];
+export const craftsmanRoutes: Routes = [
+  { path: 'register', component: CraftsmanRegisterComponent },
+  { path: 'search', component: CraftsmanSearchComponent },
+
+  // وممكن بعدين تضيفي مسارات تانية هنا زي السيرش أو البروفايل
+];

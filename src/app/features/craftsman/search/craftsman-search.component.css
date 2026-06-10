@@ -1,0 +1,63 @@
+/* الألوان والدرجات المخصصة لهوية مشروع "حرفي" */
+:root {
+  --brand-purple: #8a2387;
+  --brand-pink: #e94057;
+}
+
+/* تنسيق الخط والروابط القابلة للضغط */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.clickable-title {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.clickable-title:hover {
+  color: #8a2387 !important;
+}
+
+/* تأثير التمرير الخفيف على كروت الحرفيين */
+.craftsman-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.craftsman-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* لون مخصص لعلامة التقييم */
+.text-purple {
+  color: #8a2387;
+}
+
+.border-purple {
+  border-color: #8a2387 !important;
+}
+
+/* تخصيص لون أزرار التدرج اللوني (Gradient) كما في الفيجما */
+.btn-gradient {
+  background: linear-gradient(135deg, #8a2387 0%, #e94057 100%);
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+.btn-gradient:hover {
+  opacity: 0.9;
+  color: white;
+}
+
+/* تنسيق أشرطة التمرير والـ Sliders لتأخذ ثيم المشروع */
+.custom-range::-webkit-slider-thumb {
+  background: #8a2387;
+}
+
+.custom-range::-moz-range-thumb {
+  background: #8a2387;
+}
+
+.custom-range:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(138, 35, 135, 0.25);
+}
