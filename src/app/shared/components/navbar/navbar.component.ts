@@ -24,7 +24,6 @@ export class NavbarComponent {
 
   readonly unreadCount = this.notifService.unreadCount;
 
-
   constructor() {
     this.realtimeNotifications.start();
   }

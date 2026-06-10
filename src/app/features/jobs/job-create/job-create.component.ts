@@ -66,14 +66,28 @@ export class JobCreateComponent implements OnInit {
   };
 
   days: DayOption[] = [];
-  timeSlots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  timeSlots = [
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+  ];
 
   selectedDay = signal<string>('');
   selectedTime = signal<string>('');
 
   form = new FormGroup({
     service: new FormControl('سباك', { nonNullable: true, validators: [Validators.required] }),
-    description: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(10)] }),
+    description: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(10)],
+    }),
     city: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     address: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     street: new FormControl('', { nonNullable: true }),
@@ -85,12 +99,12 @@ export class JobCreateComponent implements OnInit {
   }
 
   get selectedServiceIcon(): string {
-    const svc = this.services.find(s => s.value === this.form.controls.service.value);
+    const svc = this.services.find((s) => s.value === this.form.controls.service.value);
     return svc?.icon ?? 'handyman';
   }
 
   get selectedServiceLabel(): string {
-    const svc = this.services.find(s => s.value === this.form.controls.service.value);
+    const svc = this.services.find((s) => s.value === this.form.controls.service.value);
     return svc?.labelKey ?? 'SERVICES.OTHER';
   }
 
@@ -114,7 +128,7 @@ export class JobCreateComponent implements OnInit {
 
     if (service) {
       const arabicValue = this.slugToArabic[service] ?? service;
-      if (this.services.some(s => s.value === arabicValue)) {
+      if (this.services.some((s) => s.value === arabicValue)) {
         this.form.controls.service.setValue(arabicValue);
       }
     }
@@ -194,7 +208,7 @@ export class JobCreateComponent implements OnInit {
   }
 
   getStars(rating: number): number[] {
-    return Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? 1 : 0);
+    return Array.from({ length: 5 }, (_, i) => (i < Math.round(rating) ? 1 : 0));
   }
 
   submit(): void {

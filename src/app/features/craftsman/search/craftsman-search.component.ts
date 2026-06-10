@@ -6,7 +6,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { CraftsmanDto, CraftsmanSearchParams, CraftsmanServiceSlug } from '@core/models/craftsman.models';
+import {
+  CraftsmanDto,
+  CraftsmanSearchParams,
+  CraftsmanServiceSlug,
+} from '@core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman.service';
 
 type ServiceOption = {
@@ -57,16 +61,19 @@ export class CraftsmanSearchComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const service = this.normalizeService(params.get('service'));
       this.activeService.set(service);
-      this.form.patchValue({
-        service,
-        search: params.get('search') || '',
-        city: params.get('city') || '',
-        minRating: this.normalizeNumber(params.get('minRating')),
-        minExperience: this.normalizeNumber(params.get('minExperience')),
-      }, { emitEvent: false });
+      this.form.patchValue(
+        {
+          service,
+          search: params.get('search') || '',
+          city: params.get('city') || '',
+          minRating: this.normalizeNumber(params.get('minRating')),
+          minExperience: this.normalizeNumber(params.get('minExperience')),
+        },
+        { emitEvent: false },
+      );
       this.loadCraftsmen();
     });
   }
@@ -123,7 +130,9 @@ export class CraftsmanSearchComponent implements OnInit {
       return this.translate.instant('CRAFTSMEN_FILTER.ALL_SERVICES');
     }
 
-    return this.translate.instant(this.getServiceLabel(this.activeService() as CraftsmanServiceSlug));
+    return this.translate.instant(
+      this.getServiceLabel(this.activeService() as CraftsmanServiceSlug),
+    );
   }
 
   private loadCraftsmen(): void {
@@ -155,8 +164,20 @@ export class CraftsmanSearchComponent implements OnInit {
   }
 
   private normalizeService(service: string | null): CraftsmanServiceSlug | '' {
-    const allowed: CraftsmanServiceSlug[] = ['plumbing', 'electrical', 'carpentry', 'painting', 'ac', 'cleaning', 'moving', 'pest', 'roofing'];
-    return allowed.includes(service as CraftsmanServiceSlug) ? service as CraftsmanServiceSlug : '';
+    const allowed: CraftsmanServiceSlug[] = [
+      'plumbing',
+      'electrical',
+      'carpentry',
+      'painting',
+      'ac',
+      'cleaning',
+      'moving',
+      'pest',
+      'roofing',
+    ];
+    return allowed.includes(service as CraftsmanServiceSlug)
+      ? (service as CraftsmanServiceSlug)
+      : '';
   }
 
   private normalizeNumber(value: string | null): number | '' {

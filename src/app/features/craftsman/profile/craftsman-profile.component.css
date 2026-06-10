@@ -20,7 +20,9 @@
   font-size: 0.9rem;
   transition: background 0.18s;
 }
-.back-btn:hover { background: var(--nav-hover-bg); }
+.back-btn:hover {
+  background: var(--nav-hover-bg);
+}
 
 .state-card {
   display: grid;
@@ -32,7 +34,10 @@
   background: var(--card-bg, #fff);
   border-radius: 20px;
 }
-.state-icon { font-size: 3rem; color: var(--text-secondary, #666); }
+.state-icon {
+  font-size: 3rem;
+  color: var(--text-secondary, #666);
+}
 
 .spinner {
   width: 2rem;
@@ -43,7 +48,11 @@
   animation: spin 0.9s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 .profile-layout {
@@ -115,10 +124,20 @@
   gap: 4px;
   color: #9b4000;
 }
-:host-context([data-theme='dark']) .rating-row { color: #ffb07a; }
-.star-icon { font-variation-settings: 'FILL' 1; font-size: 18px; }
-.rating-val { font-weight: 700; }
-.rating-count { font-size: 0.85rem; color: var(--text-secondary); }
+:host-context([data-theme='dark']) .rating-row {
+  color: #ffb07a;
+}
+.star-icon {
+  font-variation-settings: 'FILL' 1;
+  font-size: 18px;
+}
+.rating-val {
+  font-weight: 700;
+}
+.rating-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
 
 .assign-btn {
   width: 100%;
@@ -136,9 +155,14 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.18s, color 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s;
 }
-.assign-btn:hover { background: var(--accent, #b51536); color: #fff; }
+.assign-btn:hover {
+  background: var(--accent, #b51536);
+  color: #fff;
+}
 
 /* ── Details card ────────────────────────────────────────────────────────── */
 .details-card {
@@ -151,7 +175,8 @@
   gap: 2rem;
 }
 
-.detail-section {}
+.detail-section {
+}
 
 .section-title {
   font-size: 1rem;
@@ -174,7 +199,9 @@
   gap: 1rem;
 }
 @media (max-width: 600px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-item {
@@ -185,7 +212,11 @@
   border-radius: 14px;
   padding: 0.85rem 1rem;
 }
-.stat-icon { color: var(--accent, #b51536); font-size: 22px; flex-shrink: 0; }
+.stat-icon {
+  color: var(--accent, #b51536);
+  font-size: 22px;
+  flex-shrink: 0;
+}
 .stat-label {
   display: block;
   font-size: 0.78rem;

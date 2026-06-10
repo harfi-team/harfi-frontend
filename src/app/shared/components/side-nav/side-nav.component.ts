@@ -24,10 +24,16 @@ export class SideNavComponent {
     return this.auth.getRole() === 'admin';
   }
 
-  get isDark(): boolean { return this.themeService.current() === 'dark'; }
-  get isArabic(): boolean { return this.languageService.current() === 'ar'; }
+  get isDark(): boolean {
+    return this.themeService.current() === 'dark';
+  }
+  get isArabic(): boolean {
+    return this.languageService.current() === 'ar';
+  }
 
-  toggleTheme(): void { this.themeService.toggle(); }
+  toggleTheme(): void {
+    this.themeService.toggle();
+  }
   toggleLanguage(): void {
     this.languageService.switchTo(this.languageService.current() === 'ar' ? 'en' : 'ar');
   }

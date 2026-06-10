@@ -1,5 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -7,10 +15,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
-export const passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+export const passwordMatchValidator: ValidatorFn = (
+  group: AbstractControl,
+): ValidationErrors | null => {
   const password = group.get('password');
   const confirm = group.get('confirmPassword');
-  return password && confirm && password.value !== confirm.value ? { passwordMismatch: true } : null;
+  return password && confirm && password.value !== confirm.value
+    ? { passwordMismatch: true }
+    : null;
 };
 
 @Component({
@@ -39,14 +51,17 @@ export class RegisterComponent {
     return score;
   }
 
-  form = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    phone: new FormControl('', [Validators.pattern(/^01[0-9]{9}$/)]),
-    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
-    confirmPassword: new FormControl('', [Validators.required]),
-    role: new FormControl<'customer' | 'craftsman'>('customer', [Validators.required]),
-  }, { validators: passwordMatchValidator });
+  form = new FormGroup(
+    {
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      phone: new FormControl('', [Validators.pattern(/^01[0-9]{9}$/)]),
+      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      confirmPassword: new FormControl('', [Validators.required]),
+      role: new FormControl<'customer' | 'craftsman'>('customer', [Validators.required]),
+    },
+    { validators: passwordMatchValidator },
+  );
 
   setRole(role: 'customer' | 'craftsman'): void {
     this.form.controls.role.setValue(role);

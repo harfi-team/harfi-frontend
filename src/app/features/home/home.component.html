@@ -86,7 +86,11 @@
                 </div>
                 <div class="craftsman-avatar">
                   @if (craftsman.avatarUrl) {
-                    <img class="craftsman-avatar-img" [src]="craftsman.avatarUrl" [alt]="craftsman.name" />
+                    <img
+                      class="craftsman-avatar-img"
+                      [src]="craftsman.avatarUrl"
+                      [alt]="craftsman.name"
+                    />
                   } @else {
                     <span class="material-symbols-outlined avatar-icon">person</span>
                   }
@@ -123,16 +127,25 @@
               </div>
 
               <div class="craftsman-tags">
-                <span class="craftsman-tag">{{ getPrimaryServiceLabel(craftsman) | translate }}</span>
+                <span class="craftsman-tag">{{
+                  getPrimaryServiceLabel(craftsman) | translate
+                }}</span>
               </div>
 
               <div class="craftsman-actions">
-                <a class="craftsman-btn craftsman-btn--profile" [routerLink]="['/craftsmen', craftsman.id]">
+                <a
+                  class="craftsman-btn craftsman-btn--profile"
+                  [routerLink]="['/craftsmen', craftsman.id]"
+                >
                   <span class="material-symbols-outlined">person</span>
                   <span>{{ 'HOME.VIEW_PROFILE' | translate }}</span>
                 </a>
                 @if (isCustomer) {
-                  <button type="button" class="craftsman-btn craftsman-btn--apply" (click)="applyNow(craftsman)">
+                  <button
+                    type="button"
+                    class="craftsman-btn craftsman-btn--apply"
+                    (click)="applyNow(craftsman)"
+                  >
                     <span class="material-symbols-outlined">add_circle</span>
                     <span>{{ 'HOME.APPLY_NOW' | translate }}</span>
                   </button>
@@ -198,14 +211,19 @@
                 <div>
                   <div class="order-title">{{ order.description }}</div>
                   <div class="order-meta">
-                    {{ order.createdAt | date:'shortDate' }} • {{ isCraftsman ? order.customerName : order.craftsmanName }}
+                    {{ order.createdAt | date: 'shortDate' }} •
+                    {{ isCraftsman ? order.customerName : order.craftsmanName }}
                   </div>
                 </div>
               </div>
               <div class="order-right">
-                <span [class]="getStatusClass(order.status)">{{ getStatusLabelKey(order.status) | translate }}</span>
+                <span [class]="getStatusClass(order.status)">{{
+                  getStatusLabelKey(order.status) | translate
+                }}</span>
                 @if (order.budget) {
-                  <span class="order-price">{{ order.budget }} {{ 'HOME.CURRENCY' | translate }}</span>
+                  <span class="order-price"
+                    >{{ order.budget }} {{ 'HOME.CURRENCY' | translate }}</span
+                  >
                 }
               </div>
             </div>

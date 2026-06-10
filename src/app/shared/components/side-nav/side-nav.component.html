@@ -6,7 +6,12 @@
 
   <div class="nav-items">
     @if (!isAdmin) {
-      <a class="nav-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a
+        class="nav-item"
+        routerLink="/home"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
         <span class="material-symbols-outlined">home</span>
         <span>{{ 'NAV.HOME' | translate }}</span>
       </a>
@@ -39,7 +44,7 @@
     @if (isAdmin) {
       @if (showAddButton()) {
         <button class="add-craftsman-btn gradient-btn" (click)="navigateToAddCraftsman()">
-          <span class="material-symbols-outlined" style="font-size:18px">add</span>
+          <span class="material-symbols-outlined" style="font-size: 18px">add</span>
           {{ 'ADMIN.ADD_CRAFTSMAN' | translate }}
         </button>
       }
@@ -105,7 +110,12 @@
 </nav>
 
 <nav class="bottom-nav">
-  <a class="bottom-nav-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+  <a
+    class="bottom-nav-item"
+    routerLink="/home"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
     <span class="material-symbols-outlined">home</span>
     <span>{{ 'NAV.HOME' | translate }}</span>
   </a>

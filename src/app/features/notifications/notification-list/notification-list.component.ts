@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 
 const LOCATION_COORDS_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -17,21 +25,21 @@ import { SpinnerComponent } from '../../../shared/components/spinner/spinner.com
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TranslateModule, RelativeTimePipe, SpinnerComponent],
   templateUrl: './notification-list.component.html',
-  styleUrls: ['./notification-list.component.css']
+  styleUrls: ['./notification-list.component.css'],
 })
 export class NotificationListComponent implements OnDestroy {
   private notifService = inject(NotificationsService);
-  private notifHub     = inject(NotificationHubService);
-  private router       = inject(Router);
-  private destroyRef   = inject(DestroyRef);
+  private notifHub = inject(NotificationHubService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private errorTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly notifications = signal<NotificationDto[]>([]);
-  readonly loading       = signal(true);
-  readonly errorMessage  = signal('');
+  readonly loading = signal(true);
+  readonly errorMessage = signal('');
 
   private readonly incomingNotif = toSignal(this.notifHub.notification$, {
-    initialValue: null as NotificationDto | null
+    initialValue: null as NotificationDto | null,
   });
 
   constructor() {
@@ -44,8 +52,8 @@ export class NotificationListComponent implements OnDestroy {
       const notif = this.incomingNotif();
       if (!notif) return;
 
-      this.notifications.update(list => {
-        if (list.some(n => n.id === notif.id)) return list;
+      this.notifications.update((list) => {
+        if (list.some((n) => n.id === notif.id)) return list;
         return [notif, ...list];
       });
       this.syncUnreadCount();
@@ -57,7 +65,7 @@ export class NotificationListComponent implements OnDestroy {
       .getAll()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: data => {
+        next: (data) => {
           this.notifications.set(data);
           this.syncUnreadCount();
           this.loading.set(false);
@@ -65,7 +73,7 @@ export class NotificationListComponent implements OnDestroy {
         error: () => {
           this.loading.set(false);
           this.errorMessage.set('NOTIFICATIONS.LOAD_FAILED');
-        }
+        },
       });
   }
 
@@ -76,15 +84,15 @@ export class NotificationListComponent implements OnDestroy {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.notifications.update(list =>
-              list.map(n => n.id === notif.id ? { ...n, isRead: true } : n)
+            this.notifications.update((list) =>
+              list.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n)),
             );
             this.syncUnreadCount();
           },
           error: () => {
             this.errorMessage.set('NOTIFICATIONS.MARK_FAILED');
             this.scheduleErrorClear(3000);
-          }
+          },
         });
     }
 
@@ -112,15 +120,13 @@ export class NotificationListComponent implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.notifications.update(list =>
-            list.map(n => ({ ...n, isRead: true }))
-          );
+          this.notifications.update((list) => list.map((n) => ({ ...n, isRead: true })));
           this.notifService.clearUnread();
         },
         error: () => {
           this.errorMessage.set('NOTIFICATIONS.MARK_ALL_FAILED');
           this.scheduleErrorClear(3000);
-        }
+        },
       });
   }
 
@@ -132,13 +138,13 @@ export class NotificationListComponent implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.notifications.update(list => list.filter(n => n.id !== notif.id));
+          this.notifications.update((list) => list.filter((n) => n.id !== notif.id));
           this.syncUnreadCount();
         },
         error: () => {
           this.errorMessage.set('NOTIFICATIONS.DELETE_FAILED');
           this.scheduleErrorClear(3000);
-        }
+        },
       });
   }
 
@@ -154,7 +160,7 @@ export class NotificationListComponent implements OnDestroy {
         error: () => {
           this.errorMessage.set('NOTIFICATIONS.CLEAR_FAILED');
           this.scheduleErrorClear(3000);
-        }
+        },
       });
   }
 
@@ -211,7 +217,7 @@ export class NotificationListComponent implements OnDestroy {
   }
 
   private syncUnreadCount(): void {
-    const unread = this.notifications().filter(n => !n.isRead).length;
+    const unread = this.notifications().filter((n) => !n.isRead).length;
     this.notifService.setUnreadCount(unread);
   }
 

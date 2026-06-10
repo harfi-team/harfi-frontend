@@ -22,8 +22,14 @@
         }
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="onDismiss()">{{ cancelLabel() | translate }}</button>
-        <button class="btn btn-primary" (click)="onConfirm()" [disabled]="requireReason() && !reason.trim()">
+        <button class="btn btn-secondary" (click)="onDismiss()">
+          {{ cancelLabel() | translate }}
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="onConfirm()"
+          [disabled]="requireReason() && !reason.trim()"
+        >
           {{ confirmLabel() | translate }}
         </button>
       </div>
