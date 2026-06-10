@@ -92,7 +92,6 @@
 
   "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
-<<<<<<< HEAD
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "Craftsmen Search",
     "TITLE": "Craftsmen for",
@@ -115,9 +114,6 @@
     "YEARS": "years"
   },
   
-=======
-
->>>>>>> dev
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
     "HOME": "Home",
