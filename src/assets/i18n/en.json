@@ -88,5 +88,71 @@
   "NAV_HOME": "Home",
   "NAV_HOW": "How It Works",
   "NAV_CRAFTSMEN": "Craftsmen",
-  "NAV_CONTACT": "Contact Us"
+  "NAV_CONTACT": "Contact Us",
+  
+  "NAV": {
+    "TAGLINE": "Craftsmen Platform",
+    "HOME": "Home",
+    "SEARCH": "Search",
+    "BOOKINGS": "My Bookings",
+    "CHAT": "Messages",
+    "PROFILE": "Profile",
+    "MY_ACCOUNT": "Account",
+    "DARK_MODE": "Dark Mode",
+    "LIGHT_MODE": "Light Mode",
+    "LOGOUT": "Logout",
+    "BOOK_NOW": "Book Now"
+  },
+  "HOME": {
+    "USER": "User",
+    "SUBTITLE": "Ready to get things done today?",
+    "HERO_TITLE": "What do you need today?",
+    "HERO_SUB": "Find the best trusted craftsmen in your area with one tap.",
+    "SEARCH_PLACEHOLDER": "e.g. Plumber, Electrician, Carpenter...",
+    "SEARCH_BTN": "Search",
+    "POPULAR_SERVICES": "Popular Services",
+    "VIEW_ALL": "View All",
+    "FEATURED_CRAFTSMEN": "Top Craftsmen Near You",
+    "KM": "km",
+    "REVIEWS": "reviews",
+    "VIEW_PROFILE": "View Profile",
+    "HOW_TITLE": "How does Harfi work?",
+    "HOW_STEP1_TITLE": "1. Find a Service",
+    "HOW_STEP1_DESC": "Choose the service you need from dozens of available categories.",
+    "HOW_STEP2_TITLE": "2. Pick a Craftsman",
+    "HOW_STEP2_DESC": "Compare prices and ratings and choose the best craftsman for your job.",
+    "HOW_STEP3_TITLE": "3. Done with a Guarantee",
+    "HOW_STEP3_DESC": "Pay securely through the app and enjoy a quality guarantee on all work.",
+    "RECENT_ORDERS": "Recent Orders",
+    "ORDER_HISTORY": "Order History",
+    "CURRENCY": "EGP"
+  },
+  "SERVICES": {
+    "PLUMBING": "Plumbing",
+    "ELECTRICAL": "Electrical",
+    "CARPENTRY": "Carpentry",
+    "PAINTING": "Painting",
+    "AC": "AC Repair",
+    "CLEANING": "Cleaning",
+    "MOVING": "Moving",
+    "PEST": "Pest Control",
+    "ROOFING": "Roofing",
+    "MORE": "More"
+  },
+  "CRAFTSMEN": {
+    "MAHMOUD": "Mahmoud Khaled",
+    "SAEED": "Saeed Abdelsalam",
+    "YASSER": "Yasser Mohamed",
+    "PLUMBER": "Expert Plumber",
+    "ELECTRICIAN": "Electrician",
+    "CARPENTER": "Pro Carpenter"
+  },
+  "ORDERS": {
+    "LEAK": "Fix Water Leak",
+    "CHANDELIER": "Install Chandelier",
+    "DATE1": "Thursday, Oct 12",
+    "DATE2": "Sunday, Oct 8",
+    "COMPLETED": "Completed"
+  }
+
 }

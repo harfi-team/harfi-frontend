@@ -70,7 +70,7 @@ export class VerifyPhoneComponent implements OnInit, OnDestroy {
     if (this.codeForm.invalid) return;
     this.loading = true;
     this.authService.verifyPhone({ email: this.email, phoneNumber: this.phoneNumber, code: this.codeForm.value.code! }).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigate(['/home']),
       error: (err) => {
         this.errorHandler.handle(err);
         this.loading = false;

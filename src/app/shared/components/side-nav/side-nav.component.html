@@ -1,0 +1,81 @@
+<!-- Side Nav (Desktop) -->
+<nav class="side-nav">
+  <div class="nav-brand">
+    <img src="assets/images/harfi_logo.png" alt="حرفي" class="nav-logo" />
+    <span class="nav-tagline">{{ 'NAV.TAGLINE' | translate }}</span>
+  </div>
+
+  <div class="nav-items">
+    <a
+      class="nav-item"
+      routerLink="/home"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <span class="material-symbols-outlined">home</span>
+      <span>{{ 'NAV.HOME' | translate }}</span>
+    </a>
+    <a class="nav-item" routerLink="/craftsmen" routerLinkActive="active">
+      <span class="material-symbols-outlined">search</span>
+      <span>{{ 'NAV.SEARCH' | translate }}</span>
+    </a>
+    <a class="nav-item" routerLink="/jobs" routerLinkActive="active">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <span>{{ 'NAV.BOOKINGS' | translate }}</span>
+    </a>
+    <a class="nav-item" routerLink="/chat" routerLinkActive="active">
+      <span class="material-symbols-outlined">chat</span>
+      <span>{{ 'NAV.CHAT' | translate }}</span>
+    </a>
+    <a class="nav-item" routerLink="/user" routerLinkActive="active">
+      <span class="material-symbols-outlined">person</span>
+      <span>{{ 'NAV.PROFILE' | translate }}</span>
+    </a>
+  </div>
+
+  <div class="nav-footer">
+    <button class="nav-footer-item" (click)="toggleTheme()">
+      <span class="material-symbols-outlined">{{ isDark ? 'light_mode' : 'dark_mode' }}</span>
+      <span>{{ (isDark ? 'NAV.LIGHT_MODE' : 'NAV.DARK_MODE') | translate }}</span>
+    </button>
+    <button class="nav-footer-item" (click)="toggleLanguage()">
+      <span class="material-symbols-outlined">translate</span>
+      <span>{{ isArabic ? 'English' : 'العربية' }}</span>
+    </button>
+    <button class="nav-footer-item danger" (click)="auth.logout()">
+      <span class="material-symbols-outlined">logout</span>
+      <span>{{ 'NAV.LOGOUT' | translate }}</span>
+    </button>
+  </div>
+
+  <button class="nav-book-btn" routerLink="/craftsmen">{{ 'NAV.BOOK_NOW' | translate }}</button>
+</nav>
+
+<!-- Bottom Nav (Mobile) -->
+<nav class="bottom-nav">
+  <a
+    class="bottom-nav-item"
+    routerLink="/home"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
+    <span class="material-symbols-outlined">home</span>
+    <span>{{ 'NAV.HOME' | translate }}</span>
+  </a>
+  <a class="bottom-nav-item" routerLink="/craftsmen" routerLinkActive="active">
+    <span class="material-symbols-outlined">search</span>
+    <span>{{ 'NAV.SEARCH' | translate }}</span>
+  </a>
+  <a class="bottom-nav-item" routerLink="/jobs" routerLinkActive="active">
+    <span class="material-symbols-outlined">calendar_today</span>
+    <span>{{ 'NAV.BOOKINGS' | translate }}</span>
+  </a>
+  <a class="bottom-nav-item" routerLink="/chat" routerLinkActive="active">
+    <span class="material-symbols-outlined">chat</span>
+    <span>{{ 'NAV.CHAT' | translate }}</span>
+  </a>
+  <a class="bottom-nav-item" routerLink="/user" routerLinkActive="active">
+    <span class="material-symbols-outlined">person</span>
+    <span>{{ 'NAV.MY_ACCOUNT' | translate }}</span>
+  </a>
+</nav>

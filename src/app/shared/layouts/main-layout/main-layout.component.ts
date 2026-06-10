@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, RouterLink, SideNavComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css',
 })
