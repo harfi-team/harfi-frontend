@@ -75,7 +75,6 @@
   "PLATFORM_TAGLINE": "Egypt's first craftsmen platform",
   "JOIN_CRAFTSMEN": "Join Thousands of Craftsmen",
   "REGISTER_TAGLINE": "Register now and start your journey with Harfi",
-  "CRAFTSMEN": "Craftsmen",
   "COMPLETED_ORDERS": "Completed Orders",
   "STAT_CRAFTSMEN": "Registered craftsmen",
   "STAT_RATING": "Average rating",
@@ -90,7 +89,6 @@
   "NAV_CRAFTSMEN": "Craftsmen",
   "NAV_CONTACT": "Contact Us",
 
-  "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "Craftsmen Search",

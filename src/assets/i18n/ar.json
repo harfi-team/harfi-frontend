@@ -75,7 +75,6 @@
   "PLATFORM_TAGLINE": "منصة الحرفيين الأولى في مصر",
   "JOIN_CRAFTSMEN": "انضم إلى آلاف الحرفيين",
   "REGISTER_TAGLINE": "سجل الآن وابدأ رحلتك مع حرفي",
-  "CRAFTSMEN": "حرفي",
   "COMPLETED_ORDERS": "طلب مكتمل",
   "STAT_CRAFTSMEN": "حرفي مسجل",
   "STAT_RATING": "متوسط التقييم",
@@ -90,7 +89,6 @@
   "NAV_CRAFTSMEN": "الحرفيون",
   "NAV_CONTACT": "تواصل معنا",
 
-  "NOTIFICATIONS": "الإشعارات",
   "AI_ASSISTANT": "المساعد الذكي",
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "بحث الحرفيين",
@@ -137,7 +135,7 @@
     "SUBMIT_REQUEST": "إرسال الطلب",
     "BACK_TO_JOBS": "العودة إلى الطلبات",
     "SERVICE": "الخدمة",
-    "DESCRIPTION": "الوصف",
+    "DESCRIPTION": "تفاصيل المشكلة",
     "CITY": "المدينة",
     "ADDRESS": "العنوان",
     "SCHEDULED_AT": "التاريخ المفضل",
