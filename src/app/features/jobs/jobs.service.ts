@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateJobDto, JobAction, JobDto, JobStatus } from '@core/models/job.models';
+import { CreateJobDto, JobAction, JobDto, JobStatus } from '../../core/models/job.models';
 
 type ApiListResponse<T> = T[] | { items?: T[]; data?: T[]; result?: T[] };
 type ApiItemResponse<T> = T | { item?: T; data?: T; result?: T; job?: T };

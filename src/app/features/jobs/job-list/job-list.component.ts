@@ -4,8 +4,9 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { JobAction, JobDto, JobStatus } from '@core/models/job.models';
+import { JobAction, JobDto, JobStatus } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
+import { CraftsmanService } from '../../craftsman/craftsman.service';
 import { environment } from '../../../../environments/environment';
 
 type JobFilterTab = 'all' | JobStatus;
@@ -19,6 +20,7 @@ type JobFilterTab = 'all' | JobStatus;
 })
 export class JobListComponent implements OnInit {
   private jobsService = inject(JobsService);
+  private craftsmanService = inject(CraftsmanService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
@@ -78,12 +80,37 @@ export class JobListComponent implements OnInit {
         );
         this.jobs.set(sorted);
         this.loading.set(false);
+
+        // Enrich jobs with craftsman names since DB only stores craftsmanId
+        if (this.isCustomer()) {
+          this.enrichWithCraftsmanNames(sorted);
+        }
       },
       error: (error) => {
         this.errorHandler.handle(error);
         this.jobs.set([]);
         this.loading.set(false);
       },
+    });
+  }
+
+  private enrichWithCraftsmanNames(jobs: JobDto[]): void {
+    const jobsNeedingName = jobs.filter(j => j.craftsmanId && !j.craftsmanName);
+
+    jobsNeedingName.forEach(job => {
+      this.craftsmanService.getCraftsman(String(job.craftsmanId!)).subscribe({
+        next: (craftsman) => {
+          if (!craftsman?.name) {
+            return;
+          }
+          this.jobs.update(current =>
+            current.map(j =>
+              j.id === job.id ? { ...j, craftsmanName: craftsman.name } : j
+            )
+          );
+        },
+        error: () => {}, // silently ignore — name just stays null
+      });
     });
   }
 

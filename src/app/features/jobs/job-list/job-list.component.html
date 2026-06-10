@@ -83,7 +83,9 @@
                 <h2>{{ getAssignedLabel(job) }}</h2>
               </div>
             </div>
-            <span [class]="getStatusClass(job.status)">{{ getStatusLabelKey(job.status) | translate }}</span>
+            <span [class]="getStatusClass(job.status)">{{
+              getStatusLabelKey(job.status) | translate
+            }}</span>
           </header>
 
           <p class="job-description">{{ job.description }}</p>
@@ -110,8 +112,10 @@
               </dd>
             </div>
             <div>
-              <dt>{{ 'JOBS.CITY' | translate }}</dt>
-              <dd>{{ job.city || '-' }}</dd>
+              <dt>
+                {{ (isCustomer() ? 'JOBS.CRAFTSMAN_NAME' : 'JOBS.CUSTOMER_NAME') | translate }}
+              </dt>
+              <dd>{{ getAssignedLabel(job) || ('JOBS.NOT_SET' | translate) }}</dd>
             </div>
             <div>
               <dt>{{ 'JOBS.ADDRESS' | translate }}</dt>
@@ -142,17 +146,29 @@
           @if (isCraftsman() && (canAccept(job) || canReject(job) || canComplete(job))) {
             <div class="job-actions">
               @if (canAccept(job)) {
-                <button type="button" class="action-btn action-btn--primary" (click)="performAction(job.id, 'accept')">
+                <button
+                  type="button"
+                  class="action-btn action-btn--primary"
+                  (click)="performAction(job.id, 'accept')"
+                >
                   {{ 'JOBS.ACTION_ACCEPT' | translate }}
                 </button>
               }
               @if (canReject(job)) {
-                <button type="button" class="action-btn action-btn--ghost" (click)="performAction(job.id, 'reject')">
+                <button
+                  type="button"
+                  class="action-btn action-btn--ghost"
+                  (click)="performAction(job.id, 'reject')"
+                >
                   {{ 'JOBS.ACTION_REJECT' | translate }}
                 </button>
               }
               @if (canComplete(job)) {
-                <button type="button" class="action-btn action-btn--primary" (click)="performAction(job.id, 'complete')">
+                <button
+                  type="button"
+                  class="action-btn action-btn--primary"
+                  (click)="performAction(job.id, 'complete')"
+                >
                   {{ 'JOBS.ACTION_COMPLETE' | translate }}
                 </button>
               }
