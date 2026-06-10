@@ -1,0 +1,147 @@
+<div class="user-detail-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <h2 class="page-title">{{ 'ADMIN.USER_DETAIL' | translate }}</h2>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-page">
+      <div class="skeleton" style="height:160px;border-radius:var(--radius-lg);margin-bottom:20px"></div>
+      <div class="skeleton" style="height:120px;border-radius:var(--radius-lg);margin-bottom:20px"></div>
+      <div class="skeleton" style="height:200px;border-radius:var(--radius-lg)"></div>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <span class="material-symbols-outlined empty-ico">error</span>
+      <p>{{ 'ERROR_LOADING' | translate }}</p>
+      <button class="btn btn-secondary" (click)="goBack()">{{ 'BACK' | translate }}</button>
+    </div>
+  } @else {
+    @let u = user()!;
+
+    <div class="harfi-card profile-card">
+      <div class="profile-avatar">
+        @if (u.profileImageUrl) {
+          <img [src]="u.profileImageUrl" alt="avatar" class="avatar-img" />
+        } @else {
+          <div class="avatar-circle">{{ u.name.charAt(0) }}</div>
+        }
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <h3 class="profile-name">{{ u.name }}</h3>
+          <span class="role-badge" [class.role-badge--admin]="u.role === 'admin'"
+            [class.role-badge--craftsman]="u.role === 'craftsman'"
+            [class.role-badge--customer]="u.role === 'customer'">
+            {{ 'ADMIN.ROLE_' + (u.role | uppercase) | translate }}
+          </span>
+          <span class="status-dot-badge" [class.status-dot-badge--approved]="u.isActive"
+            [class.status-dot-badge--rejected]="!u.isActive">
+            <span class="dot"></span>
+            {{ (u.isActive ? 'ADMIN.ACTIVATED' : 'ADMIN.DEACTIVATED') | translate }}
+          </span>
+        </div>
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="material-symbols-outlined detail-ico">mail</span>
+            <span>{{ u.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="material-symbols-outlined detail-ico">phone</span>
+            <span>{{ u.phone || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="material-symbols-outlined detail-ico">calendar_month</span>
+            <span>{{ u.createdAt | date:'d MMM, y' }}</span>
+          </div>
+          @if (u.role === 'craftsman' && u.craftsmanProfileId) {
+            <div class="detail-item">
+              <span class="material-symbols-outlined detail-ico">badge</span>
+              <a [routerLink]="['/admin/craftsmen', u.craftsmanProfileId]" class="craftsman-link">
+                {{ 'ADMIN.VIEW_CRAFTSMAN_PROFILE' | translate }}
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card stat-card--orange">
+        <div class="stat-card__icon">
+          <span class="material-symbols-outlined" style="font-size:24px;line-height:1">work</span>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">{{ u.jobsCount }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.JOBS_COUNT' | translate }}</div>
+        </div>
+      </div>
+      <div class="stat-card stat-card--green">
+        <div class="stat-card__icon">
+          <span class="material-symbols-outlined" style="font-size:24px;line-height:1">rate_review</span>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">{{ u.reviewsCount }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.REVIEWS_COUNT' | translate }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="harfi-card activity-card">
+      <div class="card-header">
+        <h3 class="card-title">{{ 'ADMIN.ACTIVITY_LOG' | translate }}</h3>
+      </div>
+      @if (activities().length === 0) {
+        <div class="empty-state">
+          <p>{{ 'ADMIN.NO_ACTIVITY' | translate }}</p>
+        </div>
+      } @else {
+        <div class="activity-list">
+          @for (a of activities(); track $index) {
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-content">
+                <span class="activity-action">{{ a.action }}</span>
+                @if (a.details) {
+                  <p class="activity-details">{{ a.details }}</p>
+                }
+              </div>
+              <span class="activity-time">{{ a.timestamp | date:'d MMM, y h:mm a' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="action-btns-row">
+      @if (u.isActive) {
+        <button class="btn btn-warning" (click)="openDeactivate()">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">block</span>
+          {{ 'ADMIN.DEACTIVATE' | translate }}
+        </button>
+      } @else {
+        <button class="btn btn-success" (click)="openReactivate()">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+          {{ 'ADMIN.REACTIVATE' | translate }}
+        </button>
+      }
+      <button class="btn btn-danger" (click)="openDelete()">
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+        {{ 'DELETE' | translate }}
+      </button>
+    </div>
+  }
+</div>
+
+<app-confirm-dialog
+  [visible]="dialogVisible()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [requireReason]="dialogRequireReason()"
+  [reasonLabel]="dialogReasonLabel()"
+  (confirmed)="onDialogConfirmed($event)"
+  (dismissed)="dialogVisible.set(false)"
+/>

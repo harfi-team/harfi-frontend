@@ -1,0 +1,99 @@
+<div class="profile-container page-content">
+  <app-spinner *ngIf="loading" />
+
+  <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
+
+  <div *ngIf="!loading && !errorMessage && profile" class="animate-slide-up">
+    <!-- Avatar & Info -->
+    <div class="avatar-section harfi-card">
+      <div class="avatar-wrapper" (click)="avatarInput.click()">
+        <div class="avatar-img-container">
+          <img
+            *ngIf="profile.profileImageUrl"
+            class="avatar-img"
+            [src]="getImageUrl(profile.profileImageUrl)"
+            [alt]="profile.name"
+          />
+          <div *ngIf="!profile.profileImageUrl" class="avatar-initials">
+            {{ getInitials() }}
+          </div>
+          <div class="avatar-overlay">
+            <span class="camera-icon">📷</span>
+          </div>
+        </div>
+        <input
+          #avatarInput
+          type="file"
+          accept="image/*"
+          hidden
+          (change)="onAvatarSelected($event)"
+        />
+        <div class="upload-spinner" *ngIf="uploading"><app-spinner [visible]="true" /></div>
+        <div class="avatar-badge">
+          <span class="harfi-chip">{{ profile.role }}</span>
+        </div>
+      </div>
+      <div class="profile-meta">
+        <h2 class="profile-name gradient-text">{{ form.get('name')?.value || profile.name }}</h2>
+        <p class="profile-email">{{ profile.email }}</p>
+        <p class="profile-joined">
+          {{ 'PROFILE.JOINED' | translate }}
+          {{ profile.createdAt | date: 'mediumDate' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-section harfi-card">
+      <h3 class="section-title">{{ 'PROFILE.EDIT' | translate }}</h3>
+
+      <!-- Success -->
+      <div class="success-msg" *ngIf="success">✅ {{ 'PROFILE.SAVED' | translate }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="field-row">
+          <div class="field-group">
+            <label>{{ 'PROFILE.NAME' | translate }}</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="harfi-input"
+              [class.invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+            />
+            <span
+              class="field-error"
+              *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+            >
+              {{ 'PROFILE.NAME_REQUIRED' | translate }}
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label>{{ 'PROFILE.PHONE' | translate }}</label>
+            <input
+              type="tel"
+              formControlName="phone"
+              class="harfi-input"
+              [class.invalid]="form.get('phone')?.invalid && form.get('phone')?.touched"
+            />
+            <span
+              class="field-error"
+              *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched"
+            >
+              {{ 'PROFILE.PHONE_INVALID' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'PROFILE.EMAIL' | translate }}</label>
+          <input type="email" [value]="profile.email" class="harfi-input" disabled />
+        </div>
+
+        <button type="submit" class="gradient-btn save-btn" [disabled]="form.invalid || saving">
+          {{ saving ? ('PROFILE.SAVING' | translate) : ('PROFILE.SAVE' | translate) }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
