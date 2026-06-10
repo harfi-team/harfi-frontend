@@ -1,4 +1,11 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth.guard';
 
-// Owner: Ibrahim — Phase 5: Real-Time (user profile with image upload)
-export const userRoutes: Routes = [];
+export const userRoutes: Routes = [
+  {
+    path: 'profile/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./profile/user-profile.component').then(m => m.UserProfileComponent)
+  }
+];
