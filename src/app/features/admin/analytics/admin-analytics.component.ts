@@ -257,9 +257,13 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   }
 
   private createChart(canvasId: string, config: any): void {
-    const existing = this.charts.find(c => c.canvas.id === canvasId);
-    if (existing) existing.destroy();
-    this.charts = this.charts.filter(c => c.canvas.id !== canvasId);
+    this.charts = this.charts.filter(c => {
+      if (c?.canvas?.id === canvasId) {
+        c.destroy();
+        return false;
+      }
+      return true;
+    });
 
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     if (!canvas) return;
