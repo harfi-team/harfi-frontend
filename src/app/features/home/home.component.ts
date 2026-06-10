@@ -64,16 +64,16 @@ export class HomeComponent implements OnInit {
   }
 
   loadRecentOrders(): void {
-    const userId = this.auth.getUserId();
-    if (!userId) {
+    const id = this.isCraftsman ? this.auth.getCraftsmanId() : this.auth.getUserId();
+    if (!id) {
       this.recentOrders.set([]);
       return;
     }
 
     this.loadingOrders.set(true);
     const request = this.isCraftsman
-      ? this.jobsService.getCraftsmanJobs(userId)
-      : this.jobsService.getCustomerJobs(userId);
+      ? this.jobsService.getCraftsmanJobs(id)
+      : this.jobsService.getCustomerJobs(id);
 
     request.subscribe({
       next: (jobs) => {

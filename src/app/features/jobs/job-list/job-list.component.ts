@@ -59,8 +59,8 @@ export class JobListComponent implements OnInit {
   }
 
   loadJobs(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) {
+    const id = this.isCraftsman() ? this.authService.getCraftsmanId() : this.authService.getUserId();
+    if (!id) {
       this.jobs.set([]);
       this.loading.set(false);
       return;
@@ -68,8 +68,8 @@ export class JobListComponent implements OnInit {
 
     this.loading.set(true);
     const request = this.isCraftsman()
-      ? this.jobsService.getCraftsmanJobs(userId)
-      : this.jobsService.getCustomerJobs(userId);
+      ? this.jobsService.getCraftsmanJobs(id)
+      : this.jobsService.getCustomerJobs(id);
 
     request.subscribe({
       next: (items) => {

@@ -29,6 +29,7 @@ export interface UserInfoDto {
   role: string;
   phone: string;
   profileImageUrl: string;
+  craftsmanId?: number;
 }
 
 export interface RefreshTokenRequestDto {

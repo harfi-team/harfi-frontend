@@ -110,6 +110,10 @@ export class AuthService {
     return this.tokenService.getUser()?.id || null;
   }
 
+  getCraftsmanId(): number | null {
+    return this.tokenService.getUser()?.craftsmanId ?? null;
+  }
+
   getUserName(): string | null {
     return this.tokenService.getUser()?.name || null;
   }
