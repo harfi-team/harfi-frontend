@@ -46,20 +46,10 @@
       </button>
     </div>
     <div class="action-btns">
+      <input type="date" class="filter-date-input" [value]="fromDate()" (change)="fromDate.set($any($event.target).value); onDateChange()" title="من تاريخ" />
+      <input type="date" class="filter-date-input" [value]="toDate()" (change)="toDate.set($any($event.target).value); onDateChange()" title="إلى تاريخ" />
       <button class="btn-export gradient-btn" (click)="exportJobs()">↑ {{ 'ADMIN.EXPORT' | translate }}</button>
     </div>
-  </div>
-
-  <div class="filter-panel" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-    <select class="filter-select" [(ngModel)]="statusFilter">
-      <option value="">{{ 'ALL' | translate }}</option>
-      <option value="open">{{ 'OPEN' | translate }}</option>
-      <option value="in-progress">{{ 'ADMIN.IN_PROGRESS' | translate }}</option>
-      <option value="completed">{{ 'ADMIN.COMPLETED' | translate }}</option>
-    </select>
-    <input type="date" class="filter-select" [(ngModel)]="fromDate" placeholder="{{ 'ADMIN.SEARCH_ORDER' | translate }}" style="min-width:140px" />
-    <input type="date" class="filter-select" [(ngModel)]="toDate" placeholder="إلى" style="min-width:140px" />
-    <button class="gradient-btn" style="padding:8px 16px;font-size:13px;border:none;border-radius:var(--radius-md);color:white;cursor:pointer" (click)="applyFilter()">{{ 'ADMIN.FILTER' | translate }}</button>
   </div>
 
   <div class="harfi-card table-card">
@@ -108,7 +98,7 @@
                 <td>{{ parseCity(job.address) }}</td>
                 <td>{{ job.createdAt | date:'d MMM, HH:mm' }}</td>
                 <td>
-                  <span class="status-badge {{ getStatusClass(job.status) }}">{{ getStatusLabel(job.status) | translate }}</span>
+                  <span class="status-badge {{ getStatusClass(job.status) }}"><span class="dot"></span> {{ getStatusLabel(job.status) | translate }}</span>
                 </td>
                 <td>
                   <div class="action-btns">

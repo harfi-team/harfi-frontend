@@ -237,7 +237,7 @@
 }
 
 .admin-table td {
-  padding: 12px 14px;
+  padding: 10px 12px;
   font-size: 14px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
@@ -251,6 +251,7 @@
 .order-id-cell {
   font-weight: 700;
   color: var(--brand-purple);
+  white-space: nowrap;
 }
 
 .person-cell {
@@ -278,16 +279,35 @@
 }
 
 .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .status-badge.open { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-badge.open .dot { background: #3b82f6; }
 .status-badge.in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.status-badge.in-progress .dot { background: var(--warning); }
 .status-badge.done { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-badge.done .dot { background: var(--success); }
 .status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+.status-badge.rejected .dot { background: var(--error); }
+.status-badge.cancelled { background: rgba(107, 114, 128, 0.1); color: #6B7280; }
+.status-badge.cancelled .dot { background: #6B7280; }
+.status-badge.disputed { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+.status-badge.disputed .dot { background: var(--error); }
 
 .action-icon-btn {
   width: 32px;
@@ -481,6 +501,18 @@
   gap: 12px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+}
+
+.filter-date-input {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 130px;
 }
 
 .filter-select {

@@ -40,8 +40,7 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>{{ 'ADMIN.NAME_AR' | translate }}</th>
-                <th>{{ 'ADMIN.NAME_EN' | translate }}</th>
+                <th>{{ 'NAME' | translate }}</th>
                 <th>{{ 'ADMIN.ICON' | translate }}</th>
                 <th>{{ 'STATUS' | translate }}</th>
                 <th>{{ 'ACTIONS' | translate }}</th>
@@ -50,8 +49,7 @@
             <tbody>
               @for (st of serviceTypes(); track st.id) {
                 <tr>
-                  <td>{{ st.nameAr }}</td>
-                  <td>{{ st.nameEn }}</td>
+                  <td>{{ languageService.current() === 'ar' ? st.nameAr : st.nameEn }}</td>
                   <td>
                     @if (st.icon) {
                       <span class="material-symbols-outlined" style="font-size:18px;line-height:1;color:var(--text-secondary)">{{ st.icon }}</span>
@@ -109,8 +107,7 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>{{ 'ADMIN.NAME_AR' | translate }}</th>
-                <th>{{ 'ADMIN.NAME_EN' | translate }}</th>
+                <th>{{ 'NAME' | translate }}</th>
                 <th>{{ 'ADMIN.GOVERNORATE' | translate }}</th>
                 <th>{{ 'STATUS' | translate }}</th>
                 <th>{{ 'ACTIONS' | translate }}</th>
@@ -119,8 +116,7 @@
             <tbody>
               @for (c of cities(); track c.id) {
                 <tr>
-                  <td>{{ c.nameAr }}</td>
-                  <td>{{ c.nameEn }}</td>
+                  <td>{{ languageService.current() === 'ar' ? c.nameAr : c.nameEn }}</td>
                   <td>
                     @if (c.governorate) {
                       <span class="harfi-chip">{{ c.governorate }}</span>

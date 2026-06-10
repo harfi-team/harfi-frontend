@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AdminService } from '../admin.service';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
+import { LanguageService } from '@core/services/language.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { ServiceType, City, FeatureFlag } from '@core/models/admin.models';
 
@@ -17,6 +18,7 @@ import { ServiceType, City, FeatureFlag } from '@core/models/admin.models';
 export class AdminSettingsComponent {
   private adminService = inject(AdminService);
   private errorHandler = inject(ErrorHandlerService);
+  protected languageService = inject(LanguageService);
 
   activeTab = signal<'service-types' | 'cities' | 'feature-flags'>('service-types');
 

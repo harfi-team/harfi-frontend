@@ -173,9 +173,9 @@ export class AdminService {
 
   // ─── Reviews ──────────────────────────────────────────────────────────
 
-  getReviews(craftsmanId?: number, minStars?: number, maxStars?: number, page?: number, pageSize?: number): Observable<PagedResult<AdminReview>> {
+  getReviews(craftsmanId?: number, stars?: number, maxStars?: number, page?: number, pageSize?: number): Observable<PagedResult<AdminReview>> {
     return this.http.get<PagedResult<AdminReview>>(`${this.base}/reviews`, {
-      params: this.buildParams({ craftsmanId, minStars, maxStars, page, pageSize }),
+      params: this.buildParams({ craftsmanId, stars, maxStars, page, pageSize }),
     }).pipe(catchError(this.handleError.bind(this)));
   }
 

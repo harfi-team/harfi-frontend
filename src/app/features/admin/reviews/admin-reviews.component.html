@@ -9,15 +9,9 @@
       <input type="text" class="filter-search" [placeholder]="'SEARCH' | translate" [(ngModel)]="search" (ngModelChange)="onSearch()" />
     </div>
     <select class="filter-select" [(ngModel)]="minStars" (ngModelChange)="onSearch()" style="min-width:100px">
-      <option [value]="undefined">{{ 'ALL' | translate }}</option>
+      <option [ngValue]="null">{{ 'ALL' | translate }}</option>
       @for (s of [1,2,3,4,5]; track s) {
-        <option [value]="s">{{ s }}+ {{ 'STARS' | translate }}</option>
-      }
-    </select>
-    <select class="filter-select" [(ngModel)]="maxStars" (ngModelChange)="onSearch()" style="min-width:100px">
-      <option [value]="undefined">{{ 'ALL' | translate }}</option>
-      @for (s of [1,2,3,4,5]; track s) {
-        <option [value]="s">{{ s }}- {{ 'STARS' | translate }}</option>
+        <option [ngValue]="s">{{ s }}+ {{ 'STARS' | translate }}</option>
       }
     </select>
   </div>

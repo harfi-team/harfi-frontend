@@ -24,8 +24,7 @@ export class AdminReviewsComponent {
   page = signal(1);
   pageSize = 20;
   search = signal('');
-  minStars = signal<number | undefined>(undefined);
-  maxStars = signal<number | undefined>(undefined);
+  minStars = signal<number | null>(null);
 
   viewReview = signal<any | null>(null);
 
@@ -38,7 +37,7 @@ export class AdminReviewsComponent {
 
   loadReviews(): void {
     this.loading.set(true);
-    this.adminService.getReviews(undefined, this.minStars(), this.maxStars(), this.page(), this.pageSize).subscribe({
+    this.adminService.getReviews(undefined, this.minStars() ?? undefined, undefined, this.page(), this.pageSize).subscribe({
       next: (data) => {
         this.reviews.set(data.items);
         this.total.set(data.totalCount);

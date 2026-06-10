@@ -23,12 +23,31 @@ export class AdminJobsComponent {
   private errorHandler = inject(ErrorHandlerService);
   private router = inject(Router);
 
+  /** Maps API status values (Arabic or English) to internal filter keys */
+  private statusToKey: Record<string, string> = {
+    'مفتوح': 'open',
+    'قيد التنفيذ': 'in-progress',
+    'مكتمل': 'completed',
+    'مكتملة': 'completed',
+    'مرفوض': 'rejected',
+    'ملغي': 'cancelled',
+    'متنازع عليه': 'disputed',
+    'open': 'open',
+    'in_progress': 'in-progress',
+    'in-progress': 'in-progress',
+    'completed': 'completed',
+    'done': 'completed',
+    'Done': 'completed',
+    'rejected': 'rejected',
+    'cancelled': 'cancelled',
+    'disputed': 'disputed',
+  };
+
   allJobs = signal<AdminJob[]>([]);
   jobsAnalytics = signal<JobsAnalytics | null>(null);
   loading = signal(true);
   activeTab = signal<JobFilterTab>('all');
 
-  statusFilter = signal('');
   fromDate = signal('');
   toDate = signal('');
 
@@ -43,7 +62,7 @@ export class AdminJobsComponent {
 
   loadData(): void {
     this.loading.set(true);
-    this.adminService.getJobs(undefined, undefined, undefined, undefined, undefined, 1, 200).subscribe({
+    this.adminService.getJobs(undefined, undefined, undefined, this.fromDate() || undefined, this.toDate() || undefined, 1, 200).subscribe({
       next: (data) => {
         this.allJobs.set(data.items);
         this.loading.set(false);
@@ -59,29 +78,33 @@ export class AdminJobsComponent {
     let items = this.allJobs();
     const tab = this.activeTab();
     if (tab === 'disputed') return items.filter(j => j.isDisputed);
-    if (tab !== 'all') return items.filter(j => j.status === tab);
+    if (tab !== 'all') return items.filter(j => this.statusToKey[j.status] === tab);
     return items;
   }
 
   getStatusClass(status: string): string {
+    const key = this.statusToKey[status] || status;
     const map: Record<string, string> = {
       'open': 'open',
       'in-progress': 'in-progress',
       'in_progress': 'in-progress',
       'completed': 'done',
       'rejected': 'rejected',
-      'cancelled': 'rejected',
-      'disputed': 'rejected',
+      'cancelled': 'cancelled',
+      'disputed': 'disputed',
     };
-    return map[status] || 'open';
+    return map[key] || 'open';
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
+    const key = this.statusToKey[status] || status;
+    switch (key) {
       case 'open': return 'OPEN';
       case 'in-progress': case 'in_progress': return 'ADMIN.IN_PROGRESS';
       case 'completed': return 'ADMIN.COMPLETED';
       case 'rejected': return 'ADMIN.REJECTED_STATUS';
+      case 'cancelled': return 'ADMIN.CANCELLED';
+      case 'disputed': return 'ADMIN.DISPUTED';
       default: return status;
     }
   }
@@ -137,22 +160,8 @@ export class AdminJobsComponent {
     });
   }
 
-  applyFilter(): void {
-    this.loading.set(true);
-    this.adminService.getJobs(
-      this.statusFilter() || undefined,
-      undefined,
-      undefined,
-      this.fromDate() || undefined,
-      this.toDate() || undefined,
-      1, 200
-    ).subscribe({
-      next: (data) => {
-        this.allJobs.set(data.items);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+  onDateChange(): void {
+    this.loadData();
   }
 
   viewJob(id: number): void {

@@ -203,10 +203,12 @@
 
 .star.filled {
   color: #F59E0B;
+  font-variation-settings: 'FILL' 1;
 }
 
 .star.empty {
   color: var(--border-color);
+  font-variation-settings: 'FILL' 0;
 }
 
 .rating-num {
@@ -246,6 +248,23 @@
   padding: 4px 10px;
   border-radius: 999px;
   background: rgba(107, 114, 128, 0.1);
+}
+
+.status-dot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.status-dot-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .status-dot-badge--deleted {

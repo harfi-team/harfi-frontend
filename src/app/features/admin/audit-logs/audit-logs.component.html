@@ -74,8 +74,8 @@
                     <span class="deleted-admin">{{ 'ADMIN.DELETED_ADMIN' | translate }}</span>
                   }
                 </td>
-                <td><span class="action-chip">{{ 'APPROVED_ACTION_' + log.action | translate }}</span></td>
-                <td>{{ log.targetType }}</td>
+                <td><span class="action-chip">{{ getActionLabel(log.action) }}</span></td>
+                <td>{{ getTargetTypeLabel(log.targetType) }}</td>
                 <td>{{ log.targetId }}</td>
                 <td class="notes-cell">{{ log.notes ? (log.notes.length > 30 ? (log.notes | slice:0:30) + '...' : log.notes) : '-' }}</td>
                 <td>{{ log.ipAddress || '-' }}</td>
@@ -129,11 +129,11 @@
               </div>
               <div class="detail-item">
                 <span class="detail-label">الإجراء</span>
-                <span class="detail-value">{{ 'APPROVED_ACTION_' + log.action | translate }}</span>
+                <span class="detail-value">{{ getActionLabel(log.action) }}</span>
               </div>
               <div class="detail-item">
                 <span class="detail-label">نوع الهدف</span>
-                <span class="detail-value">{{ log.targetType }}</span>
+                <span class="detail-value">{{ getTargetTypeLabel(log.targetType) }}</span>
               </div>
               <div class="detail-item">
                 <span class="detail-label">رقم الهدف</span>
