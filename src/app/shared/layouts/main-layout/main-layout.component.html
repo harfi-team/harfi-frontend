@@ -1,12 +1,9 @@
-<app-side-nav
-  [isDrawerOpen]="mobileNavOpen()"
-  (drawerClosed)="closeMobileNav()"
-/>
+<app-side-nav [isDrawerOpen]="mobileNavOpen()" (drawerClosed)="closeMobileNav()" />
 @if (mobileNavOpen()) {
   <div class="drawer-backdrop" (click)="closeMobileNav()"></div>
 }
 <div class="page-content">
-  <header class="app-topbar">
+  <!-- <header class="app-topbar">
     <div class="topbar-left">
       <button class="hamburger-btn" (click)="toggleMobileNav()" aria-label="Toggle navigation">
         <span class="material-symbols-outlined">menu</span>
@@ -25,7 +22,7 @@
         <span class="material-symbols-outlined">person</span>
       </div>
     </div>
-  </header>
+  </header> -->
   <main class="main-content">
     <router-outlet />
   </main>
