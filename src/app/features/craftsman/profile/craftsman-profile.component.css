@@ -1,0 +1,65 @@
+/* ألوان المشروع الأساسية بناءً على الفيغما */
+.text-primary-custom {
+  color: #e94b63 !important; /* اللون الوردي الأساسي للمشروع */
+}
+
+.bg-primary-custom {
+  background-color: #e94b63 !important;
+}
+
+.btn-primary-custom {
+  background-color: #e94b63;
+  border-color: #e94b63;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  background-color: #d13d54;
+  border-color: #d13d54;
+}
+
+.btn-outline-custom {
+  color: #e94b63;
+  border: 1px solid #e94b63;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-custom:hover {
+  background-color: #e94b63;
+  color: #fff;
+}
+
+/* تنسيقات البروفايل */
+.profile-card {
+  border-radius: 15px;
+}
+
+.profile-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  margin-top: -20px; /* لرفع الصورة قليلاً لو في غلاف */
+}
+
+.stats-box {
+  background-color: #fcfcfc;
+  border: 1px solid #eee;
+}
+
+.badge {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* تأكيد اتجاهات الحواف في العربي */
+.border-start {
+  border-left: 1px solid #dee2e6 !important;
+  border-right: 0 !important;
+}
+
+.border-end {
+  border-right: 1px solid #dee2e6 !important;
+  border-left: 0 !important;
+}
