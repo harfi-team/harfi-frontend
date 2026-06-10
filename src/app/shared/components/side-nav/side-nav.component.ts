@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, output, HostBinding } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
@@ -18,19 +18,37 @@ export class SideNavComponent {
   themeService = inject(ThemeService);
   languageService = inject(LanguageService);
 
+  showAddButton = input<boolean>(false);
+  isDrawerOpen = input<boolean>(false);
+  drawerClosed = output<void>();
+
+  @HostBinding('class.drawer-open') get drawerOpenClass(): boolean {
+    return this.isDrawerOpen();
+  }
+
   get isAdmin(): boolean {
     return this.auth.getRole() === 'admin';
   }
 
-  get isDark(): boolean { return this.themeService.current() === 'dark'; }
-  get isArabic(): boolean { return this.languageService.current() === 'ar'; }
+  get isDark(): boolean {
+    return this.themeService.current() === 'dark';
+  }
+  get isArabic(): boolean {
+    return this.languageService.current() === 'ar';
+  }
 
-  toggleTheme(): void { this.themeService.toggle(); }
+  toggleTheme(): void {
+    this.themeService.toggle();
+  }
   toggleLanguage(): void {
     this.languageService.switchTo(this.languageService.current() === 'ar' ? 'en' : 'ar');
   }
 
+  closeDrawer(): void {
+    this.drawerClosed.emit();
+  }
+
   navigateToAddCraftsman(): void {
-    this.router.navigate(['/admin/craftsmen/add']);
+    // Removed - no backend endpoint exists
   }
 }

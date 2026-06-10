@@ -24,6 +24,12 @@ export class AuthLayoutComponent {
     return this.router.url.includes('/register');
   }
 
-  goToLogin() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/login']); }
-  goToRegister() { localStorage.setItem('harfi_onboarded','true'); this.router.navigate(['/auth/register']); }
+  goToLogin() {
+    localStorage.setItem('harfi_onboarded', 'true');
+    this.router.navigate(['/auth/login']);
+  }
+  goToRegister() {
+    localStorage.setItem('harfi_onboarded', 'true');
+    this.router.navigate(['/auth/register']);
+  }
 }

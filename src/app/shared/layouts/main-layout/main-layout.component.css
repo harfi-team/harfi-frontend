@@ -122,7 +122,46 @@
   overflow-x: auto;
 }
 
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 4px;
+  margin-inline-end: 8px;
+  border-radius: 8px;
+  transition: background 0.18s;
+}
+
+.hamburger-btn:hover {
+  background: var(--bg-color);
+}
+
+.hamburger-btn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 150;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (max-width: 767px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
   .search-box {
     width: 160px;
   }
@@ -140,9 +179,6 @@
   }
 }
 
-
-
-
 .ai-fab {
   position: fixed;
   inset-inline-end: 50px;
@@ -159,19 +195,26 @@
   box-shadow: 0 6px 22px rgba(233, 64, 87, 0.45);
   z-index: 50;
   animation: fabFloat 2.2s ease-in-out infinite;
-  transition: transform .2s ease;
+  transition: transform 0.2s ease;
   overflow: visible;
 }
 
-.ai-fab:hover { transform: scale(1.08); }
+.ai-fab:hover {
+  transform: scale(1.08);
+}
 
-.ai-fab-icon { width: 36px; height: 36px; }
+.ai-fab-icon {
+  width: 36px;
+  height: 36px;
+}
 
-.ai-fab svg line { stroke-width: 2.5; }
+.ai-fab svg line {
+  stroke-width: 2.5;
+}
 
 .fab-star {
   position: absolute;
-  color: #FFD43B;
+  color: #ffd43b;
   text-shadow: 0 0 6px rgba(255, 212, 59, 0.7);
   pointer-events: none;
   line-height: 1;
@@ -188,7 +231,7 @@
   bottom: 2px;
   inset-inline-start: -8px;
   font-size: 11px;
-  animation: starTwinkle 2.4s ease-in-out infinite .5s;
+  animation: starTwinkle 2.4s ease-in-out infinite 0.5s;
 }
 
 .fab-star-3 {
@@ -199,16 +242,35 @@
 }
 
 @keyframes starTwinkle {
-  0%, 100% { opacity: .4; transform: scale(.8) translateY(0); }
-  50%       { opacity: 1;  transform: scale(1.2) translateY(-4px); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-4px);
+  }
 }
 
 @keyframes fabFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 @media (max-width: 600px) {
-  .ai-fab { width: 60px; height: 60px; bottom: 95px; }
-  .ai-fab-icon { width: 32px; height: 32px; }
+  .ai-fab {
+    width: 60px;
+    height: 60px;
+    bottom: 95px;
+  }
+  .ai-fab-icon {
+    width: 32px;
+    height: 32px;
+  }
 }

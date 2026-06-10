@@ -15,7 +15,11 @@
   <form class="filter-panel" [formGroup]="form" (ngSubmit)="submit()">
     <label>
       <span>{{ 'CRAFTSMEN_FILTER.SEARCH' | translate }}</span>
-      <input type="text" formControlName="search" [placeholder]="'CRAFTSMEN_FILTER.SEARCH_PLACEHOLDER' | translate" />
+      <input
+        type="text"
+        formControlName="search"
+        [placeholder]="'CRAFTSMEN_FILTER.SEARCH_PLACEHOLDER' | translate"
+      />
     </label>
     <label>
       <span>{{ 'CRAFTSMEN_FILTER.SERVICE' | translate }}</span>
@@ -27,7 +31,11 @@
     </label>
     <label>
       <span>{{ 'CRAFTSMEN_FILTER.CITY' | translate }}</span>
-      <input type="text" formControlName="city" [placeholder]="'CRAFTSMEN_FILTER.CITY_PLACEHOLDER' | translate" />
+      <input
+        type="text"
+        formControlName="city"
+        [placeholder]="'CRAFTSMEN_FILTER.CITY_PLACEHOLDER' | translate"
+      />
     </label>
     <label>
       <span>{{ 'CRAFTSMEN_FILTER.MIN_RATING' | translate }}</span>
@@ -40,7 +48,9 @@
 
     <div class="filter-actions">
       <button type="submit" class="primary-btn">{{ 'CRAFTSMEN_FILTER.APPLY' | translate }}</button>
-      <button type="button" class="secondary-btn" (click)="clearFilters()">{{ 'CRAFTSMEN_FILTER.CLEAR' | translate }}</button>
+      <button type="button" class="secondary-btn" (click)="clearFilters()">
+        {{ 'CRAFTSMEN_FILTER.CLEAR' | translate }}
+      </button>
     </div>
   </form>
 
@@ -91,7 +101,9 @@
 
           @if (canBook()) {
             <div class="card-actions">
-              <button type="button" class="primary-btn" (click)="bookNow(craftsman)">{{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}</button>
+              <button type="button" class="primary-btn" (click)="bookNow(craftsman)">
+                {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
+              </button>
             </div>
           }
         </article>

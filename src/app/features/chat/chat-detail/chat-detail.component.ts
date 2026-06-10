@@ -10,7 +10,7 @@ import {
   effect,
   inject,
   signal,
-  untracked
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
@@ -18,7 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { Subject, debounceTime, firstValueFrom,combineLatest } from 'rxjs';
+import { Subject, debounceTime, firstValueFrom, combineLatest } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { ChatHubService } from '../../../core/hubs/chat.hub.service';
 import { MessageDto } from '../../../core/models/chat.models';
@@ -45,51 +45,45 @@ type PendingImage = {
   standalone: true,
   selector: 'app-chat-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    TranslateModule,
-    SpinnerComponent,
-    RelativeTimePipe
-  ],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, SpinnerComponent, RelativeTimePipe],
   templateUrl: './chat-detail.component.html',
-  styleUrls: ['./chat-detail.component.css']
+  styleUrls: ['./chat-detail.component.css'],
 })
 export class ChatDetailComponent implements OnInit, OnDestroy {
   @ViewChild('messagesArea') private messagesArea!: ElementRef;
   @ViewChild('fileInput') private fileInput!: ElementRef<HTMLInputElement>;
 
-  private route      = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   private chatService = inject(ChatService);
-  private chatHub    = inject(ChatHubService);
-  private tokenSvc   = inject(TokenService);
-  private router     = inject(Router);
-  private location   = inject(Location);
+  private chatHub = inject(ChatHubService);
+  private tokenSvc = inject(TokenService);
+  private router = inject(Router);
+  private location = inject(Location);
   private destroyRef = inject(DestroyRef);
 
   readonly currentUserId = this.tokenSvc.getUser()?.id ?? 0;
 
-  readonly conversationId     = signal<number | null>(null);
-  readonly conversationName   = signal<string | null>(null);
-  readonly otherUserId        = signal<number | null>(null);
-  readonly otherUserOnline    = signal(false);
-  readonly allMessages        = signal<MessageDto[]>([]);
-  readonly loading            = signal(true);
-  readonly loadingMore        = signal(false);
-  readonly hasMore            = signal(true);
-  readonly sending            = signal(false);
-  readonly uploadingImage     = signal(false);
-  readonly sendError          = signal<string | null>(null);
-  readonly isTyping           = signal(false);
-  readonly imagePreviewUrl    = signal<string | null>(null);
-  readonly showAttachMenu     = signal(false);
-  readonly pendingImages      = signal<PendingImage[]>([]);
+  readonly conversationId = signal<number | null>(null);
+  readonly conversationName = signal<string | null>(null);
+  readonly otherUserId = signal<number | null>(null);
+  readonly otherUserOnline = signal(false);
+  readonly allMessages = signal<MessageDto[]>([]);
+  readonly loading = signal(true);
+  readonly loadingMore = signal(false);
+  readonly hasMore = signal(true);
+  readonly sending = signal(false);
+  readonly uploadingImage = signal(false);
+  readonly sendError = signal<string | null>(null);
+  readonly isTyping = signal(false);
+  readonly imagePreviewUrl = signal<string | null>(null);
+  readonly showAttachMenu = signal(false);
+  readonly pendingImages = signal<PendingImage[]>([]);
   readonly confirmDeleteMessageId = signal<number | null>(null);
   readonly deletingFromConfirm = signal(false);
 
   // ── Voice ──────────────────────────────────────────────────
-  readonly isRecording      = signal(false);
-  readonly uploadingVoice   = signal(false);
+  readonly isRecording = signal(false);
+  readonly uploadingVoice = signal(false);
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private readonly voiceDurations = new Map<number, number>();
@@ -103,8 +97,8 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
   private readonly seenMessageIds = new Set<number>();
   private readonly deletingMessageIds = new Set<number>();
-  private readonly typingSubject  = new Subject<number>();
-  private readonly scrollTrigger  = new Subject<void>();
+  private readonly typingSubject = new Subject<number>();
+  private readonly scrollTrigger = new Subject<void>();
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private sendErrorTimer: ReturnType<typeof setTimeout> | null = null;
   private markAsReadTimer: ReturnType<typeof setTimeout> | null = null;
@@ -115,12 +109,10 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   private isDestroyed = false;
   private hasConnected = false;
 
-  readonly messageControl = new FormControl('', [
-    Validators.maxLength(2000)
-  ]);
+  readonly messageControl = new FormControl('', [Validators.maxLength(2000)]);
 
   private readonly messageValue = toSignal(this.messageControl.valueChanges, {
-    initialValue: this.messageControl.value ?? ''
+    initialValue: this.messageControl.value ?? '',
   });
 
   readonly canSend = computed(() => {
@@ -129,27 +121,26 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   });
 
   private readonly incomingMessage = toSignal(this.chatHub.message$, {
-    initialValue: null as MessageDto | null
+    initialValue: null as MessageDto | null,
   });
   private readonly incomingRead = toSignal(this.chatHub.read$, {
-    initialValue: null as { conversationId: number; readerId: number } | null
+    initialValue: null as { conversationId: number; readerId: number } | null,
   });
   private readonly typingFromHub = toSignal(this.chatHub.typing$, {
-    initialValue: null as { conversationId: number; userId: number } | null
+    initialValue: null as { conversationId: number; userId: number } | null,
   });
   private readonly deletedMessageFromHub = toSignal(this.chatHub.deletedMessage$, {
-    initialValue: null as { conversationId: number; messageId: number } | null
+    initialValue: null as { conversationId: number; messageId: number } | null,
   });
-  
 
   constructor() {
     effect(() => {
       const msg = this.incomingMessage();
-      const id  = this.conversationId();
+      const id = this.conversationId();
       if (!msg || msg.conversationId !== id) return;
       if (this.seenMessageIds.has(msg.id)) return;
       this.seenMessageIds.add(msg.id);
-      this.allMessages.update(list => this.limitMessages([...list, msg]));
+      this.allMessages.update((list) => this.limitMessages([...list, msg]));
       this.scrollTrigger.next();
       if (msg.senderId !== this.currentUserId) {
         this.scheduleMarkAsRead();
@@ -162,8 +153,8 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       if (!payload || payload.conversationId !== id) return;
       if (payload.readerId === this.currentUserId) return;
 
-      this.allMessages.update(list =>
-        list.map(m => (m.senderId === this.currentUserId ? { ...m, isRead: true } : m))
+      this.allMessages.update((list) =>
+        list.map((m) => (m.senderId === this.currentUserId ? { ...m, isRead: true } : m)),
       );
     });
 
@@ -186,8 +177,6 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
       this.removeMessageLocally(payload.messageId);
     });
-
-   
   }
 
   ngOnInit(): void {
@@ -196,13 +185,12 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       .subscribe(([params, data]) => {
         const id = Number(params.get('id'));
         if (id && id !== this.conversationId()) {
-          
-          const resolved = data['conversation'] as any; 
+          const resolved = data['conversation'] as any;
           if (resolved) {
             this.conversationName.set(resolved.otherUserName);
             const parsedOtherUserId = Number(resolved.otherUserId);
             this.otherUserId.set(parsedOtherUserId);
-            
+
             this.otherUserOnline.set(resolved.isOnline);
           }
           void this.openConversation(id);
@@ -211,7 +199,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
     this.typingSubject
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
-      .subscribe(convId => {
+      .subscribe((convId) => {
         void this.chatHub.typing(convId);
       });
 
@@ -219,25 +207,21 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(50), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.scrollToBottom());
 
-   this.chatHub.userOnline$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(userId => {
-        if (userId && Number(userId) === Number(this.otherUserId())) {
-          this.otherUserOnline.set(true);
-        }
-      });
+    this.chatHub.userOnline$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((userId) => {
+      if (userId && Number(userId) === Number(this.otherUserId())) {
+        this.otherUserOnline.set(true);
+      }
+    });
 
-    this.chatHub.userOffline$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(userId => {
-        if (userId && Number(userId) === Number(this.otherUserId())) {
-          this.otherUserOnline.set(false);
-        }
-      });
+    this.chatHub.userOffline$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((userId) => {
+      if (userId && Number(userId) === Number(this.otherUserId())) {
+        this.otherUserOnline.set(false);
+      }
+    });
   }
 
   // ── Open Conversation ─────────────────────────────────────
- private async openConversation(id: number): Promise<void> {
+  private async openConversation(id: number): Promise<void> {
     const previous = this.conversationId();
     if (previous) {
       await this.chatHub.leaveConversation(previous).catch(() => {});
@@ -280,13 +264,11 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     const id = this.conversationId();
     if (!id) return;
     try {
-      const data = await firstValueFrom(
-        this.chatService.getMessages(id, this.page, PAGE_SIZE)
-      );
+      const data = await firstValueFrom(this.chatService.getMessages(id, this.page, PAGE_SIZE));
       if (data.length < PAGE_SIZE) this.hasMore.set(false);
       const ordered = data.reverse();
       this.allMessages.set(this.limitMessages(ordered));
-      ordered.forEach(m => this.seenMessageIds.add(m.id));
+      ordered.forEach((m) => this.seenMessageIds.add(m.id));
       this.loading.set(false);
       this.scrollToBottomDeferred();
     } catch {
@@ -302,12 +284,10 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     this.page++;
     const prevScrollHeight = this.messagesArea?.nativeElement?.scrollHeight ?? 0;
     try {
-      const data = await firstValueFrom(
-        this.chatService.getMessages(id, this.page, PAGE_SIZE)
-      );
+      const data = await firstValueFrom(this.chatService.getMessages(id, this.page, PAGE_SIZE));
       if (data.length < PAGE_SIZE) this.hasMore.set(false);
-      this.allMessages.update(list => [...data.reverse(), ...list]);
-      data.forEach(m => this.seenMessageIds.add(m.id));
+      this.allMessages.update((list) => [...data.reverse(), ...list]);
+      data.forEach((m) => this.seenMessageIds.add(m.id));
       this.scrollAdjustRafId = requestAnimationFrame(() => {
         if (this.isDestroyed) return;
         const el = this.messagesArea?.nativeElement;
@@ -326,7 +306,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   }
 
   // ── Send Text ─────────────────────────────────────────────
- async send(event?: Event): Promise<void> {
+  async send(event?: Event): Promise<void> {
     event?.preventDefault();
 
     if (this.sending() || this.messageControl.invalid) return;
@@ -357,7 +337,11 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
         for (const image of queuedImages) {
           const { url } = await firstValueFrom(this.chatService.uploadImage(image.file));
-          await this.chatHub.sendMessage({ conversationId: id, content: url, messageType: 'image' });
+          await this.chatHub.sendMessage({
+            conversationId: id,
+            content: url,
+            messageType: 'image',
+          });
           this.removePendingImage(image.id);
         }
       }
@@ -373,7 +357,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
   // ── Send Image ────────────────────────────────────────────
   toggleAttachMenu(): void {
-    this.showAttachMenu.update(v => !v);
+    this.showAttachMenu.update((v) => !v);
   }
 
   closeAttachMenu(): void {
@@ -395,7 +379,9 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     let hasLargeFile = false;
 
     const existing = new Set(
-      this.pendingImages().map(img => `${img.file.name}-${img.file.size}-${img.file.lastModified}`)
+      this.pendingImages().map(
+        (img) => `${img.file.name}-${img.file.size}-${img.file.lastModified}`,
+      ),
     );
 
     const validImages: PendingImage[] = [];
@@ -418,12 +404,12 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       validImages.push({
         id: Date.now() + Math.floor(Math.random() * 10000),
         file,
-        previewUrl: URL.createObjectURL(file)
+        previewUrl: URL.createObjectURL(file),
       });
     }
 
     if (validImages.length > 0) {
-      this.pendingImages.update(list => [...list, ...validImages]);
+      this.pendingImages.update((list) => [...list, ...validImages]);
       this.closeAttachMenu();
     }
 
@@ -434,11 +420,11 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   }
 
   removePendingImage(imageId: number): void {
-    const image = this.pendingImages().find(img => img.id === imageId);
+    const image = this.pendingImages().find((img) => img.id === imageId);
     if (!image) return;
 
     URL.revokeObjectURL(image.previewUrl);
-    this.pendingImages.update(list => list.filter(img => img.id !== imageId));
+    this.pendingImages.update((list) => list.filter((img) => img.id !== imageId));
   }
 
   clearPendingImages(): void {
@@ -474,7 +460,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
           this.showError('CHAT.SEND_FAILED');
         }
       },
-      () => this.showError('CHAT.LOCATION_DENIED')
+      () => this.showError('CHAT.LOCATION_DENIED'),
     );
   }
 
@@ -498,13 +484,12 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       };
 
       this.mediaRecorder.onstop = () => {
-        stream.getTracks().forEach(t => t.stop());
+        stream.getTracks().forEach((t) => t.stop());
         this.uploadVoice();
       };
 
       this.mediaRecorder.start();
       this.isRecording.set(true);
-
     } catch {
       this.showError('CHAT.MIC_DENIED');
     }
@@ -547,7 +532,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   toggleVoicePlayback(messageId: number, audio: HTMLAudioElement): void {
     this.voiceElements.set(messageId, audio);
 
-    const msg = this.allMessages().find(m => m.id === messageId);
+    const msg = this.allMessages().find((m) => m.id === messageId);
 
     if (this.currentPlayingVoiceId !== null && this.currentPlayingVoiceId !== messageId) {
       const currentAudio = this.voiceElements.get(this.currentPlayingVoiceId);
@@ -625,7 +610,9 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   formatAudioTime(seconds: number): string {
     if (!Number.isFinite(seconds) || seconds <= 0) return '00:00';
     const total = Math.floor(seconds);
-    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const m = Math.floor(total / 60)
+      .toString()
+      .padStart(2, '0');
     const s = (total % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   }
@@ -650,7 +637,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
 
   resolveImageUrl(url: string): string {
     if (!url || url.startsWith('http://') || url.startsWith('https://')) return url;
-    const base   = environment.apiBaseUrl;
+    const base = environment.apiBaseUrl;
     const origin = base.substring(0, base.lastIndexOf('/api'));
     return `${origin}${url}`;
   }
@@ -717,7 +704,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
- ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.isDestroyed = true;
 
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
@@ -726,16 +713,21 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     this.clearScrollDeferredTimers();
 
     if (this.mediaRecorder && this.isRecording()) {
-      try { this.mediaRecorder.stop(); } catch {}
+      try {
+        this.mediaRecorder.stop();
+      } catch {}
     }
-    this.voiceElements.forEach(audio => {
-      try { audio.pause(); audio.src = ''; } catch {}
+    this.voiceElements.forEach((audio) => {
+      try {
+        audio.pause();
+        audio.src = '';
+      } catch {}
     });
     this.voiceElements.clear();
     this.clearPendingImages();
 
     this.teardownRealtime();
-    
+
     if (this.hasConnected) {
       this.chatHub.release();
     }
@@ -749,7 +741,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     }
   }
 
- private async ensureConnectedToConversation(id: number): Promise<void> {
+  private async ensureConnectedToConversation(id: number): Promise<void> {
     if (!this.chatHub.isConnected()) {
       await this.chatHub.connect();
       this.hasConnected = true;
@@ -808,7 +800,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   }
 
   private removeMessageLocally(messageId: number): void {
-    this.allMessages.update(list => list.filter(m => m.id !== messageId));
+    this.allMessages.update((list) => list.filter((m) => m.id !== messageId));
     this.seenMessageIds.delete(messageId);
     const audio = this.voiceElements.get(messageId);
     if (audio) {

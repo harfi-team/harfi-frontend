@@ -23,11 +23,11 @@ export class ChatService {
 
   getMessages(conversationId: number, page = 1, pageSize = 20): Observable<MessageDto[]> {
     return this.http.get<MessageDto[]>(
-      `${this.base}/${conversationId}/messages?page=${page}&pageSize=${pageSize}`
+      `${this.base}/${conversationId}/messages?page=${page}&pageSize=${pageSize}`,
     );
   }
 
-    uploadImage(file: File): Observable<{ url: string }> {
+  uploadImage(file: File): Observable<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<{ url: string }>(`${this.base}/upload-image`, formData);
