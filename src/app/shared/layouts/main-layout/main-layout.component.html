@@ -18,12 +18,27 @@
         <span class="material-symbols-outlined search-icon">search</span>
         <input type="text" class="search-input" [placeholder]="'ADMIN.SEARCH_ORDER' | translate" />
       </div>
-      <button class="icon-btn">
+            <button
+        class="icon-btn notification-btn"
+        type="button"
+        (click)="goToNotifications()"
+        [class.active]="currentUrl().includes('/notifications')"
+        [attr.aria-label]="'NOTIFICATIONS.TITLE' | translate"
+      >
         <span class="material-symbols-outlined">notifications</span>
+        @if (unreadCount() > 0) {
+          <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+        }
       </button>
-      <div class="user-avatar"(click)="goToProfile()">
+      <button
+        class="user-avatar"
+        type="button"
+        (click)="goToProfile()"
+        [attr.aria-label]="'NAV.PROFILE' | translate"
+      >
         <span class="material-symbols-outlined">person</span>
-      </div>
+      </button>
+
     </div>
   </header>
   <main class="main-content">
