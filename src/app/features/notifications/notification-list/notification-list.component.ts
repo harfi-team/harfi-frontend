@@ -1,12 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  effect,
-  inject,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy,
+   Component,
+    DestroyRef,
+    effect,
+    inject,
+    OnDestroy,
+    ChangeDetectorRef,
+    signal } from '@angular/core';
 
 const LOCATION_COORDS_REGEX = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -18,6 +17,7 @@ import { NotificationHubService } from '../../../core/hubs/notification.hub.serv
 import { NotificationDto } from '../../../core/models/notification.models';
 import { RelativeTimePipe } from '../../../shared/pipes/relative-time.pipe';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+
 
 @Component({
   standalone: true,
@@ -33,6 +33,7 @@ export class NotificationListComponent implements OnDestroy {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private errorTimer: ReturnType<typeof setTimeout> | null = null;
+  private cdr = inject(ChangeDetectorRef);
 
   readonly notifications = signal<NotificationDto[]>([]);
   readonly loading = signal(true);
@@ -48,15 +49,16 @@ export class NotificationListComponent implements OnDestroy {
       // page still works with polling/API fallback if realtime connection fails
     });
 
-    effect(() => {
-      const notif = this.incomingNotif();
-      if (!notif) return;
+   effect(() => {
+    const notif = this.incomingNotif();
+    if (!notif) return;
 
-      this.notifications.update((list) => {
-        if (list.some((n) => n.id === notif.id)) return list;
+      this.notifications.update(list => {
+        if (list.some(n => n.id === notif.id)) return list;
         return [notif, ...list];
       });
       this.syncUnreadCount();
+      this.cdr.markForCheck();
     });
   }
 

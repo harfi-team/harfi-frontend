@@ -28,6 +28,7 @@ export class NavbarComponent {
     this.realtimeNotifications.start();
   }
 
+
   openNotifications(): void {
     this.router.navigate(['/notifications']);
   }
