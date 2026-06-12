@@ -6,6 +6,8 @@ import {
   CraftsmanDto,
   CraftsmanSearchParams,
   CraftsmanServiceSlug,
+  CraftsmanRegistrationDto,
+  CraftsmanReviewsResponse,
 } from '../../core/models/craftsman.models';
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +28,16 @@ export class CraftsmanService {
     roofing: 'عزل',
   };
 
+  // ══════════════════════════════════════════════
+  //  REGISTER (Craftsman registration form)
+  // ══════════════════════════════════════════════
+  register(payload: CraftsmanRegistrationDto): Observable<any> {
+    return this.http.post(`${this.base}/register`, payload);
+  }
+
+  // ══════════════════════════════════════════════
+  //  PROFILE
+  // ══════════════════════════════════════════════
   getCraftsman(id: string): Observable<CraftsmanDto | null> {
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
       map((response) => this.normalizeCraftsman(response)),
@@ -52,13 +64,25 @@ export class CraftsmanService {
     );
   }
 
-  // Restored from HEAD — reviews live on a separate endpoint: GET /api/reviews/craftsman/{id}
-  getCraftsmanReviews(craftsmanId: string | number): Observable<any> {
-    return this.http
-      .get<any>(`${this.reviewsBase}/craftsman/${craftsmanId}`)
-      .pipe(catchError(() => of({ reviews: [], averageStars: 0, totalReviews: 0 })));
+  // ══════════════════════════════════════════════
+  //  REVIEWS — GET /api/reviews/craftsman/{id}
+  // ══════════════════════════════════════════════
+  getCraftsmanReviews(craftsmanId: string | number): Observable<CraftsmanReviewsResponse> {
+    return this.http.get<CraftsmanReviewsResponse>(`${this.reviewsBase}/craftsman/${craftsmanId}`).pipe(
+      catchError(() =>
+        of({
+          craftsmanId: Number(craftsmanId),
+          totalReviews: 0,
+          averageStars: 0,
+          reviews: [],
+        } as CraftsmanReviewsResponse),
+      ),
+    );
   }
 
+  // ══════════════════════════════════════════════
+  //  HELPERS
+  // ══════════════════════════════════════════════
   getServiceLabel(service: CraftsmanServiceSlug): string {
     return `SERVICES.${service.toUpperCase()}`;
   }
@@ -135,6 +159,14 @@ export class CraftsmanService {
       priceMin: priceMin ?? undefined,
       priceMax: priceMax ?? undefined,
       minPrice: priceMin ?? undefined,
+      portfolioImages: this.pickStringArray(typed, [
+        'portfolioImages',
+        'PortfolioImages',
+        'workGallery',
+        'WorkGallery',
+        'gallery',
+        'Gallery',
+      ]),
     };
   }
 
@@ -219,6 +251,17 @@ export class CraftsmanService {
       }
     }
     return null;
+  }
+
+  private pickStringArray(item: Record<string, unknown>, keys: string[]): string[] | undefined {
+    for (const key of keys) {
+      const value = item[key];
+      if (Array.isArray(value)) {
+        const filtered = value.filter((v): v is string => typeof v === 'string' && v.trim() !== '');
+        if (filtered.length) return filtered;
+      }
+    }
+    return undefined;
   }
 
   private pickString(item: Record<string, unknown>, keys: string[]): string | undefined {

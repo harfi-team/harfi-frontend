@@ -1,142 +1,283 @@
 <div class="register-container" dir="rtl">
-  
+
+  <!-- ══════════════════════════════════════ -->
+  <!--  BANNER SECTION                        -->
+  <!-- ══════════════════════════════════════ -->
   <div class="banner-section gradient-bg">
     <div class="banner-content">
+      <div class="brand-logo">
+        <span class="logo-icon">🔧</span>
+        <span class="logo-text">حرفي</span>
+      </div>
       <h2>انضم إلى حرفي</h2>
-      <p>سجل كحرفي محترف وابدأ في استقبال طلبات العملاء في منطقتك.</p>
-      
+      <p>سجّل كحرفي محترف وابدأ في استقبال طلبات العملاء في منطقتك.</p>
+
       <div class="steps-indicator">
-         <div class="step completed"><span>1</span> البيانات الشخصية</div>
-         <div class="step active"><span>2</span> بيانات العمل</div>
-         <div class="step"><span>3</span> التحقق والمراجعة</div>
+        <div class="step completed">
+          <span class="step-num">✓</span>
+          <span class="step-label">البيانات الشخصية</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step active">
+          <span class="step-num">2</span>
+          <span class="step-label">بيانات العمل</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span class="step-label">التحقق والمراجعة</span>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════ -->
+  <!--  FORM SECTION                          -->
+  <!-- ══════════════════════════════════════ -->
   <div class="form-section">
     <div class="form-header">
       <h3>بيانات العمل</h3>
       <p>أخبرنا المزيد عن مهاراتك والخدمات التي تقدمها.</p>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
 
+      <!-- مجال التخصص -->
       <div class="form-group">
-        <label>مجالات التخصص <span class="text-secondary">(اختر مجالك)</span></label>
+        <label class="form-label">
+          مجالات التخصص
+          <span class="label-hint">(اختر مجالك)</span>
+        </label>
         <div class="chips-container">
-          <button type="button"
-                  *ngFor="let type of serviceTypes"
-                  class="harfi-chip"
-                  [class.active]="registerForm.get('serviceType')?.value === type"
-                  (click)="setServiceType(type)">
+          <button
+            type="button"
+            *ngFor="let type of serviceTypes"
+            class="harfi-chip"
+            [class.active]="f['serviceType'].value === type"
+            (click)="setServiceType(type)">
             {{ type }}
           </button>
         </div>
-        <small class="error-text" *ngIf="registerForm.get('serviceType')?.touched && registerForm.get('serviceType')?.invalid">
+        <small class="error-text"
+          *ngIf="f['serviceType'].touched && f['serviceType'].invalid">
           يرجى اختيار مجال التخصص.
         </small>
       </div>
 
-      <div class="row">
-        <div class="form-group col">
-          <label>المدينة</label>
-          <select class="form-control" formControlName="city">
+      <!-- المدينة + الحي -->
+      <div class="row-grid">
+        <div class="form-group">
+          <label class="form-label">المدينة <span class="required-star">*</span></label>
+          <select class="form-control" formControlName="city"
+            [class.is-invalid]="f['city'].touched && f['city'].invalid">
             <option value="" disabled selected>اختر مدينتك</option>
             <option value="القاهرة">القاهرة</option>
             <option value="الإسكندرية">الإسكندرية</option>
             <option value="الجيزة">الجيزة</option>
             <option value="المنصورة">المنصورة</option>
             <option value="طنطا">طنطا</option>
+            <option value="المحلة الكبرى">المحلة الكبرى</option>
+            <option value="أسيوط">أسيوط</option>
+            <option value="الفيوم">الفيوم</option>
+            <option value="سوهاج">سوهاج</option>
+            <option value="بورسعيد">بورسعيد</option>
+            <option value="الزقازيق">الزقازيق</option>
+            <option value="شبرا الخيمة">شبرا الخيمة</option>
           </select>
+          <small class="error-text"
+            *ngIf="f['city'].touched && f['city'].invalid">
+            يرجى اختيار المدينة.
+          </small>
         </div>
 
-        <div class="form-group col">
-          <label>الحي / المنطقة</label>
-          <input type="text" class="form-control" formControlName="neighborhood" placeholder="أدخل الحي">
+        <div class="form-group">
+          <label class="form-label">الحي / المنطقة <span class="required-star">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="neighborhood"
+            placeholder="أدخل اسم الحي أو المنطقة"
+            [class.is-invalid]="f['neighborhood'].touched && f['neighborhood'].invalid">
+          <small class="error-text"
+            *ngIf="f['neighborhood'].touched && f['neighborhood'].invalid">
+            يرجى إدخال الحي أو المنطقة (حرفان على الأقل).
+          </small>
         </div>
       </div>
 
-      <div class="row align-items-end">
-        <div class="form-group col">
-          <label>سنوات الخبرة</label>
-          <div class="counter-input">
-            <button type="button" class="counter-btn" (click)="incrementExperience()">+</button>
-            <span class="counter-value">{{ registerForm.get('experience')?.value }} سنوات</span>
-            <button type="button" class="counter-btn" (click)="decrementExperience()">-</button>
-          </div>
-        </div>
-      </div>
-
+      <!-- سنوات الخبرة -->
       <div class="form-group">
-          <label>نطاق السعر المتوقع (للساعة / للزيارة)</label>
-          <div class="price-range-inputs">
-            <div class="price-input">
-              <span>من</span>
-              <input type="number" class="form-control" formControlName="priceRangeMin" placeholder="ر.س">
-            </div>
-            <div class="price-input">
-              <span>إلى</span>
-              <input type="number" class="form-control" formControlName="priceRangeMax" placeholder="ر.س">
-            </div>
-          </div>
-      </div>
-
-      <div class="form-group">
-        <label>نبذة عنك وعن عملك</label>
-        <textarea class="form-control" formControlName="bio" rows="4" placeholder="اكتب نبذة مختصرة تظهر للعملاء في ملفك الشخصي..."></textarea>
-      </div>
-
-     <div class="form-group">
-        <label>معرض الأعمال (اختياري)</label>
-        <p class="subtitle">أضف صوراً لأعمال سابقة كمعرض لعملائك.</p>
-        <div class="upload-container">
-          <div class="upload-box" (click)="fileInput.click()">
-             <span class="icon">📸</span>
-             <span>إضافة صورة</span>
-             <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
-          </div>
-          <div class="upload-box empty"></div>
-          <div class="upload-box empty"></div>
+        <label class="form-label">سنوات الخبرة</label>
+        <div class="counter-input">
+          <button type="button" class="counter-btn" (click)="decrementExperience()">−</button>
+          <span class="counter-value">{{ f['experience'].value }} سنوات</span>
+          <button type="button" class="counter-btn" (click)="incrementExperience()">+</button>
         </div>
-        <small *ngIf="selectedFileName" class="text-success mt-2 d-block">تم إرفاق: {{ selectedFileName }}</small>
       </div>
 
-      <div class="form-group mt-4">
-        <label>رابط صورة الهوية (National ID URL)</label>
-        <p class="subtitle">يرجى إدخال الرابط المباشر لصورة بطاقة الهوية الخاصة بك.</p>
-        <input type="url" class="form-control" formControlName="nationalIdUrl" placeholder="https://example.com/my-id-image.jpg" dir="ltr">
-        
-        <small class="error-text" *ngIf="registerForm.get('nationalIdUrl')?.touched && registerForm.get('nationalIdUrl')?.invalid">
-          يرجى إدخال رابط صحيح لصورة الهوية.
+      <!-- نطاق السعر -->
+      <div class="form-group">
+        <label class="form-label">نطاق السعر المتوقع <span class="label-hint">(للساعة / للزيارة)</span></label>
+        <div class="price-range-inputs">
+          <div class="price-input">
+            <label class="price-sub-label">من</label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                class="form-control"
+                formControlName="priceRangeMin"
+                placeholder="0"
+                min="0"
+                [class.is-invalid]="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
+              <span class="input-suffix">ج.م</span>
+            </div>
+          </div>
+          <div class="price-separator">—</div>
+          <div class="price-input">
+            <label class="price-sub-label">إلى</label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                class="form-control"
+                formControlName="priceRangeMax"
+                placeholder="0"
+                min="1"
+                [class.is-invalid]="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
+              <span class="input-suffix">ج.م</span>
+            </div>
+          </div>
+        </div>
+        <small class="error-text" *ngIf="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
+          يرجى إدخال الحد الأدنى للسعر.
+        </small>
+        <small class="error-text" *ngIf="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
+          يرجى إدخال الحد الأقصى للسعر (أكبر من صفر).
+        </small>
+        <small class="error-text" *ngIf="priceRangeInvalid">
+          يجب أن يكون الحد الأقصى للسعر أكبر من الحد الأدنى.
         </small>
       </div>
 
-      <div class="register-card" *ngIf="!isSubmitted">
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    
-    <div class="form-actions mt-5 d-flex justify-content-center">
-      <button type="submit" class="gradient-btn" [disabled]="registerForm.invalid">
-        إرسال البيانات
-      </button>
-    </div>
-    
-    <p *ngIf="errorMessage" class="text-danger text-center mt-3">{{ errorMessage }}</p>
-  </form>
-</div>
+      <!-- نبذة -->
+      <div class="form-group">
+        <label class="form-label">نبذة عنك وعن عملك <span class="required-star">*</span></label>
+        <textarea
+          class="form-control"
+          formControlName="bio"
+          rows="4"
+          placeholder="اكتب نبذة مختصرة تظهر للعملاء في ملفك الشخصي..."
+          [class.is-invalid]="f['bio'].touched && f['bio'].invalid">
+        </textarea>
+        <div class="bio-footer">
+          <div>
+            <small class="error-text"
+              *ngIf="f['bio'].touched && f['bio'].hasError('required')">
+              يرجى كتابة نبذة عنك.
+            </small>
+            <small class="error-text"
+              *ngIf="f['bio'].touched && f['bio'].hasError('minlength')">
+              النبذة يجب أن تكون 20 حرفاً على الأقل.
+            </small>
+          </div>
+          <small class="char-count" [class.over-limit]="bioLength > 300">
+            {{ bioLength }} / 300
+          </small>
+        </div>
+      </div>
 
-<ng-template #successTemplate>
-  <div class="success-container text-center p-5 animate-fade">
-    <div class="status-icon mb-4" style="font-size: 3.5rem;">⏳</div>
-    <h3 class="mb-2" style="color: var(--brand-purple);">تم استلام بياناتك بنجاح</h3>
-    <p class="text-secondary">Your application is under review.</p>
-    <p class="small text-muted">جاري مراجعة حسابك كحرفي من قبل الإدارة وسنقوم بتفعيل حسابك قريباً.</p>
-  </div>
-</ng-template>
+      <!-- معرض الأعمال -->
+      <div class="form-group">
+        <label class="form-label">
+          معرض الأعمال
+          <span class="label-hint">(اختياري)</span>
+        </label>
+        <p class="field-subtitle">أضف صوراً لأعمال سابقة كمعرض لعملائك.</p>
+        <div class="upload-container">
+          <div class="upload-box upload-action" (click)="fileInput.click()">
+            <span class="upload-icon">📸</span>
+            <span class="upload-text">إضافة صورة</span>
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              hidden>
+          </div>
+          <div class="upload-box upload-empty"></div>
+          <div class="upload-box upload-empty"></div>
+        </div>
+        <small *ngIf="selectedFileName" class="success-text mt-2">
+          ✓ تم إرفاق: {{ selectedFileName }}
+        </small>
+      </div>
 
-<div *ngIf="isSubmitted">
-  <ng-container *ngTemplateOutlet="successTemplate"></ng-container>
-</div>
+      <!-- رابط الهوية -->
+      <div class="form-group">
+        <label class="form-label">
+          رابط صورة الهوية
+          <span class="required-star">*</span>
+        </label>
+        <p class="field-subtitle">يرجى إدخال الرابط المباشر لصورة بطاقة الهوية الخاصة بك.</p>
+        <input
+          type="url"
+          class="form-control"
+          formControlName="nationalIdUrl"
+          placeholder="https://example.com/my-id-image.jpg"
+          dir="ltr"
+          [class.is-invalid]="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
+        <small class="error-text"
+          *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
+          يرجى إدخال رابط صحيح يبدأ بـ https://
+        </small>
+      </div>
+
+      <!-- رسالة الخطأ العامة -->
+      <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+        <span class="alert-icon">⚠️</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- زرار الإرسال -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="gradient-btn btn-full"
+          [disabled]="isLoading">
+          <ng-container *ngIf="!isLoading">
+            <span>إرسال البيانات</span>
+            <span class="btn-arrow">←</span>
+          </ng-container>
+          <ng-container *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+            <span>جاري الإرسال...</span>
+          </ng-container>
+        </button>
+      </div>
 
     </form>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  SUCCESS MODAL                                             -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showSuccessModal" (click)="goHome()">
+  <div class="modal-card" (click)="$event.stopPropagation()" dir="rtl">
+    <div class="modal-success-icon">
+      <span class="check-circle">✅</span>
+    </div>
+    <h3 class="modal-title">تم إرسال بياناتك بنجاح!</h3>
+    <p class="modal-body-text">
+      شكراً لتسجيلك في منصة حرفي. سيقوم فريقنا بمراجعة بياناتك
+      وتفعيل حسابك في أقرب وقت ممكن.
+    </p>
+    <div class="modal-status-box">
+      <span class="badge-pending">⏳ قيد المراجعة</span>
+      <p class="modal-hint">ستصلك إشعار عند قبول طلبك</p>
+    </div>
+    <button class="gradient-btn btn-full mt-4" (click)="goHome()">
+      العودة للصفحة الرئيسية
+    </button>
   </div>
 </div>

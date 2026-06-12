@@ -1,8 +1,7 @@
-<!-- RESOLVED — keep origin/dev, add missing fields -->
-<div class="profile-page">
+<div class="profile-page" dir="rtl">
   <div class="page-header">
     <a class="back-btn" routerLink="/craftsmen">
-      <span class="material-symbols-outlined">arrow_back</span>
+      <span class="material-symbols-outlined">arrow_forward</span>
       <span>{{ 'CRAFTSMEN_FILTER.BACK_HOME' | translate }}</span>
     </a>
   </div>
@@ -19,6 +18,10 @@
     </div>
   } @else {
     <div class="profile-layout">
+
+      <!-- ══════════════════════════════════ -->
+      <!--  IDENTITY CARD (Sidebar)            -->
+      <!-- ══════════════════════════════════ -->
       <aside class="identity-card">
         <div class="avatar-wrap">
           @if (craftsman()!.avatarUrl) {
@@ -29,89 +32,216 @@
         </div>
 
         <h1 class="craftsman-name">{{ craftsman()!.name }}</h1>
-        <span class="specialty-badge">{{ craftsman()!.specialty }}</span>
+        <span class="specialty-badge">{{ getServiceLabel(craftsman()!) | translate }}</span>
+
+        @if (craftsman()!.city) {
+          <div class="location-row">
+            <span class="material-symbols-outlined location-icon">location_on</span>
+            <span>
+              {{ craftsman()!.city }}
+              @if (craftsman()!.neighborhood) {
+                ، {{ craftsman()!.neighborhood }}
+              }
+            </span>
+          </div>
+        }
 
         <div class="rating-row">
           <span class="material-symbols-outlined star-icon">star</span>
-          <span class="rating-val">{{ craftsman()!.rating }}</span>
+          <span class="rating-val">{{ displayRating(craftsman()!) | number:'1.1-1' }}</span>
           <span class="rating-count">
-            ({{ craftsman()!.reviewsCount }} {{ 'CRAFTSMEN_FILTER.REVIEWS' | translate }})
+            ({{ displayReviewsCount(craftsman()!) }} {{ 'CRAFTSMEN_FILTER.REVIEWS' | translate }})
           </span>
+        </div>
+
+        <!-- إحصائيات سريعة -->
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <span class="quick-stat-value">{{ craftsman()!.experienceYears }}</span>
+            <span class="quick-stat-label">{{ 'HOME.YEARS' | translate }}</span>
+          </div>
+          <div class="quick-stat-divider"></div>
+          <div class="quick-stat">
+            <span class="quick-stat-value">+{{ displayReviewsCount(craftsman()!) }}</span>
+            <span class="quick-stat-label">{{ 'CRAFTSMAN_PROFILE.JOBS_DONE' | translate }}</span>
+          </div>
+          @if (getPriceRange(craftsman()!)) {
+            <div class="quick-stat-divider"></div>
+            <div class="quick-stat">
+              <span class="quick-stat-value">{{ getPriceRange(craftsman()!) }}</span>
+              <span class="quick-stat-label">{{ 'HOME.CURRENCY' | translate }}</span>
+            </div>
+          }
         </div>
 
         @if (isCustomer) {
           <button type="button" class="assign-btn" (click)="assignJob(craftsman()!)">
-            <span class="material-symbols-outlined">add_circle</span>
-            <span>{{ 'HOME.APPLY_NOW' | translate }}</span>
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            <span>{{ 'CRAFTSMAN_PROFILE.BOOK_NOW' | translate }}</span>
           </button>
+
+          <a class="contact-btn" routerLink="/chat">
+            <span class="material-symbols-outlined">forum</span>
+            <span>{{ 'CRAFTSMAN_PROFILE.CONTACT' | translate }}</span>
+          </a>
         }
       </aside>
 
+      <!-- ══════════════════════════════════ -->
+      <!--  DETAILS CARD (Main content)        -->
+      <!-- ══════════════════════════════════ -->
       <section class="details-card">
-        @if (craftsman()!.bio) {
-          <div class="detail-section">
-            <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}</h2>
-            <p class="bio-text">{{ craftsman()!.bio }}</p>
-          </div>
-        }
 
-        <div class="detail-section">
-          <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.DETAILS' | translate }}</h2>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="material-symbols-outlined stat-icon">location_on</span>
-              <div>
-                <span class="stat-label">{{ 'CITY' | translate }}</span>
-                <!-- API returns both city and neighborhood -->
-                <span class="stat-value">
-                  {{ craftsman()!.city || ('JOBS.NOT_SET' | translate) }}
-                  @if (craftsman()!.neighborhood) {
-                    ، {{ craftsman()!.neighborhood }}
+        <!-- التابات -->
+        <div class="tabs-bar">
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeTab() === 'about'"
+            (click)="setTab('about')">
+            {{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeTab() === 'portfolio'"
+            (click)="setTab('portfolio')">
+            {{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeTab() === 'reviews'"
+            (click)="setTab('reviews')">
+            {{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}
+            @if (displayReviewsCount(craftsman()!) > 0) {
+              <span class="tab-count">{{ displayReviewsCount(craftsman()!) }}</span>
+            }
+          </button>
+        </div>
+
+        <!-- ── تاب: نبذة ── -->
+        @if (activeTab() === 'about') {
+          <div class="tab-content">
+            @if (craftsman()!.bio) {
+              <div class="detail-section">
+                <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}</h2>
+                <p class="bio-text">{{ craftsman()!.bio }}</p>
+              </div>
+            }
+
+            <div class="detail-section">
+              <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.DETAILS' | translate }}</h2>
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <span class="material-symbols-outlined stat-icon">location_on</span>
+                  <div>
+                    <span class="stat-label">{{ 'CITY' | translate }}</span>
+                    <span class="stat-value">
+                      {{ craftsman()!.city || ('JOBS.NOT_SET' | translate) }}
+                      @if (craftsman()!.neighborhood) {
+                        ، {{ craftsman()!.neighborhood }}
+                      }
+                    </span>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <span class="material-symbols-outlined stat-icon">work_history</span>
+                  <div>
+                    <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.EXPERIENCE' | translate }}</span>
+                    <span class="stat-value">
+                      {{ craftsman()!.experienceYears }} {{ 'HOME.YEARS' | translate }}
+                    </span>
+                  </div>
+                </div>
+                @if (getPriceRange(craftsman()!)) {
+                  <div class="stat-item">
+                    <span class="material-symbols-outlined stat-icon">payments</span>
+                    <div>
+                      <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.PRICE_RANGE' | translate }}</span>
+                      <span class="stat-value">
+                        {{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }}
+                      </span>
+                    </div>
+                  </div>
+                }
+                <div class="stat-item">
+                  <span class="material-symbols-outlined stat-icon">build</span>
+                  <div>
+                    <span class="stat-label">{{ 'SPECIALTY' | translate }}</span>
+                    <span class="stat-value">{{ getServiceLabel(craftsman()!) | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            @if (craftsman()!.services.length) {
+              <div class="detail-section">
+                <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.SERVICES' | translate }}</h2>
+                <div class="chips">
+                  @for (service of craftsman()!.services; track service) {
+                    <span class="chip">{{ 'SERVICES.' + service.toUpperCase() | translate }}</span>
                   }
-                </span>
-              </div>
-            </div>
-            <div class="stat-item">
-              <span class="material-symbols-outlined stat-icon">work_history</span>
-              <div>
-                <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.EXPERIENCE' | translate }}</span>
-                <span class="stat-value">
-                  {{ craftsman()!.experienceYears }} {{ 'HOME.YEARS' | translate }}
-                </span>
-              </div>
-            </div>
-            <!-- API returns priceRangeMin + priceRangeMax — restored from HEAD -->
-            @if (getPriceRange(craftsman()!)) {
-              <div class="stat-item">
-                <span class="material-symbols-outlined stat-icon">payments</span>
-                <div>
-                  <span class="stat-label">{{ 'CRAFTSMAN_PROFILE.PRICE_RANGE' | translate }}</span>
-                  <span class="stat-value">
-                    {{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }}
-                  </span>
                 </div>
               </div>
             }
-            <div class="stat-item">
-              <span class="material-symbols-outlined stat-icon">build</span>
-              <div>
-                <span class="stat-label">{{ 'SPECIALTY' | translate }}</span>
-                <span class="stat-value">{{ getServiceLabel(craftsman()!) | translate }}</span>
+
+            <!-- بادجات الثقة -->
+            <div class="detail-section">
+              <div class="trust-badges">
+                <div class="trust-badge">
+                  <span class="material-symbols-outlined trust-icon">verified</span>
+                  <div>
+                    <span class="trust-title">{{ 'CRAFTSMAN_PROFILE.QUALITY_GUARANTEE' | translate }}</span>
+                    <span class="trust-desc">{{ 'CRAFTSMAN_PROFILE.QUALITY_GUARANTEE_DESC' | translate }}</span>
+                  </div>
+                </div>
+                <div class="trust-badge">
+                  <span class="material-symbols-outlined trust-icon">bolt</span>
+                  <div>
+                    <span class="trust-title">{{ 'CRAFTSMAN_PROFILE.FAST_RESPONSE' | translate }}</span>
+                    <span class="trust-desc">{{ 'CRAFTSMAN_PROFILE.FAST_RESPONSE_DESC' | translate }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        }
 
-        @if (craftsman()!.services.length) {
-          <div class="detail-section">
-            <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.SERVICES' | translate }}</h2>
-            <div class="chips">
-              @for (service of craftsman()!.services; track service) {
-                <span class="chip">{{ 'SERVICES.' + service.toUpperCase() | translate }}</span>
+        <!-- ── تاب: أعمال سابقة ── -->
+        @if (activeTab() === 'portfolio') {
+          <div class="tab-content">
+            <div class="detail-section">
+              <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}</h2>
+              @if (craftsman()!.portfolioImages && craftsman()!.portfolioImages!.length) {
+                <div class="portfolio-grid">
+                  @for (img of craftsman()!.portfolioImages; track img) {
+                    <div class="portfolio-item">
+                      <img [src]="img" alt="" loading="lazy" />
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-portfolio">
+                  <span class="material-symbols-outlined">photo_library</span>
+                  <p>{{ 'CRAFTSMAN_PROFILE.NO_PORTFOLIO' | translate }}</p>
+                </div>
               }
             </div>
           </div>
         }
+
+        <!-- ── تاب: المراجعات ── -->
+        @if (activeTab() === 'reviews') {
+          <div class="tab-content">
+            <div class="detail-section">
+              <h2 class="section-title">{{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}</h2>
+              <!-- مكوّن المراجعات الخاص بالفريق -->
+              <app-craftsman-reviews [craftsmanId]="craftsmanIdAsNumber()" />
+            </div>
+          </div>
+        }
+
       </section>
     </div>
   }
