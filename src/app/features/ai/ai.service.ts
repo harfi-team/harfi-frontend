@@ -12,6 +12,7 @@ export interface AiSessionSummary {
   messageCount: number;
 }
 
+
 export interface AiSessionMsg {
   id: number;
   role: 'user' | 'assistant';
@@ -19,8 +20,12 @@ export interface AiSessionMsg {
   createdAt: string;
   images: string[];
   audio?: string;
+  craftsmenResult?: {
+    craftsmen: any[];
+    service: string | null;
+    city: string | null;
+  };
 }
-
 export interface AiSessionDetail {
   sessionId: string;
   title: string;
@@ -85,4 +90,19 @@ export class AiService {
   deleteSession(userId: number, sessionId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/sessions/${userId}/${sessionId}`);
   }
+  saveMessageWithCraftsmen(
+  userId: number,
+  sessionId: string,
+  role: string,
+  content: string,
+  craftsmenJson?: string
+): Observable<any> {
+  const fd = new FormData();
+  fd.append('userId', userId.toString());
+  fd.append('sessionId', sessionId);
+  fd.append('role', role);
+  fd.append('content', content);
+  if (craftsmenJson) fd.append('craftsmenJson', craftsmenJson);
+  return this.http.post(`${this.baseUrl}/sessions/message`, fd);
+}
 }

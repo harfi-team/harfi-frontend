@@ -18,6 +18,8 @@ export interface RetrievedCraftsman {
   similarityScore: number;
   isNearby: boolean;
   nearbyFromCity: string | null;
+    neighborhood: string | null;  // ← ضيف السطر ده
+
 }
 
 export interface QueryResult {

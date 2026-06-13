@@ -4,6 +4,9 @@ import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationsService } from '../../../features/notifications/notifications.service';
+
 
 @Component({
   selector: 'app-main-layout',
@@ -14,11 +17,16 @@ import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 })
 export class MainLayoutComponent {
   private router = inject(Router);
+  private auth = inject(AuthService);
+  private notificationsService = inject(NotificationsService);
 
   pageTitle = signal('NAV.HOME');
   isAdminRoute = signal(false);
   isAiRoute = signal(false);
   mobileNavOpen = signal(false);
+  currentUrl = signal(this.router.url);
+  readonly unreadCount = this.notificationsService.unreadCount;
+
 
   constructor() {
     this.router.events
@@ -43,27 +51,52 @@ export class MainLayoutComponent {
           if (url.includes('/chat')) return { key: 'NAV.CHAT', admin: false, ai: false };
           if (url.includes('/craftsmen')) return { key: 'NAV.SEARCH', admin: false, ai: false };
           if (url.includes('/jobs')) return { key: 'NAV.BOOKINGS', admin: false, ai: false };
-          if (url.includes('/notifications'))
-            return { key: 'NOTIFICATIONS', admin: false, ai: false };
+                    if (url.includes('/notifications'))
+            return { key: 'NOTIFICATIONS.TITLE', admin: false, ai: false };
+
           if (url.includes('/user')) return { key: 'NAV.PROFILE', admin: false, ai: false };
           if (url.includes('/ai')) return { key: 'AI_ASSISTANT', admin: false, ai: true };
           return { key: 'NAV.HOME', admin: false, ai: false };
         }),
         takeUntilDestroyed(),
       )
-      .subscribe(({ key, admin, ai }) => {
+            .subscribe(({ key, admin, ai }) => {
         this.pageTitle.set(key);
         this.isAdminRoute.set(admin);
         this.isAiRoute.set(ai);
+        this.currentUrl.set(this.router.url);
         this.mobileNavOpen.set(false);
       });
+
+    this.loadUnreadCount();
   }
 
-  toggleMobileNav(): void {
+
+    toggleMobileNav(): void {
     this.mobileNavOpen.update(v => !v);
+  }
+
+  goToNotifications(): void {
+    this.router.navigate(['/notifications']);
+  }
+
+  goToProfile(): void {
+    const id = this.auth.getUserId();
+    if (!id) return;
+    this.router.navigate(['/user/profile', id]);
   }
 
   closeMobileNav(): void {
     this.mobileNavOpen.set(false);
   }
+
+  private loadUnreadCount(): void {
+    if (!this.auth.isLoggedIn()) return;
+
+    this.notificationsService.getUnreadCount().subscribe({
+      next: (res) => this.notificationsService.setUnreadCount(res.unreadCount),
+      error: () => this.notificationsService.setUnreadCount(0),
+    });
+  }
 }
+

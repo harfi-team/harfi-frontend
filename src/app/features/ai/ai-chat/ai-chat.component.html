@@ -164,7 +164,10 @@
                   <div class="step-text">{{ step }}</div>
                 </div>
               </div>
-              <button class="find-craftsman-btn" (click)="findCraftsman()" [disabled]="isLoading">
+              <!-- <button class="find-craftsman-btn" (click)="findCraftsman()" [disabled]="isLoading"> -->
+<!-- <button class="find-craftsman-btn" *ngIf="msg.detectedService" (click)="findCraftsman()" [disabled]="isLoading"> -->
+    <button class="find-craftsman-btn" *ngIf="msg.detectedService" (click)="findCraftsman()" [disabled]="isLoading">
+
                 لو المشكلة لسا متحلتش يمكنك البحث عن حرفي متخصص يساعدك 👷
               </button>
               <div class="msg-time">{{ msg.timestamp | date:'hh:mm a' }}</div>
@@ -174,7 +177,7 @@
           <div *ngIf="msg.optionsType === 'services'" class="options-row bot-row">
             <div class="avatar">🤖</div>
             <div class="options-bubble" [class.disabled]="msg.isDisabled">
-              <p class="options-label">اختر التخصص المطلوب:</p>
+              <p class="options-label">اختر التخصص المطلوب، هذه هي الحرف المتاحة :</p>
               <div class="chips-grid">
                 <button class="chip-btn" *ngFor="let s of msg.options" (click)="onOptionClick(msg, s)" [disabled]="msg.isDisabled || isLoading">{{ s }}</button>
               </div>
@@ -232,16 +235,20 @@
                 </div>
               </div>
               <div class="mini-scroll">
-                <div class="mini-card" *ngFor="let c of msg.craftsmen; let i = index" [class.mini-card-nearby]="c.isNearby">
-                  <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
+<a class="mini-card"
+   *ngFor="let c of msg.craftsmen; let i = index"
+   [class.mini-card-nearby]="c.isNearby"
+   [routerLink]="['/craftsmen', c.id]">                  <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
                   <div class="mini-av" [class.mini-av-nearby]="c.isNearby">{{ c.name.charAt(0) }}</div>
+<!-- <div class="mini-av" [class.mini-av-nearby]="c.isNearby">🔧</div> -->
                   <div class="mini-info">
                     <div class="mini-name">{{ c.name }}</div>
-                    <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}</div>
+                    <!-- <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}</div> -->
+<div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}{{ c.neighborhood ? ' · ' + c.neighborhood : '' }}</div>
                     <div class="nearby-badge" *ngIf="c.isNearby">📍 أقرب محافظة</div>
                   </div>
                   <div class="mini-score" [style.color]="scoreColor(c.similarityScore)">{{ (c.similarityScore * 100).toFixed(0) }}%</div>
-                </div>
+                </a>
               </div>
             </div>
           </div>

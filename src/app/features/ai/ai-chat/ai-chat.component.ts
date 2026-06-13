@@ -12,6 +12,8 @@ import {
 } from '../../../core/models/ai.models';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
+import { RouterLink } from '@angular/router';
+
 // ── DTOs ──────────────────────────────────────────────────────
 interface Chat3Response {
   showFeedbackQuestion: boolean;
@@ -97,7 +99,7 @@ interface ExtendedChatMessage extends ChatMessage {
 @Component({
   selector: 'app-ai-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.css']
 })
@@ -190,9 +192,8 @@ ngOnInit() {
 
 
 
-// ── الـ method ──
 openSession(sessionId: string) {
-    localStorage.setItem('harfi_ai_session', sessionId); // ← احفظ
+  localStorage.setItem('harfi_ai_session', sessionId);
 
   const uid = this.userId;
   if (!uid) return;
@@ -202,7 +203,6 @@ openSession(sessionId: string) {
       this.conversationHistory = [];
       this.chatMessages = [this.welcomeMessage()];
       this.state = this.freshState();
-      // ← أضف دول
       this.selectedImages = [];
       this.selectedImagePreviews = [];
       this.recordedAudio = null;
@@ -210,26 +210,43 @@ openSession(sessionId: string) {
 
       for (const m of d.messages) {
         const role = m.role as 'user' | 'assistant';
-
         this.conversationHistory.push({ role, content: m.content });
-        this.chatMessages.push({
-          role,
-          content: m.audio ? '' : (m.content || ''),
-          timestamp: new Date(m.createdAt),
-          audioUrl: m.audio
-            ? (m.audio.startsWith('http') ? m.audio : this.backendBase + m.audio)
-            : undefined,
-          images: m.images?.length
-            ? m.images.map((img: string) => img.startsWith('http') ? img : this.backendBase + img)
-            : undefined
-        });
+
+      if (m.craftsmenResult?.craftsmen?.length ?? 0 > 0) {
+  this.chatMessages.push({
+    role: 'assistant',
+    content: m.content || '',
+    timestamp: new Date(m.createdAt),
+  });
+  this.chatMessages.push({
+    role: 'assistant',
+    content: '',
+    timestamp: new Date(m.createdAt),
+    optionsType: 'craftsmen',
+    craftsmen: m.craftsmenResult!.craftsmen,
+    detectedService: m.craftsmenResult!.service,
+    detectedCity: m.craftsmenResult!.city,
+  });
+
+        } else {
+          this.chatMessages.push({
+            role,
+            content: m.audio ? '' : (m.content || ''),
+            timestamp: new Date(m.createdAt),
+            audioUrl: m.audio
+              ? (m.audio.startsWith('http') ? m.audio : this.backendBase + m.audio)
+              : undefined,
+            images: m.images?.length
+              ? m.images.map((img: string) => img.startsWith('http') ? img : this.backendBase + img)
+              : undefined
+          });
+        }
       }
 
       this.sidebarOpen = false;
       this.cdr.detectChanges();
     },
     error: () => {
-      // لو مش موجود في الـ DB، افتحه كشات جديد فاضي
       this.currentSessionId = sessionId;
       this.chatMessages = [this.welcomeMessage()];
       this.conversationHistory = [];
@@ -302,25 +319,35 @@ cancelDelete() {
 
   reset() { this.newChat(); }
 
-  // ════════════════════════════════════════════════════════════
-  //  PERSISTENCE
-  // ════════════════════════════════════════════════════════════
-private persistMessage(role: 'user' | 'assistant', content: string) {
+private persistMessage(role: 'user' | 'assistant', content: string, craftsmenJson?: string) {
   const uid = this.userId;
   if (!uid || !content?.trim()) return;
-  this.chatSvc.saveMessage(uid, this.currentSessionId, role, content).subscribe({
-    next: () => {
-      // لو user message، استنى شوية عشان الـ LLM يولّد العنوان
-      if (role === 'user') {
-        setTimeout(() => this.loadSessions(), 2000);
-      } else {
-        this.loadSessions();
-      }
-    },
-    error: e => console.warn('[AI] save msg failed', e)
-  });
-}
 
+  if (craftsmenJson) {
+    this.chatSvc.saveMessageWithCraftsmen(uid, this.currentSessionId, role, content, craftsmenJson)
+      .subscribe({
+        next: () => {
+          if (role === 'user') {
+            setTimeout(() => this.loadSessions(), 2000);
+          } else {
+            this.loadSessions();
+          }
+        },
+        error: e => console.warn('[AI] save msg failed', e)
+      });
+  } else {
+    this.chatSvc.saveMessage(uid, this.currentSessionId, role, content).subscribe({
+      next: () => {
+        if (role === 'user') {
+          setTimeout(() => this.loadSessions(), 2000);
+        } else {
+          this.loadSessions();
+        }
+      },
+      error: e => console.warn('[AI] save msg failed', e)
+    });
+  }
+}
   // ════════════════════════════════════════════════════════════
   //  USER INTERACTION
   // ════════════════════════════════════════════════════════════
@@ -436,7 +463,9 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
     });
   }
 
-  private onResponse(r: Chat3Response) {
+
+
+private onResponse(r: Chat3Response) {
     this.chatMessages = this.chatMessages.filter(m => !m.isLoading);
     this.isLoading = false;
 
@@ -450,10 +479,7 @@ private persistMessage(role: 'user' | 'assistant', content: string) {
 
     if (this.state.followUpState > 0 || this.state.problemClarificationAttempts > 0)
       this.state.intent = 2;
-if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
-
-    // ── حفظ رد الـ assistant في الـ DB
-    if (r.message) this.persistMessage('assistant', r.message);
+    if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     // ── RAG complete ──
     if (r.isComplete && r.result) {
@@ -461,8 +487,18 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.conversationHistory.push({ role: 'assistant', content: r.message });
-      this.shouldScroll = true;
 
+      // ← احفظ مع بيانات الحرفيين
+      if (r.message) {
+        const craftsmenJson = JSON.stringify({
+          craftsmen: r.result.retrievedCraftsmen,
+          service: r.extractedService,
+          city: r.extractedCity
+        });
+        this.persistMessage('assistant', r.message, craftsmenJson);
+      }
+
+      this.shouldScroll = true;
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'craftsmen',
@@ -472,9 +508,16 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
       });
       this.lastAnswer = r.result.answer;
       this.showResults = false;
-      this.state = this.freshState(r.extractedCity);
+      // this.state = this.freshState(r.extractedCity);
+      this.state = this.freshState(
+  r.extractedCity,
+  r.extractedDistrict ?? this.state.extractedDistrict
+);
       return;
     }
+
+    // ── حفظ رد الـ assistant في الـ DB (للرسائل العادية بس)
+    if (r.message) this.persistMessage('assistant', r.message);
 
     const inStepsFlow = this.state.intent === 2 || this.state.followUpState > 0
                      || this.state.problemClarificationAttempts > 0;
@@ -489,10 +532,8 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     if (r.showFeedbackQuestion) {
       this.shouldScroll = true;
-
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: 'هل كانت خطوات الحل مفيدة؟ 🤔',
         timestamp: new Date(),
@@ -502,16 +543,28 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
       return;
     }
 
-    if (r.solutionSteps?.length > 0) {
-      this.state.solutionSteps = r.solutionSteps;
+//     if (r.solutionSteps?.length > 0) {
+//       this.state.solutionSteps = r.solutionSteps;
+//       this.shouldScroll = true;
+//       this.chatMessages.push({
+//         role: 'assistant', content: r.message, timestamp: new Date(),
+//         // optionsType: 'steps', options: r.solutionSteps, isDisabled: false
+// // optionsType: 'steps', options: r.solutionSteps, isDisabled: false,
+// // detectedService: r.extractedService ?? this.state.extractedService ?? null
+// optionsType: 'steps', options: r.solutionSteps, isDisabled: false,
+// detectedService: r.extractedService ?? this.state.extractedService ?? null
+//       });
+if (r.solutionSteps?.length > 0) {
+  this.state.solutionSteps = r.solutionSteps;
+  this.shouldScroll = true;
+  this.chatMessages.push({
+    role: 'assistant', content: r.message, timestamp: new Date(),
+    optionsType: 'steps', options: r.solutionSteps, isDisabled: false,
+    // ✅ بس لو الـ backend بعت extractedService → اعتمد عليه
+    // لو بعت null → الزرار يتخفى حتى لو state عنده قيمة قديمة
+    detectedService: r.extractedService   // ← مش ?? this.state.extractedService
+  });
       this.shouldScroll = true;
-
-      this.chatMessages.push({
-        role: 'assistant', content: r.message, timestamp: new Date(),
-        optionsType: 'steps', options: r.solutionSteps, isDisabled: false
-      });
-      this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: 'هل تمكّنت الخطوات دي من حل المشكلة؟ 🤔',
         timestamp: new Date(),
@@ -525,10 +578,8 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     if (r.showSolvedQuestion) {
       this.shouldScroll = true;
-
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: 'هل المشكلة اتحلت؟ 🤔',
         timestamp: new Date(),
@@ -542,10 +593,8 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     if (r.showIntentChoice) {
       this.shouldScroll = true;
-
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'intent', options: ['craftsman', 'steps'], isDisabled: false
@@ -555,10 +604,8 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     if (r.showServicesList && r.servicesList?.length > 0) {
       this.shouldScroll = true;
-
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'services', options: r.servicesList, isDisabled: false
@@ -572,10 +619,8 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
 
     if (isCityQ) {
       this.shouldScroll = true;
-
       this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
       this.shouldScroll = true;
-
       this.chatMessages.push({
         role: 'assistant', content: '', timestamp: new Date(),
         optionsType: 'cities', options: r.citiesList, isDisabled: false
@@ -584,13 +629,10 @@ if (r.extractedDistrict) this.state.extractedDistrict = r.extractedDistrict;
     }
 
     this.shouldScroll = true;
-
-
     this.chatMessages.push({ role: 'assistant', content: r.message, timestamp: new Date() });
     if (this.state.followUpState === 0 && this.state.problemClarificationAttempts === 0)
       this.state.intent = 0;
   }
-
   private onError() {
     this.chatMessages = this.chatMessages.filter(m => !m.isLoading);
     this.isLoading = false;
@@ -882,9 +924,9 @@ this.chatMessages.push({
     };
   }
 
-  private freshState(city: string | null = null): ConversationState {
+private freshState(city: string | null = null, district: string | null = null): ConversationState {
     return {
-      extractedService: null, extractedCity: city,    extractedDistrict: null,  // ← جديد
+      extractedService: null, extractedCity: city,    extractedDistrict: district,  // ← جديد
  extractedCount: null,
       failedServiceAttempts: 0, failedCityAttempts: 0, failedCountAttempts: 0,
       intent: 0, problemClarificationAttempts: 0, followUpState: 0,
