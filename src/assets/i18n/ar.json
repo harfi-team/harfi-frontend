@@ -110,10 +110,31 @@
     "NO_RESULTS_DESC": "جرّب خدمة أخرى أو خفف الفلاتر لعرض نتائج أكثر.",
     "FILTER_TITLE": "الفلاتر",
     "PRICE_LABEL": "نطاق السعر",
+    "SERVICES_HEADER": "الحرفة",
+    "CITY_HEADER": "المدينة",
+    "ALL_CITIES": "كل المدن",
     "RESULTS_TITLE": "النتائج",
     "VISIT": "زيارة",
     "REVIEWS": "تقييم",
     "YEARS": "سنوات"
+  },
+
+  "CITIES": {
+    "CAIRO": "القاهرة",
+    "ALEXANDRIA": "الإسكندرية",
+    "TANTA": "طنطا",
+    "MANSOURA": "المنصورة",
+    "GIZA": "الجيزة"
+  },
+
+  "SORT": {
+    "HIGHEST_RATING": "الأعلى تقييماً",
+    "LOWEST_PRICE": "الأقل سعراً",
+    "MOST_EXPERIENCED": "الأكثر خبرة"
+  },
+
+  "RATING": {
+    "AND_ABOVE": "وأكثر"
   },
   
   "NAV": {

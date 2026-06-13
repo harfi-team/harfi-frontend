@@ -40,14 +40,14 @@ type ServiceOption = {
 
 type SortOption = {
   value: string;
-  label: string;
+  labelKey: string;
   icon?: string;
 };
 
 type RatingOption = {
   value: number;
   stars: ('filled' | 'empty')[];
-  label?: string;
+  labelKey?: string;
 };
 
 @Component({
@@ -77,27 +77,27 @@ export class CraftsmanSearchComponent implements OnInit {
 
   selectedService = signal<string>('');
 
-  cityOptions = signal<{ value: string; label: string }[]>([
-    { value: 'القاهرة', label: 'القاهرة' },
-    { value: 'الإسكندرية', label: 'الإسكندرية' },
-    { value: 'طنطا', label: 'طنطا' },
-    { value: 'المنصورة', label: 'المنصورة' },
-    { value: 'الجيزة', label: 'الجيزة' },
+  cityOptions = signal<{ value: string; labelKey: string }[]>([
+    { value: 'القاهرة', labelKey: 'CITIES.CAIRO' },
+    { value: 'الإسكندرية', labelKey: 'CITIES.ALEXANDRIA' },
+    { value: 'طنطا', labelKey: 'CITIES.TANTA' },
+    { value: 'المنصورة', labelKey: 'CITIES.MANSOURA' },
+    { value: 'الجيزة', labelKey: 'CITIES.GIZA' },
   ]);
 
   // Sort
   sortOptions: SortOption[] = [
-    { value: 'rating_desc', label: 'الأعلى تقييماً', icon: 'star' },
-    { value: 'price_asc', label: 'الأقل سعراً' },
-    { value: 'experience_desc', label: 'الأكثر خبرة' },
+    { value: 'rating_desc', labelKey: 'SORT.HIGHEST_RATING', icon: 'star' },
+    { value: 'price_asc', labelKey: 'SORT.LOWEST_PRICE' },
+    { value: 'experience_desc', labelKey: 'SORT.MOST_EXPERIENCED' },
   ];
   activeSortValue = 'rating_desc';
 
   // Rating filter
   ratingOptions: RatingOption[] = [
     { value: 5, stars: ['filled', 'filled', 'filled', 'filled', 'filled'] },
-    { value: 4, stars: ['filled', 'filled', 'filled', 'filled', 'empty'], label: 'وأكثر' },
-    { value: 3, stars: ['filled', 'filled', 'filled', 'empty', 'empty'], label: 'وأكثر' },
+    { value: 4, stars: ['filled', 'filled', 'filled', 'filled', 'empty'], labelKey: 'RATING.AND_ABOVE' },
+    { value: 3, stars: ['filled', 'filled', 'filled', 'empty', 'empty'], labelKey: 'RATING.AND_ABOVE' },
   ];
   selectedMinRating: number | null = null;
 

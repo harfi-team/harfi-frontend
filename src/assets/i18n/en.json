@@ -111,10 +111,31 @@
     "NO_RESULTS_DESC": "Try a different service or relax the filters to see more results.",
     "FILTER_TITLE": "Filters",
     "PRICE_LABEL": "Price Range",
+    "SERVICES_HEADER": "Service",
+    "CITY_HEADER": "City",
+    "ALL_CITIES": "All Cities",
     "RESULTS_TITLE": "Results",
     "VISIT": "visit",
     "REVIEWS": "reviews",
     "YEARS": "years"
+  },
+
+  "CITIES": {
+    "CAIRO": "Cairo",
+    "ALEXANDRIA": "Alexandria",
+    "TANTA": "Tanta",
+    "MANSOURA": "Mansoura",
+    "GIZA": "Giza"
+  },
+
+  "SORT": {
+    "HIGHEST_RATING": "Highest Rated",
+    "LOWEST_PRICE": "Lowest Price",
+    "MOST_EXPERIENCED": "Most Experienced"
+  },
+
+  "RATING": {
+    "AND_ABOVE": "& up"
   },
   
   "NAV": {
