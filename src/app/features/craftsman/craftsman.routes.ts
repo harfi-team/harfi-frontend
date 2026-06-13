@@ -1,17 +1,8 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '../../core/guards/auth.guard';
+import { CraftsmanRegisterComponent } from './register/craftsman-register.component';
+import { CraftsmanProfileComponent } from './profile/craftsman-profile.component';
 
 export const craftsmanRoutes: Routes = [
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./register/craftsman-register.component').then((m) => m.CraftsmanRegisterComponent),
-  },
-  
-  {
-    path: ':id',
-    loadComponent: () =>
-      import('./profile/craftsman-profile.component').then((m) => m.CraftsmanProfileComponent),
-    canActivate: [authGuard],
-  },
+  { path: 'register', component: CraftsmanRegisterComponent },
+  { path: 'profile/:id', component: CraftsmanProfileComponent } // المسار الجديد
 ];

@@ -1,12 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import {FormBuilder,FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors,} from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CraftsmanService } from '../craftsman.service';
@@ -17,10 +10,8 @@ function priceRangeValidator(group: AbstractControl): ValidationErrors | null {
   const min = group.get('priceRangeMin')?.value;
   const max = group.get('priceRangeMax')?.value;
   if (
-    min !== null &&
-    min !== '' &&
-    max !== null &&
-    max !== '' &&
+    min !== null && min !== '' &&
+    max !== null && max !== '' &&
     Number(max) <= Number(min)
   ) {
     return { priceRangeInvalid: true };
@@ -43,13 +34,7 @@ export class CraftsmanRegisterComponent implements OnInit {
   errorMessage: string = '';
 
   serviceTypes: string[] = [
-    'سباكة',
-    'كهرباء',
-    'نجارة',
-    'دهان',
-    'تكييف',
-    'تنظيف',
-    'أخرى',
+    'سباكة', 'كهرباء', 'نجارة', 'دهان', 'تكييف', 'تنظيف', 'أخرى',
   ];
 
   constructor(
@@ -59,15 +44,9 @@ export class CraftsmanRegisterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ── جلب userId من localStorage – يدعم أشكال مختلفة للتخزين ──
     const userId = this.getCurrentUserId();
 
-    // ── لو مفيش userId معناه اليوزر مش logged in، نرجعه للـ auth ──
-    if (!userId) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
-
+    // ── نبني الفورم أولاً دايماً عشان template لا يعمل error ──
     this.registerForm = this.fb.group(
       {
         userId: [userId],
@@ -76,65 +55,38 @@ export class CraftsmanRegisterComponent implements OnInit {
         neighborhood: ['', [Validators.required, Validators.minLength(2)]],
         priceRangeMin: [null, [Validators.required, Validators.min(0)]],
         priceRangeMax: [null, [Validators.required, Validators.min(1)]],
-        experience: [
-          1,
-          [Validators.required, Validators.min(0), Validators.max(50)],
-        ],
-        bio: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(20),
-            Validators.maxLength(300),
-          ],
-        ],
-        nationalIdUrl: [
-          '',
-          [Validators.required, Validators.pattern('https?://.+')],
-        ],
+        experience: [1, [Validators.required, Validators.min(0), Validators.max(50)]],
+        bio: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(300)]],
+        nationalIdUrl: ['', [Validators.required, Validators.pattern('https?://.+')]],
       },
       { validators: priceRangeValidator }
     );
+
+    
   }
 
-  // ── استخراج userId من localStorage بأشكال مختلفة ──
+  // ── استخراج userId من أي شكل ممكن يتخزن فيه بعد اللوجين ──
   private getCurrentUserId(): number {
     try {
-      // الشكل الأول: { id: number, ... }
-      const currentUser = localStorage.getItem('currentUser');
-      if (currentUser) {
-        const parsed = JSON.parse(currentUser);
-        if (parsed?.id) return Number(parsed.id);
+      const keys = ['currentUser', 'user', 'authUser', 'userData'];
+      for (const key of keys) {
+        const raw = localStorage.getItem(key) ?? sessionStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const id = parsed?.id ?? parsed?.userId ?? parsed?.user?.id;
+          if (id) return Number(id);
+        }
       }
+      // userId مخزون كـ string مباشراً
+      const directId = localStorage.getItem('userId') ?? sessionStorage.getItem('userId');
+      if (directId) return Number(directId);
+    } catch { /* silent */ }
 
-      // الشكل الثاني: { user: { id: number } }
-      const authData = localStorage.getItem('authData');
-      if (authData) {
-        const parsed = JSON.parse(authData);
-        if (parsed?.user?.id) return Number(parsed.user.id);
-        if (parsed?.id) return Number(parsed.id);
-      }
-
-      // الشكل الثالث: userId مباشرة
-      const userId = localStorage.getItem('userId');
-      if (userId) return Number(userId);
-
-      // sessionStorage كـ fallback
-      const sessionUser = sessionStorage.getItem('currentUser');
-      if (sessionUser) {
-        const parsed = JSON.parse(sessionUser);
-        if (parsed?.id) return Number(parsed.id);
-      }
-    } catch {
-      // silent fail
-    }
+   
     return 0;
   }
 
-  // ── Getters للاختصار في الـ HTML ──
-  get f() {
-    return this.registerForm.controls;
-  }
+  get f() { return this.registerForm.controls; }
 
   get bioLength(): number {
     return this.registerForm.get('bio')?.value?.length ?? 0;
@@ -149,11 +101,8 @@ export class CraftsmanRegisterComponent implements OnInit {
   }
 
   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
-      this.selectedFileName = file.name;
-    }
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) this.selectedFileName = file.name;
   }
 
   setServiceType(type: string): void {
@@ -162,17 +111,13 @@ export class CraftsmanRegisterComponent implements OnInit {
   }
 
   incrementExperience(): void {
-    const current = this.registerForm.get('experience')?.value ?? 0;
-    if (current < 50) {
-      this.registerForm.get('experience')?.setValue(current + 1);
-    }
+    const v = this.registerForm.get('experience')?.value ?? 0;
+    if (v < 50) this.registerForm.get('experience')?.setValue(v + 1);
   }
 
   decrementExperience(): void {
-    const current = this.registerForm.get('experience')?.value ?? 0;
-    if (current > 0) {
-      this.registerForm.get('experience')?.setValue(current - 1);
-    }
+    const v = this.registerForm.get('experience')?.value ?? 0;
+    if (v > 0) this.registerForm.get('experience')?.setValue(v - 1);
   }
 
   onSubmit(): void {
@@ -185,59 +130,53 @@ export class CraftsmanRegisterComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // ── بناء الـ payload بالشكل الصح للـ API ──
-    const formVal = this.registerForm.value;
+    const v = this.registerForm.value;
+
+    // ── payload يطابق بالظبط شكل API: POST /api/Craftsmen/register ──
     const payload: CraftsmanRegistrationDto = {
-      userId: formVal.userId,
-      serviceType: formVal.serviceType,
-      city: formVal.city,
-      neighborhood: formVal.neighborhood,
-      priceRangeMin: Number(formVal.priceRangeMin),
-      priceRangeMax: Number(formVal.priceRangeMax),
-      experience: Number(formVal.experience),
-      bio: formVal.bio,
-      nationalIdUrl: formVal.nationalIdUrl,
+      userId:        Number(v.userId),
+      serviceType:   v.serviceType,
+      city:          v.city,
+      neighborhood:  v.neighborhood,
+      priceRangeMin: Number(v.priceRangeMin),
+      priceRangeMax: Number(v.priceRangeMax),
+      experience:    Number(v.experience),
+      bio:           v.bio,
+      nationalIdUrl: v.nationalIdUrl,
     };
 
+    // ── DEBUG: اطبع الـ payload في الكونسول قبل الإرسال ──
+    console.log('[Register] payload:', payload);
+
     this.craftsmanService.register(payload).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log('[Register] success:', res);
         this.isLoading = false;
         this.showSuccessModal = true;
       },
       error: (err) => {
+        console.error('[Register] error:', err.status, err.error);
         this.isLoading = false;
         this.errorMessage = this.getErrorMessage(err);
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth',
-        });
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       },
     });
   }
 
   private getErrorMessage(err: any): string {
-    if (err.status === 400) {
-      // محاولة استخراج رسالة الخطأ من الـ API
-      const apiMsg =
-        err.error?.message ||
-        err.error?.title ||
-        err.error?.errors?.join(', ');
-      if (apiMsg) return apiMsg;
-      return 'البيانات المدخلة غير صحيحة. يرجى مراجعة الحقول والمحاولة مرة أخرى.';
+    switch (err.status) {
+      case 400: {
+        const msg = err.error?.message ?? err.error?.title ?? err.error?.errors?.join(', ');
+        return msg ?? 'البيانات المدخلة غير صحيحة. يرجى مراجعة الحقول والمحاولة مرة أخرى.';
+      }
+      case 401: return 'انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.';
+      case 409: return 'لديك طلب تسجيل سابق قيد المراجعة بالفعل.';
+      case 404: return 'المسار غير موجود. تحقق من إعدادات الـ API مع المسؤول.';
+      case 0:   return 'لا يمكن الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
+      default:  return 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة لاحقاً.';
     }
-    if (err.status === 401) {
-      return 'انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.';
-    }
-    if (err.status === 409) {
-      return 'لديك طلب تسجيل سابق قيد المراجعة بالفعل.';
-    }
-    if (err.status === 0) {
-      return 'لا يمكن الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
-    }
-    return 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة لاحقاً.';
   }
 
-  // ── لما اليوزر يضغط "الصفحة الرئيسية" في الـ Modal ──
   goHome(): void {
     this.showSuccessModal = false;
     this.router.navigate(['/home']);

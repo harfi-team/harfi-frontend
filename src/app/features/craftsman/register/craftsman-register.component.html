@@ -1,75 +1,73 @@
-<div class="register-container" dir="rtl">
+<div class="cr-container" dir="rtl">
 
-  <!-- ══════════════════════════════════════ -->
-  <!--  BANNER SECTION                        -->
-  <!-- ══════════════════════════════════════ -->
-  <div class="banner-section gradient-bg">
-    <div class="banner-content">
-      <div class="brand-logo">
-        <span class="logo-icon">🔧</span>
-        <span class="logo-text">حرفي</span>
+  <!-- ══════════════════════ BANNER ══════════════════════ -->
+  <div class="cr-banner gradient-bg">
+    <div class="cr-banner-content">
+
+      <div class="cr-brand">
+        <span class="cr-brand-icon">🔧</span>
+        <span class="cr-brand-name">حرفي</span>
       </div>
-      <h2>انضم إلى حرفي</h2>
-      <p>سجّل كحرفي محترف وابدأ في استقبال طلبات العملاء في منطقتك.</p>
 
-      <div class="steps-indicator">
-        <div class="step completed">
-          <span class="step-num">✓</span>
-          <span class="step-label">البيانات الشخصية</span>
+      <h2 class="cr-banner-title">انضم إلى حرفي</h2>
+      <p class="cr-banner-sub">سجّل كحرفي محترف وابدأ في استقبال طلبات العملاء في منطقتك.</p>
+
+      <div class="cr-steps">
+        <div class="cr-step cr-step--done">
+          <div class="cr-step-circle">✓</div>
+          <span>البيانات الشخصية</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step active">
-          <span class="step-num">2</span>
-          <span class="step-label">بيانات العمل</span>
+        <div class="cr-step-line"></div>
+        <div class="cr-step cr-step--active">
+          <div class="cr-step-circle">2</div>
+          <span>بيانات العمل</span>
         </div>
-        <div class="step-connector"></div>
-        <div class="step">
-          <span class="step-num">3</span>
-          <span class="step-label">التحقق والمراجعة</span>
+        <div class="cr-step-line"></div>
+        <div class="cr-step">
+          <div class="cr-step-circle">3</div>
+          <span>التحقق والمراجعة</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════ -->
-  <!--  FORM SECTION                          -->
-  <!-- ══════════════════════════════════════ -->
-  <div class="form-section">
-    <div class="form-header">
+  <!-- ══════════════════════ FORM ══════════════════════ -->
+  <div class="cr-form-section">
+
+    <div class="cr-form-header">
       <h3>بيانات العمل</h3>
       <p>أخبرنا المزيد عن مهاراتك والخدمات التي تقدمها.</p>
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- مجال التخصص -->
-      <div class="form-group">
-        <label class="form-label">
+      <!-- ── مجال التخصص ── -->
+      <div class="cr-field">
+        <label class="cr-label">
           مجالات التخصص
-          <span class="label-hint">(اختر مجالك)</span>
+          <span class="cr-hint">(اختر مجالك)</span>
         </label>
-        <div class="chips-container">
+        <div class="cr-chips-wrap">
           <button
             type="button"
             *ngFor="let type of serviceTypes"
-            class="harfi-chip"
-            [class.active]="f['serviceType'].value === type"
+            class="harfi-chip cr-type-chip"
+            [class.cr-type-chip--active]="f['serviceType'].value === type"
             (click)="setServiceType(type)">
             {{ type }}
           </button>
         </div>
-        <small class="error-text"
-          *ngIf="f['serviceType'].touched && f['serviceType'].invalid">
+        <small class="cr-error" *ngIf="f['serviceType'].touched && f['serviceType'].invalid">
           يرجى اختيار مجال التخصص.
         </small>
       </div>
 
-      <!-- المدينة + الحي -->
-      <div class="row-grid">
-        <div class="form-group">
-          <label class="form-label">المدينة <span class="required-star">*</span></label>
-          <select class="form-control" formControlName="city"
-            [class.is-invalid]="f['city'].touched && f['city'].invalid">
+      <!-- ── المدينة + الحي ── -->
+      <div class="cr-row">
+        <div class="cr-field">
+          <label class="cr-label">المدينة <span class="cr-star">*</span></label>
+          <select class="cr-input" formControlName="city"
+            [class.cr-input--err]="f['city'].touched && f['city'].invalid">
             <option value="" disabled selected>اختر مدينتك</option>
             <option value="القاهرة">القاهرة</option>
             <option value="الإسكندرية">الإسكندرية</option>
@@ -84,171 +82,141 @@
             <option value="الزقازيق">الزقازيق</option>
             <option value="شبرا الخيمة">شبرا الخيمة</option>
           </select>
-          <small class="error-text"
-            *ngIf="f['city'].touched && f['city'].invalid">
+          <small class="cr-error" *ngIf="f['city'].touched && f['city'].invalid">
             يرجى اختيار المدينة.
           </small>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">الحي / المنطقة <span class="required-star">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="neighborhood"
+        <div class="cr-field">
+          <label class="cr-label">الحي / المنطقة <span class="cr-star">*</span></label>
+          <input type="text" class="cr-input" formControlName="neighborhood"
             placeholder="أدخل اسم الحي أو المنطقة"
-            [class.is-invalid]="f['neighborhood'].touched && f['neighborhood'].invalid">
-          <small class="error-text"
-            *ngIf="f['neighborhood'].touched && f['neighborhood'].invalid">
-            يرجى إدخال الحي أو المنطقة (حرفان على الأقل).
+            [class.cr-input--err]="f['neighborhood'].touched && f['neighborhood'].invalid">
+          <small class="cr-error" *ngIf="f['neighborhood'].touched && f['neighborhood'].invalid">
+            يرجى إدخال الحي (حرفان على الأقل).
           </small>
         </div>
       </div>
 
-      <!-- سنوات الخبرة -->
-      <div class="form-group">
-        <label class="form-label">سنوات الخبرة</label>
-        <div class="counter-input">
-          <button type="button" class="counter-btn" (click)="decrementExperience()">−</button>
-          <span class="counter-value">{{ f['experience'].value }} سنوات</span>
-          <button type="button" class="counter-btn" (click)="incrementExperience()">+</button>
+      <!-- ── سنوات الخبرة ── -->
+      <div class="cr-field">
+        <label class="cr-label">سنوات الخبرة</label>
+        <div class="cr-counter">
+          <button type="button" class="cr-counter-btn" (click)="decrementExperience()">−</button>
+          <span class="cr-counter-val">{{ f['experience'].value }} سنوات</span>
+          <button type="button" class="cr-counter-btn" (click)="incrementExperience()">+</button>
         </div>
       </div>
 
-      <!-- نطاق السعر -->
-      <div class="form-group">
-        <label class="form-label">نطاق السعر المتوقع <span class="label-hint">(للساعة / للزيارة)</span></label>
-        <div class="price-range-inputs">
-          <div class="price-input">
-            <label class="price-sub-label">من</label>
-            <div class="input-with-suffix">
-              <input
-                type="number"
-                class="form-control"
-                formControlName="priceRangeMin"
-                placeholder="0"
-                min="0"
-                [class.is-invalid]="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
-              <span class="input-suffix">ج.م</span>
+      <!-- ── نطاق السعر ── -->
+      <div class="cr-field">
+        <label class="cr-label">
+          نطاق السعر المتوقع
+          <span class="cr-hint">(للساعة / للزيارة)</span>
+        </label>
+        <div class="cr-price-row">
+          <div class="cr-price-group">
+            <span class="cr-price-lbl">من</span>
+            <div class="cr-price-input-wrap">
+              <input type="number" class="cr-input" formControlName="priceRangeMin"
+                placeholder="0" min="0"
+                [class.cr-input--err]="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
+              <span class="cr-currency">ج.م</span>
             </div>
           </div>
-          <div class="price-separator">—</div>
-          <div class="price-input">
-            <label class="price-sub-label">إلى</label>
-            <div class="input-with-suffix">
-              <input
-                type="number"
-                class="form-control"
-                formControlName="priceRangeMax"
-                placeholder="0"
-                min="1"
-                [class.is-invalid]="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
-              <span class="input-suffix">ج.م</span>
+          <span class="cr-price-sep">—</span>
+          <div class="cr-price-group">
+            <span class="cr-price-lbl">إلى</span>
+            <div class="cr-price-input-wrap">
+              <input type="number" class="cr-input" formControlName="priceRangeMax"
+                placeholder="0" min="1"
+                [class.cr-input--err]="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
+              <span class="cr-currency">ج.م</span>
             </div>
           </div>
         </div>
-        <small class="error-text" *ngIf="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
+        <small class="cr-error" *ngIf="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
           يرجى إدخال الحد الأدنى للسعر.
         </small>
-        <small class="error-text" *ngIf="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
-          يرجى إدخال الحد الأقصى للسعر (أكبر من صفر).
+        <small class="cr-error" *ngIf="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
+          يرجى إدخال الحد الأقصى للسعر.
         </small>
-        <small class="error-text" *ngIf="priceRangeInvalid">
-          يجب أن يكون الحد الأقصى للسعر أكبر من الحد الأدنى.
+        <small class="cr-error" *ngIf="priceRangeInvalid">
+          يجب أن يكون الحد الأقصى أكبر من الحد الأدنى.
         </small>
       </div>
 
-      <!-- نبذة -->
-      <div class="form-group">
-        <label class="form-label">نبذة عنك وعن عملك <span class="required-star">*</span></label>
-        <textarea
-          class="form-control"
-          formControlName="bio"
-          rows="4"
+      <!-- ── نبذة ── -->
+      <div class="cr-field">
+        <label class="cr-label">نبذة عنك وعن عملك <span class="cr-star">*</span></label>
+        <textarea class="cr-input cr-textarea" formControlName="bio" rows="4"
           placeholder="اكتب نبذة مختصرة تظهر للعملاء في ملفك الشخصي..."
-          [class.is-invalid]="f['bio'].touched && f['bio'].invalid">
+          [class.cr-input--err]="f['bio'].touched && f['bio'].invalid">
         </textarea>
-        <div class="bio-footer">
+        <div class="cr-bio-footer">
           <div>
-            <small class="error-text"
-              *ngIf="f['bio'].touched && f['bio'].hasError('required')">
+            <small class="cr-error" *ngIf="f['bio'].touched && f['bio'].hasError('required')">
               يرجى كتابة نبذة عنك.
             </small>
-            <small class="error-text"
-              *ngIf="f['bio'].touched && f['bio'].hasError('minlength')">
+            <small class="cr-error" *ngIf="f['bio'].touched && f['bio'].hasError('minlength')">
               النبذة يجب أن تكون 20 حرفاً على الأقل.
             </small>
           </div>
-          <small class="char-count" [class.over-limit]="bioLength > 300">
+          <small class="cr-char-count" [class.cr-char-over]="bioLength > 300">
             {{ bioLength }} / 300
           </small>
         </div>
       </div>
 
-      <!-- معرض الأعمال -->
-      <div class="form-group">
-        <label class="form-label">
+      <!-- ── معرض الأعمال ── -->
+      <div class="cr-field">
+        <label class="cr-label">
           معرض الأعمال
-          <span class="label-hint">(اختياري)</span>
+          <span class="cr-hint">(اختياري)</span>
         </label>
-        <p class="field-subtitle">أضف صوراً لأعمال سابقة كمعرض لعملائك.</p>
-        <div class="upload-container">
-          <div class="upload-box upload-action" (click)="fileInput.click()">
-            <span class="upload-icon">📸</span>
-            <span class="upload-text">إضافة صورة</span>
-            <input
-              type="file"
-              #fileInput
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              hidden>
+        <p class="cr-sub">أضف صوراً لأعمال سابقة كمعرض لعملائك.</p>
+        <div class="cr-upload-row">
+          <div class="cr-upload-box cr-upload-add" (click)="fileInput.click()">
+            <span class="cr-upload-icon">📸</span>
+            <span>إضافة صورة</span>
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
           </div>
-          <div class="upload-box upload-empty"></div>
-          <div class="upload-box upload-empty"></div>
+          <div class="cr-upload-box cr-upload-empty"></div>
+          <div class="cr-upload-box cr-upload-empty"></div>
         </div>
-        <small *ngIf="selectedFileName" class="success-text mt-2">
+        <small *ngIf="selectedFileName" class="cr-success-text">
           ✓ تم إرفاق: {{ selectedFileName }}
         </small>
       </div>
 
-      <!-- رابط الهوية -->
-      <div class="form-group">
-        <label class="form-label">
-          رابط صورة الهوية
-          <span class="required-star">*</span>
+      <!-- ── رابط الهوية ── -->
+      <div class="cr-field">
+        <label class="cr-label">
+          رابط صورة الهوية <span class="cr-star">*</span>
         </label>
-        <p class="field-subtitle">يرجى إدخال الرابط المباشر لصورة بطاقة الهوية الخاصة بك.</p>
-        <input
-          type="url"
-          class="form-control"
-          formControlName="nationalIdUrl"
-          placeholder="https://example.com/my-id-image.jpg"
-          dir="ltr"
-          [class.is-invalid]="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
-        <small class="error-text"
-          *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
+        <p class="cr-sub">يرجى إدخال الرابط المباشر لصورة بطاقة الهوية الخاصة بك.</p>
+        <input type="url" class="cr-input" formControlName="nationalIdUrl"
+          placeholder="https://example.com/my-id-image.jpg" dir="ltr"
+          [class.cr-input--err]="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
+        <small class="cr-error" *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
           يرجى إدخال رابط صحيح يبدأ بـ https://
         </small>
       </div>
 
-      <!-- رسالة الخطأ العامة -->
-      <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-        <span class="alert-icon">⚠️</span>
+      <!-- ── رسالة خطأ عامة ── -->
+      <div class="cr-alert" *ngIf="errorMessage">
+        <span>⚠️</span>
         <span>{{ errorMessage }}</span>
       </div>
 
-      <!-- زرار الإرسال -->
-      <div class="form-actions">
-        <button
-          type="submit"
-          class="gradient-btn btn-full"
-          [disabled]="isLoading">
+      <!-- ── زرار الإرسال ── -->
+      <div class="cr-actions">
+        <button type="submit" class="gradient-btn cr-submit-btn" [disabled]="isLoading">
           <ng-container *ngIf="!isLoading">
             <span>إرسال البيانات</span>
-            <span class="btn-arrow">←</span>
           </ng-container>
           <ng-container *ngIf="isLoading">
-            <span class="spinner-border spinner-border-sm" role="status"></span>
+            <span class="cr-spinner"></span>
             <span>جاري الإرسال...</span>
           </ng-container>
         </button>
@@ -256,27 +224,22 @@
 
     </form>
   </div>
-
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!--  SUCCESS MODAL                                             -->
-<!-- ══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" *ngIf="showSuccessModal" (click)="goHome()">
-  <div class="modal-card" (click)="$event.stopPropagation()" dir="rtl">
-    <div class="modal-success-icon">
-      <span class="check-circle">✅</span>
-    </div>
-    <h3 class="modal-title">تم إرسال بياناتك بنجاح!</h3>
-    <p class="modal-body-text">
+<!-- ══════════════════════ SUCCESS MODAL ══════════════════════ -->
+<div class="cr-modal-overlay" *ngIf="showSuccessModal" (click)="goHome()">
+  <div class="cr-modal" (click)="$event.stopPropagation()" dir="rtl">
+    <div class="cr-modal-icon">✅</div>
+    <h3 class="cr-modal-title">تم إرسال بياناتك بنجاح!</h3>
+    <p class="cr-modal-body">
       شكراً لتسجيلك في منصة حرفي. سيقوم فريقنا بمراجعة بياناتك
       وتفعيل حسابك في أقرب وقت ممكن.
     </p>
-    <div class="modal-status-box">
-      <span class="badge-pending">⏳ قيد المراجعة</span>
-      <p class="modal-hint">ستصلك إشعار عند قبول طلبك</p>
+    <div class="cr-modal-status">
+      <span class="cr-badge-pending">⏳ قيد المراجعة</span>
+      <p class="cr-modal-hint">ستصلك إشعار عند قبول طلبك</p>
     </div>
-    <button class="gradient-btn btn-full mt-4" (click)="goHome()">
+    <button class="gradient-btn cr-modal-btn" (click)="goHome()">
       العودة للصفحة الرئيسية
     </button>
   </div>
