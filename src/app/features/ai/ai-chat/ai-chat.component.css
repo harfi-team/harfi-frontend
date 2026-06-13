@@ -1164,14 +1164,13 @@
 .wa-audio {
   display: flex;
   align-items: center;
-  flex-direction: row-reverse; /* في RTL: الـ play button على اليمين */
+  flex-direction: row-reverse; 
   gap: 8px;
   min-width: 200px;
   max-width: 280px;
   padding: 2px 0;
 }
 
-/* زر Play/Pause */
 .wa-play-btn {
   flex-shrink: 0;
   width: 40px;
@@ -1247,7 +1246,9 @@
   left: 0;
   right: 0;
 }
-
+a.mini-card {
+  text-decoration: none;
+}
 .wa-slider {
   -webkit-appearance: none;
   appearance: none;
