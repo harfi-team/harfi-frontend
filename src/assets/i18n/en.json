@@ -96,8 +96,8 @@
     "TITLE": "Craftsmen for",
     "SUBTITLE": "Browse verified craftsmen, refine the filters, and book the right expert for the job.",
     "BACK_HOME": "Back Home",
-    "SEARCH": "Search by name or specialty",
-    "SEARCH_PLACEHOLDER": "e.g. plumber, electrician...",
+    "SEARCH": "Search by name",
+    "SEARCH_PLACEHOLDER": "e.g. Plumber, Electrician, Carpenter...",
     "SERVICE": "Service",
     "CITY": "City",
     "CITY_PLACEHOLDER": "e.g. Cairo, Giza...",
@@ -109,6 +109,10 @@
     "ALL_SERVICES": "All Services",
     "NO_RESULTS_TITLE": "No craftsmen found",
     "NO_RESULTS_DESC": "Try a different service or relax the filters to see more results.",
+    "FILTER_TITLE": "Filters",
+    "PRICE_LABEL": "Price Range",
+    "RESULTS_TITLE": "Results",
+    "VISIT": "visit",
     "REVIEWS": "reviews",
     "YEARS": "years"
   },
@@ -773,6 +777,9 @@
     "NAME_REQUIRED": "Name is required",
     "PHONE_INVALID": "Invalid phone number",
     "IMAGE_URL": "Profile Picture URL"
+  }
+}
+
   }
 }
 

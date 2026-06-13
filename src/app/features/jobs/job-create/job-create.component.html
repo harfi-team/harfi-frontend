@@ -154,7 +154,7 @@
           </div>
           <div class="craftsman-info">
             <h3 class="craftsman-name">{{ craftsman()!.name }}</h3>
-            <p class="craftsman-specialty">{{ craftsman()!.specialty }}</p>
+            <p class="craftsman-specialty">{{ getServiceName(craftsman()!) }}</p>
             <div class="craftsman-rating">
               <span class="material-symbols-outlined star-icon">star</span>
               <span class="rating-value">{{ craftsman()!.rating | number: '1.1-1' }}</span>

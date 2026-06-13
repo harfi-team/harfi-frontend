@@ -8,10 +8,11 @@ import { CraftsmanDto } from '../../core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman/craftsman.service';
 import { JobsService } from '../jobs/jobs.service';
 import { JobDto, JobStatus } from '../../core/models/job.models';
+import { HttpClient } from '@angular/common/http'; // 1. ضفنا الـ HttpClient
 
-interface Service {
+interface DynamicService {
   icon: string;
-  labelKey: string;
+  name: string;
   variant: string;
   slug: string;
 }
@@ -23,17 +24,26 @@ interface Service {
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
+
 export class HomeComponent implements OnInit {
-  auth = inject(AuthService);
+ auth = inject(AuthService);
   languageService = inject(LanguageService);
   private router = inject(Router);
   private craftsmanService = inject(CraftsmanService);
   private jobsService = inject(JobsService);
+  private http = inject(HttpClient); // 3. عملنا Inject للـ HttpClient
 
   loadingCraftsmen = signal(true);
   loadingOrders = signal(false);
+  loadingServices = signal(true); // 4. Signal لحالة التحميل الخاصة بالخدمات
+
   featuredCraftsmen = signal<CraftsmanDto[]>([]);
   recentOrders = signal<JobDto[]>([]);
+  dynamicServices = signal<DynamicService[]>([]); // 5. Signal يشيل الخدمات الجاية من الداتا بيز
+
+  detectedCity = signal<string | null>(null);
+  filteringByCity = signal(false);
+
   readonly isCustomer = this.auth.getRole() === 'customer';
   readonly isCraftsman = this.auth.getRole() === 'craftsman';
 
@@ -45,50 +55,235 @@ export class HomeComponent implements OnInit {
     return isArabic ? 'مساء النور' : 'Good Evening';
   }
 
-  services: Service[] = [
-    { icon: 'plumbing', labelKey: 'SERVICES.PLUMBING', variant: 'primary', slug: 'plumbing' },
-    {
-      icon: 'electrical_services',
-      labelKey: 'SERVICES.ELECTRICAL',
-      variant: 'secondary',
-      slug: 'electrical',
-    },
-    { icon: 'carpenter', labelKey: 'SERVICES.CARPENTRY', variant: 'tertiary', slug: 'carpentry' },
-    { icon: 'format_paint', labelKey: 'SERVICES.PAINTING', variant: 'neutral', slug: 'painting' },
-    { icon: 'ac_unit', labelKey: 'SERVICES.AC', variant: 'primary', slug: 'ac' },
-    {
-      icon: 'cleaning_services',
-      labelKey: 'SERVICES.CLEANING',
-      variant: 'error',
-      slug: 'cleaning',
-    },
-    { icon: 'local_shipping', labelKey: 'SERVICES.MOVING', variant: 'secondary', slug: 'moving' },
-    { icon: 'pest_control', labelKey: 'SERVICES.PEST', variant: 'tertiary', slug: 'pest' },
-    { icon: 'roofing', labelKey: 'SERVICES.ROOFING', variant: 'primary', slug: 'roofing' },
-    { icon: 'more_horiz', labelKey: 'SERVICES.MORE', variant: 'neutral', slug: '' },
-  ];
+  // ─── Lifecycle ──────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
-    this.loadFeaturedCraftsmen();
+    this.loadActiveServices(); // 6. نادينا على الدالة أول ما الصفحة تفتح
     this.loadRecentOrders();
+    this.initLocationAndCraftsmen();
   }
 
-  loadRecentOrders(): void {
-    const id = this.isCraftsman ? this.auth.getCraftsmanId() : this.auth.getUserId();
-    if (!id) {
-      this.recentOrders.set([]);
+  // 7. الدالة الجديدة اللي بتكلم الـ API
+  loadActiveServices(): void {
+    this.loadingServices.set(true);
+    const isArabic = this.languageService.current() === 'ar' || !this.languageService.current(); // بنشوف اللغة الحالية إيه
+
+    this.http.get<any[]>('http://localhost:5108/api/Services').subscribe({
+      next: (data) => {
+        const variants = ['primary', 'secondary', 'tertiary', 'neutral', 'error'];
+        
+        const mappedServices = data.map((s, index) => {
+          return {
+            icon: s.icon || 'handyman', // لو مفيش أيقونة في الداتا بيز، حط دي كاحتياطي
+            name: isArabic ? s.nameAr : s.nameEn, // بنعرض الاسم حسب اللغة
+            variant: variants[index % variants.length], // بنوزع الألوان بالترتيب عشان شكل الـ UI
+            slug: s.nameAr // السيرش في صفحة الحرفيين بيعتمد على الاسم العربي، فبنبعته في الـ URL
+          };
+        });
+        
+        this.dynamicServices.set(mappedServices);
+        this.loadingServices.set(false);
+      },
+      error: (err) => {
+        console.error('[Harfi] Failed to load services', err);
+        this.loadingServices.set(false);
+      }
+    });
+  }
+
+  // ─── Geolocation ────────────────────────────────────────────────────────────
+
+  async initLocationAndCraftsmen(): Promise<void> {
+    console.log('[Harfi] initLocationAndCraftsmen called');
+
+    if (!navigator.geolocation) {
+      console.warn('[Harfi] Geolocation not supported by this browser');
+      this.loadFeaturedCraftsmen();
       return;
     }
 
+    // Direct check for permission status if supported
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const permStatus = await navigator.permissions.query({ name: 'geolocation' });
+        console.log('[Harfi] Geolocation permission state:', permStatus.state);
+
+        if (permStatus.state === 'denied') {
+          console.warn('[Harfi] Location permission is denied — loading all craftsmen');
+          this.loadFeaturedCraftsmen();
+          return;
+        }
+      } catch (err) {
+        console.warn('[Harfi] navigator.permissions.query failed:', err);
+      }
+    }
+
+    // If granted or prompt, or if permissions API not supported, request position
+    this.requestPosition();
+  }
+
+  requestPosition(): void {
+    console.log('[Harfi] Requesting position...');
+    this.loadingCraftsmen.set(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        console.log('[Harfi] Position received:', pos.coords.latitude, pos.coords.longitude);
+        this.reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        console.warn('[Harfi] getCurrentPosition error — code:', err.code, '— message:', err.message);
+        this.loadFeaturedCraftsmen();
+      },
+      {
+        enableHighAccuracy: true, // Set to true for better accuracy, especially in Egypt's denser cities
+        timeout: 15000,           // Increased to 15 seconds to give the GPS enough time to respond
+        maximumAge: 300_000,
+      },
+    );
+  }
+
+  private reverseGeocode(lat: number, lng: number): void {
+    const lang = this.languageService.current() || 'ar';
+    console.log('[Harfi] Reverse geocoding with lang:', lang);
+
+    // Removed the manual User-Agent header and added the email parameter per Nominatim's policy
+    const url = 
+      `https://nominatim.openstreetmap.org/reverse` +
+      `?lat=${lat}&lon=${lng}&format=json&accept-language=${lang}&email=your_email@example.com`; // Add your actual dev email here
+
+    // Standard fetch without the forbidden header
+    fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error('Network response was not ok');
+        return r.json();
+      })
+      .then((data) => {
+        const addr = data?.address ?? {};
+        const city: string =
+          addr.city ||
+          addr.town ||
+          addr.village ||
+          addr.suburb ||
+          addr.neighbourhood ||
+          addr.county ||
+          addr.state ||
+          '';
+
+        console.log('[Harfi] Detected city:', city);
+
+        if (city) {
+          this.detectedCity.set(city);
+          this.loadCraftsmenByCity(city);
+        } else {
+          this.loadFeaturedCraftsmen();
+        }
+      })
+      .catch((err) => {
+        console.error('[Harfi] Reverse geocode failed:', err);
+        this.loadFeaturedCraftsmen();
+      });
+  }
+
+  
+
+  private loadCraftsmenByCity(city: string): void {
+  this.loadingCraftsmen.set(true);
+
+  // تمرير الـ 4 باراميترز كاملة للـ API بناءً على طلب الـ Backend
+  this.craftsmanService.searchCraftsmen({
+    city: city,
+    service: '',          // نص فاضي عشان يجيب كل التخصصات والخدمات في طنطا
+    minExperience: 0,     // 0 عشان يرجع كل سنوات الخبرة
+    minRating: 0          // 0 عشان يرجع كل التقييمات
+  }).subscribe({
+    next: (all) => {
+      
+      const norm = (s: string) => {
+        if (!s) return '';
+        return s
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[أإآ]/g, 'ا')          
+          .replace(/ة/g, 'ه')             
+          .replace(/ى/g, 'ي');            
+      };
+
+      const cityNorm = norm(city);
+
+      // فلترة للتأكد التام من دقة النصوص (عربي أو إنجليزي)
+      const local = all.filter((c) => {
+        if (!c.city) return false;
+        const cNorm = norm(c.city);
+        
+        return cNorm.includes(cityNorm) || cityNorm.includes(cNorm) || 
+               (cityNorm === 'طنطا' && cNorm.includes('tanta')) ||
+               (cityNorm === 'tanta' && cNorm.includes('طنطا'));
+      });
+
+      if (local.length > 0) {
+        this.filteringByCity.set(true);
+        // ترتيب الحرفيين اللي في طنطا من الأعلى تقييماً للأقل
+        this.featuredCraftsmen.set(
+          [...local].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 6)
+        );
+      } else {
+        this.filteringByCity.set(false);
+        this.loadFeaturedCraftsmen();
+      }
+
+      this.loadingCraftsmen.set(false);
+    },
+    error: () => {
+      this.loadFeaturedCraftsmen();
+    },
+  });
+}
+
+loadFeaturedCraftsmen(): void {
+  this.loadingCraftsmen.set(true);
+  
+  // تحديث الـ Fallback أيضاً بالـ 4 باراميترز الأساسية بقيم فارغة ليعود بالجميع
+  this.craftsmanService.searchCraftsmen({
+    city: '',
+    service: '',
+    minExperience: 0,
+    minRating: 0
+  }).subscribe({
+    next: (craftsmen) => {
+      this.featuredCraftsmen.set(
+        [...craftsmen]
+          .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+          .slice(0, 6),
+      );
+      this.loadingCraftsmen.set(false);
+    },
+    error: () => {
+      this.featuredCraftsmen.set([]);
+      this.loadingCraftsmen.set(false);
+    },
+  });
+}
+
+ 
+  // ─── Orders ─────────────────────────────────────────────────────────────────
+
+  loadRecentOrders(): void {
+    const id = this.isCraftsman ? this.auth.getCraftsmanId() : this.auth.getUserId();
+    if (!id) { this.recentOrders.set([]); return; }
+
     this.loadingOrders.set(true);
-    const request = this.isCraftsman
+    const req = this.isCraftsman
       ? this.jobsService.getCraftsmanJobs(id)
       : this.jobsService.getCustomerJobs(id);
 
-    request.subscribe({
+    req.subscribe({
       next: (jobs) => {
         const sorted = [...jobs].sort(
-          (a, b) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
+          (a, b) =>
+            new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
         );
         this.recentOrders.set(sorted.slice(0, 5));
         this.loadingOrders.set(false);
@@ -100,19 +295,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+
   getStatusLabelKey(status: JobStatus): string {
-    switch (status) {
-      case 'open':
-        return 'JOBS.STATUS_OPEN';
-      case 'in-progress':
-        return 'JOBS.STATUS_IN_PROGRESS';
-      case 'done':
-        return 'JOBS.STATUS_DONE';
-      case 'rejected':
-        return 'JOBS.STATUS_REJECTED';
-      default:
-        return 'JOBS.STATUS_OPEN';
-    }
+    const map: Record<string, string> = {
+      'open':        'JOBS.STATUS_OPEN',
+      'in-progress': 'JOBS.STATUS_IN_PROGRESS',
+      'done':        'JOBS.STATUS_DONE',
+      'rejected':    'JOBS.STATUS_REJECTED',
+    };
+    return map[status] ?? 'JOBS.STATUS_OPEN';
   }
 
   getStatusClass(status: JobStatus): string {
@@ -122,47 +314,40 @@ export class HomeComponent implements OnInit {
   getServiceIcon(serviceType: string): string {
     if (!serviceType) return 'handyman';
     const iconMap: Record<string, string> = {
-      سباك: 'plumbing',
-      كهربائي: 'electrical_services',
-      نجار: 'carpenter',
-      نقاش: 'format_paint',
-      تكييف: 'ac_unit',
-      نظافة: 'cleaning_services',
-      نقل: 'local_shipping',
+      'سباك':          'plumbing',
+      'كهربائي':       'electrical_services',
+      'نجار':          'carpenter',
+      'نقاش':          'format_paint',
+      'تكييف':         'ac_unit',
+      'نظافة':         'cleaning_services',
+      'نقل':           'local_shipping',
       'مكافحة حشرات': 'pest_control',
-      plumbing: 'plumbing',
-      electrical: 'electrical_services',
-      carpentry: 'carpenter',
-      painting: 'format_paint',
-      ac: 'ac_unit',
-      cleaning: 'cleaning_services',
-      moving: 'local_shipping',
-      pest: 'pest_control',
+      plumbing:        'plumbing',
+      electrical:      'electrical_services',
+      carpentry:       'carpenter',
+      painting:        'format_paint',
+      ac:              'ac_unit',
+      cleaning:        'cleaning_services',
+      moving:          'local_shipping',
+      pest:            'pest_control',
     };
     return iconMap[serviceType] ?? 'handyman';
-  }
-
-  loadFeaturedCraftsmen(): void {
-    this.loadingCraftsmen.set(true);
-    this.craftsmanService.searchCraftsmen({}).subscribe({
-      next: (craftsmen) => {
-        this.featuredCraftsmen.set(
-          [...craftsmen]
-            .sort((left, right) => (right.rating ?? 0) - (left.rating ?? 0))
-            .slice(0, 6),
-        );
-        this.loadingCraftsmen.set(false);
-      },
-      error: () => {
-        this.featuredCraftsmen.set([]);
-        this.loadingCraftsmen.set(false);
-      },
-    });
   }
 
   getPrimaryServiceLabel(craftsman: CraftsmanDto): string {
     const service = this.craftsmanService.getPrimaryService(craftsman);
     return service ? `SERVICES.${service.toUpperCase()}` : craftsman.specialty;
+  }
+
+  getServiceName(craftsman: CraftsmanDto): string {
+    const isArabic = this.languageService.current() === 'ar';
+    if (isArabic && craftsman.serviceNameAr) {
+      return craftsman.serviceNameAr;
+    }
+    if (!isArabic && craftsman.serviceNameEn) {
+      return craftsman.serviceNameEn;
+    }
+    return craftsman.specialty;
   }
 
   getPriceRange(craftsman: CraftsmanDto): string {
@@ -173,10 +358,25 @@ export class HomeComponent implements OnInit {
     const service = this.craftsmanService.getPrimaryService(craftsman);
     this.router.navigate(['/jobs/create'], {
       queryParams: {
-        craftsmanId: craftsman.id,
+        craftsmanId:   craftsman.id,
         craftsmanName: craftsman.name,
-        service: service || undefined,
+        service:       service || undefined,
       },
     });
   }
+
+  onSearch(value: string): void {
+  if (!value.trim()) return;
+  
+  // بنوجه العميل لصفحة البحث وبنحط الكلمة اللي كتبها في الـ search param
+  this.router.navigate(['/craftsmen'], {
+    queryParams: { search: value.trim() }
+  });
+}
+
+selectService(serviceSlug: string): void {
+  this.router.navigate(['/craftsmen'], {
+    queryParams: { service: serviceSlug }
+  });
+}
 }

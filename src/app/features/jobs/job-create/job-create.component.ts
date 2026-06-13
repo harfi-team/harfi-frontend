@@ -237,6 +237,17 @@ export class JobCreateComponent implements OnInit {
     return Array.from({ length: 5 }, (_, i) => (i < Math.round(rating) ? 1 : 0));
   }
 
+  getServiceName(craftsman: CraftsmanDto): string {
+    const isArabic = this.languageService.current() === 'ar';
+    if (isArabic && craftsman.serviceNameAr) {
+      return craftsman.serviceNameAr;
+    }
+    if (!isArabic && craftsman.serviceNameEn) {
+      return craftsman.serviceNameEn;
+    }
+    return craftsman.specialty;
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

@@ -29,7 +29,7 @@
         </div>
 
         <h1 class="craftsman-name">{{ craftsman()!.name }}</h1>
-        <span class="specialty-badge">{{ craftsman()!.specialty }}</span>
+        <span class="specialty-badge">{{ getServiceName(craftsman()!) }}</span>
 
         <div class="rating-row">
           <span class="material-symbols-outlined star-icon">star</span>

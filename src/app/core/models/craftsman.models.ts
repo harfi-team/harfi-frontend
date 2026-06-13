@@ -14,6 +14,8 @@ export interface CraftsmanDto {
   name: string;
   city: string;
   specialty: string;
+  serviceNameAr?: string;
+  serviceNameEn?: string;
   services: CraftsmanServiceSlug[];
   rating: number;
   reviewsCount: number;

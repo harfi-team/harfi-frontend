@@ -1,113 +1,264 @@
 <div class="craftsman-search-page">
-  <section class="search-hero">
-    <div>
-      <p class="eyebrow">{{ 'CRAFTSMEN_FILTER.PAGE_LABEL' | translate }}</p>
-      <h1>
-        {{ 'CRAFTSMEN_FILTER.TITLE' | translate }}
-        <span class="accent">{{ activeServiceLabel }}</span>
-      </h1>
-      <p class="hero-copy">{{ 'CRAFTSMEN_FILTER.SUBTITLE' | translate }}</p>
-    </div>
-
-    <a class="hero-link" routerLink="/home">{{ 'CRAFTSMEN_FILTER.BACK_HOME' | translate }}</a>
-  </section>
-
-  <form class="filter-panel" [formGroup]="form" (ngSubmit)="submit()">
-    <label>
-      <span>{{ 'CRAFTSMEN_FILTER.SEARCH' | translate }}</span>
+  <!-- Top Search Bar -->
+  <div class="top-search-bar harfi-card">
+    <div class="top-search-input-wrapper">
+      <span class="material-symbols-outlined">search</span>
       <input
         type="text"
-        formControlName="search"
+        [formControl]="searchControl"
         [placeholder]="'CRAFTSMEN_FILTER.SEARCH_PLACEHOLDER' | translate"
+        (keyup.enter)="submit()"
       />
-    </label>
-    <label>
-      <span>{{ 'CRAFTSMEN_FILTER.SERVICE' | translate }}</span>
-      <select formControlName="service">
-        @for (option of serviceOptions; track option.value) {
-          <option [value]="option.value">{{ option.labelKey | translate }}</option>
-        }
-      </select>
-    </label>
-    <label>
-      <span>{{ 'CRAFTSMEN_FILTER.CITY' | translate }}</span>
-      <input
-        type="text"
-        formControlName="city"
-        [placeholder]="'CRAFTSMEN_FILTER.CITY_PLACEHOLDER' | translate"
-      />
-    </label>
-    <label>
-      <span>{{ 'CRAFTSMEN_FILTER.MIN_RATING' | translate }}</span>
-      <input type="number" min="0" max="5" step="0.1" formControlName="minRating" />
-    </label>
-    <label>
-      <span>{{ 'CRAFTSMEN_FILTER.MIN_EXPERIENCE' | translate }}</span>
-      <input type="number" min="0" step="1" formControlName="minExperience" />
-    </label>
-
-    <div class="filter-actions">
-      <button type="submit" class="primary-btn">{{ 'CRAFTSMEN_FILTER.APPLY' | translate }}</button>
-      <button type="button" class="secondary-btn" (click)="clearFilters()">
-        {{ 'CRAFTSMEN_FILTER.CLEAR' | translate }}
-      </button>
     </div>
-  </form>
+  </div>
 
-  @if (loading()) {
-    <section class="state-card">
-      <span class="spinner"></span>
-      <p>{{ 'LOADING' | translate }}</p>
-    </section>
-  } @else if (craftsmen().length === 0) {
-    <section class="state-card empty-card">
-      <h2>{{ 'CRAFTSMEN_FILTER.NO_RESULTS_TITLE' | translate }}</h2>
-      <p>{{ 'CRAFTSMEN_FILTER.NO_RESULTS_DESC' | translate }}</p>
-    </section>
-  } @else {
-    <section class="results-grid">
-      @for (craftsman of craftsmen(); track craftsman.id) {
-        <article class="craftsman-card">
-          <div class="card-top">
-            <div class="avatar">
-              @if (craftsman.avatarUrl) {
-                <img class="avatar-img" [src]="craftsman.avatarUrl" [alt]="craftsman.name" />
-              } @else {
-                {{ craftsman.name.slice(0, 1) }}
-              }
-            </div>
-            <div class="meta">
-              <h2>{{ craftsman.name }}</h2>
-              <p>{{ craftsman.specialty }} · {{ craftsman.city }}</p>
-            </div>
-          </div>
+  <!-- Main Layout: Sidebar + Results -->
+  <div class="search-layout">
+    <!-- Left Sidebar Filters -->
+    <aside class="filter-sidebar harfi-card">
+      <div class="sidebar-header">
+        <h3>{{ 'CRAFTSMEN_FILTER.FILTER_TITLE' | translate }}</h3>
+        <button type="button" class="clear-all-btn" (click)="clearFilters()">
+          {{ 'CRAFTSMEN_FILTER.CLEAR' | translate }}
+        </button>
+      </div>
 
-          <p class="bio">{{ craftsman.bio }}</p>
-
-          <div class="chips">
-            @for (service of craftsman.services; track service) {
-              <span class="chip">{{ getServiceLabel(service) | translate }}</span>
-            }
-          </div>
-
-          <div class="stats">
-            <span>⭐ {{ craftsman.rating }}</span>
-            <span>{{ craftsman.reviewsCount }} {{ 'CRAFTSMEN_FILTER.REVIEWS' | translate }}</span>
-            <span>{{ craftsman.experienceYears }} {{ 'CRAFTSMEN_FILTER.YEARS' | translate }}</span>
-            @if (getPriceRange(craftsman)) {
-              <span>{{ getPriceRange(craftsman) }} {{ 'CURRENCY' | translate }}</span>
-            }
-          </div>
-
-          @if (canBook()) {
-            <div class="card-actions">
-              <button type="button" class="primary-btn" (click)="bookNow(craftsman)">
-                {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
-              </button>
-            </div>
+      <!-- Services Filter -->
+      <div class="filter-section">
+        <h4 class="filter-section-title">الحرفة</h4>
+        <select class="filter-dropdown" (change)="onServiceChange($event)">
+          <option value="" selected>كل الحرف</option>
+          @for (option of serviceOptions(); track option.value) {
+            <option [value]="option.value" [selected]="selectedService() === option.value">
+              {{ option.labelKey }}
+            </option>
           }
-        </article>
+        </select>
+      </div>
+
+      <!-- City Filter -->
+      <div class="filter-section">
+        <h4 class="filter-section-title">المدينة</h4>
+        <select class="filter-dropdown" (change)="onCityChange($event)">
+          <option value="" selected>كل المدن</option>
+          @for (city of cityOptions(); track city.value) {
+            <option [value]="city.value" [selected]="form.get('city')?.value === city.value">
+              {{ city.label }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="filter-section">
+        <h4 class="filter-section-title">{{ 'CRAFTSMEN_FILTER.MIN_RATING' | translate }}</h4>
+        <div class="rating-options">
+          @for (r of ratingOptions; track r.value) {
+            <label class="rating-radio-item">
+              <input
+                type="radio"
+                name="ratingFilter"
+                [value]="r.value"
+                [checked]="selectedMinRating === r.value"
+                (change)="onRatingChange(r.value)"
+              />
+              <span class="stars-display">
+                @for (star of r.stars; track $index) {
+                  <span
+                    class="material-symbols-outlined"
+                    [class.star-filled]="star === 'filled'"
+                    [class.star-empty]="star === 'empty'"
+                    >star</span
+                  >
+                }
+              </span>
+              @if (r.label) {
+                <span class="rating-label-text">{{ r.label }}</span>
+              }
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div class="filter-section">
+        <h4 class="filter-section-title">
+          {{ 'CRAFTSMEN_FILTER.PRICE_LABEL' | translate }} ({{ 'CURRENCY' | translate }})
+        </h4>
+        <div class="price-range-wrapper">
+          <div class="price-value-display">
+            <span class="price-value-text">{{ 'CURRENCY' | translate }} {{ maxPrice }}</span>
+          </div>
+          <input
+            type="range"
+            class="price-slider"
+            min="0"
+            max="1000"
+            [value]="maxPrice"
+            [style.--slider-pct]="(maxPrice / 1000) * 100 + '%'"
+            (input)="onPriceInput($event)"
+            (change)="onPriceChange($event)"
+          />
+          <div class="price-range-labels">
+            <span>0</span>
+            <span>{{ 'CURRENCY' | translate }} +1000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience Filter -->
+      <div class="filter-section">
+        <h4 class="filter-section-title">{{ 'CRAFTSMEN_FILTER.MIN_EXPERIENCE' | translate }}</h4>
+        <div class="top-search-input-wrapper small">
+          <span class="material-symbols-outlined">work_history</span>
+          <input
+            type="number"
+            [formControl]="minExperienceControl"
+            [placeholder]="'CRAFTSMEN_FILTER.MIN_EXPERIENCE' | translate"
+            min="0"
+            max="50"
+          />
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Results Area -->
+    <main class="results-area">
+      <!-- Results Header -->
+      <div class="results-header">
+        <h2 class="results-title">
+          {{ 'CRAFTSMEN_FILTER.RESULTS_TITLE' | translate }}
+          @if (!loading()) {
+            <span class="results-count">({{ craftsmen().length }})</span>
+          }
+        </h2>
+        <div class="sort-chips">
+          @for (sort of sortOptions; track sort.value) {
+            <button
+              type="button"
+              class="sort-chip"
+              [class.active]="activeSortValue === sort.value"
+              (click)="onSortChange(sort.value)"
+            >
+              @if (sort.icon) {
+                <span class="material-symbols-outlined">{{ sort.icon }}</span>
+              }
+              {{ sort.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Cards Grid -->
+      <div class="results-grid">
+        @if (loading()) {
+          <div class="full-col centered-state">
+            <span class="loading-spinner"></span>
+            <p>{{ 'LOADING' | translate }}</p>
+          </div>
+        } @else if (craftsmen().length === 0) {
+          <div class="full-col centered-state">
+            <span class="material-symbols-outlined empty-icon">search_off</span>
+            <p class="empty-title">{{ 'CRAFTSMEN_FILTER.NO_RESULTS_TITLE' | translate }}</p>
+            <p class="empty-sub-text">{{ 'CRAFTSMEN_FILTER.NO_RESULTS_DESC' | translate }}</p>
+          </div>
+        } @else {
+          @for (craftsman of paginatedCraftsmen(); track craftsman.id; let i = $index) {
+            <article class="craftsman-card" style="--i: {{ i }}">
+              <!-- Card Image -->
+              <div class="card-image-wrapper">
+                <div class="card-image-placeholder">
+                  <span class="material-symbols-outlined">handyman</span>
+                </div>
+                <!-- Rating Badge -->
+                <div class="rating-badge">
+                  <span class="material-symbols-outlined star-icon">star</span>
+                  <span>{{ craftsman.rating | number: '1.1-1' }}</span>
+                </div>
+                <!-- Avatar overlaid at bottom -->
+                <div class="card-avatar">
+                  @if (craftsman.profileImageUrl) {
+                    <img [src]="craftsman.profileImageUrl" [alt]="craftsman.fullName" />
+                  } @else {
+                    <span class="material-symbols-outlined">person</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="card-name">{{ craftsman.fullName }}</div>
+                <div class="card-specialty-tags">
+                  <span class="specialty-tag">{{ getServiceName(craftsman) }}</span>
+                  @if (craftsman.neighborhood) {
+                    <span class="specialty-tag secondary">{{ craftsman.neighborhood }}</span>
+                  }
+                </div>
+
+                <div class="card-footer">
+                  @if (getPriceRange(craftsman)) {
+                    <div class="card-price">
+                      <span class="price-value">{{ getPriceRange(craftsman) }}</span>
+                      <span class="price-unit">
+                        {{ 'CURRENCY' | translate }} /
+                        {{ 'CRAFTSMEN_FILTER.VISIT' | translate }}</span
+                      >
+                    </div>
+                  }
+
+                  @if (canBook()) {
+                    <button
+                      type="button"
+                      class="card-book-btn gradient-btn"
+                      (click)="bookNow(craftsman)"
+                    >
+                      {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
+                    </button>
+                  } @else {
+                    <button type="button" class="card-view-btn" (click)="viewProfile(craftsman)">
+                      {{ 'VIEW' | translate }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (!loading() && totalPages > 1) {
+        <div class="pagination">
+          <button
+            class="page-btn nav-btn"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          @for (page of visiblePages(); track page) {
+            @if (page === -1) {
+              <span class="page-ellipsis">...</span>
+            } @else {
+              <button
+                class="page-btn"
+                [class.active]="currentPage === page"
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            }
+          }
+          <button
+            class="page-btn nav-btn"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)"
+          >
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+        </div>
       }
-    </section>
-  }
+    </main>
+  </div>
 </div>
