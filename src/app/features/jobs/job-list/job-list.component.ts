@@ -134,8 +134,12 @@ export class JobListComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
-  createJob(): void {
-    this.router.navigate(['/jobs/create']);
+  RouteToCraftsmenSearch(): void {
+    this.router.navigate(['/craftsmen']);
+  }
+
+  RouteToJobDetails(jobId: string): void {
+    this.router.navigate(['/jobs', jobId]);
   }
 
   performAction(jobId: string, action: JobAction): void {
