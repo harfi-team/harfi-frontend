@@ -11,12 +11,14 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor, refreshInterceptor])),
+    
+    // التعديل هنا 👇
     provideTranslateService({
       fallbackLang: 'en',
-    }),
-    provideTranslateHttpLoader({
-      prefix: '/assets/i18n/',
-      suffix: '.json',
+      loader: provideTranslateHttpLoader({
+        prefix: './assets/i18n/',
+        suffix: '.json',
+      }),
     }),
   ],
 };
