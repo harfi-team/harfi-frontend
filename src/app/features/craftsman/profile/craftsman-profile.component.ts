@@ -3,12 +3,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
-<<<<<<< HEAD
 import { LanguageService } from '../../../core/services/language.service';
-import { CraftsmanDto } from '../../../core/models/craftsman.models';
-=======
 import { CraftsmanDto, CraftsmanReviewsResponse } from '../../../core/models/craftsman.models';
->>>>>>> dev
 import { CraftsmanService } from '../craftsman.service';
 import { CraftsmanReviewsComponent } from './craftsman-reviews/craftsman-reviews.component';
 
