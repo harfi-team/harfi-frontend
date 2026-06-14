@@ -235,7 +235,7 @@
     "RECENT_ORDERS": "آخر طلباتي",
     "ORDER_HISTORY": "سجل الطلبات",
     "NO_ORDERS": "لا توجد طلبات حتى الآن",
-    "CURRENCY": "ر.س"
+    "CURRENCY": "ج.م"
   },
   "CRAFTSMAN_PROFILE": {
     "ABOUT": "نبذة",
@@ -724,7 +724,7 @@
   },
   "CITY_RIYADH": "الرياض",
   "CITY_JEDDAH": "جدة",
-  "CURRENCY": "رس",
+  "CURRENCY": "ج.م",
 
    "CHAT": {
   "TITLE": "المحادثات",
