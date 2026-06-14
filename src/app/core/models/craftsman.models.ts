@@ -92,6 +92,8 @@ export interface CraftsmanDto {
   priceMax?: number;
   minPrice?: number;
   portfolioImages?: string[];
+  serviceNameEn?: string;
+  serviceNameAr?: string;
 }
 
 export type CraftsmanServiceSlug =

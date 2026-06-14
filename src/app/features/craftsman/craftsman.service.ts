@@ -141,6 +141,8 @@ export class CraftsmanService {
           typed['Specialty'] ??
           '',
       ),
+      serviceNameAr: this.pickString(typed, ['serviceNameAr', 'ServiceNameAr']),
+      serviceNameEn: this.pickString(typed, ['serviceNameEn', 'ServiceNameEn']),
       services,
       rating,
       reviewsCount,

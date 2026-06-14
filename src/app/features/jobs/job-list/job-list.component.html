@@ -1,4 +1,5 @@
 <div class="jobs-page">
+  <!-- ── Hero ─────────────────────────────────────────── -->
   <section class="jobs-hero">
     <div>
       <p class="eyebrow">{{ 'JOBS.PAGE_LABEL' | translate }}</p>
@@ -7,13 +8,14 @@
     </div>
 
     @if (isCustomer()) {
-      <button class="create-btn" type="button" (click)="createJob()">
+      <button class="create-btn" type="button" (click)="RouteToCraftsmenSearch()">
         <span class="material-symbols-outlined">add_circle</span>
-        <span>{{ 'JOBS.CREATE_JOB' | translate }}</span>
+        {{ 'CRAFTSMEN_FILTER.PAGE_LABEL' | translate }}
       </button>
     }
   </section>
 
+  <!-- ── Summary cards ─────────────────────────────────── -->
   <section class="summary-grid">
     <article class="summary-card">
       <span class="summary-label">{{ 'JOBS.FILTER_ALL' | translate }}</span>
@@ -33,6 +35,7 @@
     </article>
   </section>
 
+  <!-- ── Filter tabs ────────────────────────────────────── -->
   <section class="filter-bar">
     @for (tab of filterTabs; track tab.value) {
       <button
@@ -46,13 +49,19 @@
     }
   </section>
 
+  <!-- ── Loading ────────────────────────────────────────── -->
   @if (loading()) {
     <div class="loading-state">
       <span class="spinner"></span>
       <p>{{ 'LOADING' | translate }}</p>
     </div>
+
+    <!-- ── Empty state ────────────────────────────────────── -->
   } @else if (visibleJobs().length === 0) {
     <section class="empty-state">
+      <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.35">
+        work_off
+      </span>
       <h2>{{ 'JOBS.NO_JOBS' | translate }}</h2>
       <p>
         @if (isCustomer()) {
@@ -61,18 +70,24 @@
           {{ 'JOBS.EMPTY_HINT_CRAFTSMAN' | translate }}
         }
       </p>
-
       @if (isCustomer()) {
-        <button class="create-btn create-btn--secondary" type="button" (click)="createJob()">
+        <button
+          class="create-btn create-btn--secondary"
+          type="button"
+          (click)="RouteToCraftsmenSearch()"
+        >
           <span class="material-symbols-outlined">add</span>
-          <span>{{ 'JOBS.CREATE_JOB' | translate }}</span>
+          {{ 'CRAFTSMEN_FILTER.PAGE_LABEL' | translate }}
         </button>
       }
     </section>
+
+    <!-- ── Jobs list ──────────────────────────────────────── -->
   } @else {
     <section class="jobs-grid">
       @for (job of visibleJobs(); track trackByJobId($index, job)) {
-        <article class="job-card">
+        <article class="job-card" (click)="RouteToJobDetails(job.id)">
+          <!-- Header: icon + title + status badge -->
           <header class="job-card__header">
             <div class="job-card__title-group">
               <div class="job-service-icon">
@@ -83,13 +98,15 @@
                 <h2>{{ getAssignedLabel(job) }}</h2>
               </div>
             </div>
-            <span [class]="getStatusClass(job.status)">{{
-              getStatusLabelKey(job.status) | translate
-            }}</span>
+            <span [class]="getStatusClass(job.status)">
+              {{ getStatusLabelKey(job.status) | translate }}
+            </span>
           </header>
 
+          <!-- Description -->
           <p class="job-description">{{ job.description }}</p>
 
+          <!-- Problem image (optional) -->
           @if (job.problemImageUrl) {
             <div class="job-image-section">
               <img
@@ -100,6 +117,7 @@
             </div>
           }
 
+          <!-- Meta grid -->
           <dl class="job-meta">
             <div>
               <dt>{{ 'JOBS.CREATED_AT' | translate }}</dt>
@@ -112,8 +130,10 @@
               </dd>
             </div>
             <div>
-              <dt>{{ 'JOBS.CITY' | translate }}</dt>
-              <dd>{{ job.city || '-' }}</dd>
+              <dt>
+                {{ (isCustomer() ? 'JOBS.CRAFTSMAN_NAME' : 'JOBS.CUSTOMER_NAME') | translate }}
+              </dt>
+              <dd>{{ getAssignedLabel(job) || ('JOBS.NOT_SET' | translate) }}</dd>
             </div>
             <div>
               <dt>{{ 'JOBS.ADDRESS' | translate }}</dt>
@@ -141,6 +161,7 @@
             </div>
           </dl>
 
+          <!-- Craftsman action buttons -->
           @if (isCraftsman() && (canAccept(job) || canReject(job) || canComplete(job))) {
             <div class="job-actions">
               @if (canAccept(job)) {
@@ -149,15 +170,21 @@
                   class="action-btn action-btn--primary"
                   (click)="performAction(job.id, 'accept')"
                 >
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 16px; line-height: 1; vertical-align: middle"
+                    >check_circle</span
+                  >
                   {{ 'JOBS.ACTION_ACCEPT' | translate }}
                 </button>
               }
               @if (canReject(job)) {
-                <button
-                  type="button"
-                  class="action-btn action-btn--ghost"
-                  (click)="performAction(job.id, 'reject')"
-                >
+                <button type="button" class="action-btn" (click)="performAction(job.id, 'reject')">
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 16px; line-height: 1; vertical-align: middle"
+                    >cancel</span
+                  >
                   {{ 'JOBS.ACTION_REJECT' | translate }}
                 </button>
               }
@@ -167,12 +194,18 @@
                   class="action-btn action-btn--primary"
                   (click)="performAction(job.id, 'complete')"
                 >
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 16px; line-height: 1; vertical-align: middle"
+                    >task_alt</span
+                  >
                   {{ 'JOBS.ACTION_COMPLETE' | translate }}
                 </button>
               }
             </div>
           }
 
+          <!-- Chat button -->
           <div class="job-actions">
             <button
               type="button"
@@ -180,9 +213,17 @@
               [class.action-btn--primary]="job.status === 'in-progress'"
               [disabled]="job.status !== 'in-progress'"
               (click)="openChat(job)"
-              [title]="job.status !== 'in-progress' ? ('JOBS.CHAT_PENDING' | translate) : ('JOBS.OPEN_CHAT' | translate)"
+              [title]="
+                job.status !== 'in-progress'
+                  ? ('JOBS.CHAT_PENDING' | translate)
+                  : ('JOBS.OPEN_CHAT' | translate)
+              "
             >
-              <span class="material-symbols-outlined" style="font-size:16px;line-height:1;vertical-align:middle">chat</span>
+              <span
+                class="material-symbols-outlined"
+                style="font-size: 16px; line-height: 1; vertical-align: middle"
+                >chat</span
+              >
               {{ 'JOBS.OPEN_CHAT' | translate }}
             </button>
           </div>

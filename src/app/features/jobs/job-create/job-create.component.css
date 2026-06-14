@@ -227,7 +227,12 @@
   overflow-x: auto;
   padding-bottom: 0.75rem;
   margin-bottom: 1.25rem;
-  scrollbar-width: thin;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.day-picker::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .day-card {

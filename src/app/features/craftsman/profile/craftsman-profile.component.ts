@@ -3,6 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { CraftsmanDto, CraftsmanReviewsResponse } from '../../../core/models/craftsman.models';
 import { CraftsmanService } from '../craftsman.service';
 import { CraftsmanReviewsComponent } from './craftsman-reviews/craftsman-reviews.component';
@@ -19,6 +20,7 @@ export class CraftsmanProfileComponent implements OnInit {
   private router = inject(Router);
   private craftsmanService = inject(CraftsmanService);
   private auth = inject(AuthService);
+  private languageService = inject(LanguageService);
 
   loading = signal(true);
   craftsman = signal<CraftsmanDto | null>(null);
@@ -85,7 +87,18 @@ export class CraftsmanProfileComponent implements OnInit {
 
   getServiceLabel(craftsman: CraftsmanDto): string {
     const service = this.craftsmanService.getPrimaryService(craftsman);
-    return service ? `SERVICES.${service.toUpperCase()}` : craftsman.specialty;
+    return service ? `SERVICES.${service.toUpperCase()}` : this.getServiceName(craftsman);
+  }
+
+  getServiceName(craftsman: CraftsmanDto): string {
+    const isArabic = this.languageService.current() === 'ar';
+    if (isArabic && craftsman.serviceNameAr) {
+      return craftsman.serviceNameAr;
+    }
+    if (!isArabic && craftsman.serviceNameEn) {
+      return craftsman.serviceNameEn;
+    }
+    return craftsman.specialty;
   }
 
   // ── متوسط التقييم: من ملخص المراجعات أولاً، وإلا من بيانات الحرفي نفسه ──

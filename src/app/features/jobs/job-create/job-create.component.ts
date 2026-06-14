@@ -108,6 +108,25 @@ export class JobCreateComponent implements OnInit {
     return svc?.labelKey ?? 'SERVICES.OTHER';
   }
 
+ get filteredServices() {
+  const c = this.craftsman();
+  if (!c) return this.services; // no craftsman yet → show all
+
+  const rawServices = c.services || [];
+
+  const arabicFromDirect = rawServices.filter(s =>
+    this.services.some(svc => svc.value === s)
+  );
+
+  const arabicFromSlug = rawServices
+    .map(slug => this.slugToArabic[slug.toLowerCase()])
+    .filter(Boolean);
+
+  const combined = [...new Set([...arabicFromDirect, ...arabicFromSlug])];
+
+  return this.services.filter(s => combined.includes(s.value)); // ← no fallback
+}
+
   get visitFee(): string {
     const c = this.craftsman();
     if (c && c.priceMin) return `${c.priceMin}`;
@@ -157,6 +176,13 @@ export class JobCreateComponent implements OnInit {
       next: (c) => {
         this.craftsman.set(c);
         this.craftsmanLoading.set(false);
+
+        // Ensure the selected service is one of the craftsman's services
+        const available = this.filteredServices;
+        const current = this.form.controls.service.value;
+        if (available.length > 0 && !available.some(s => s.value === current)) {
+          this.form.controls.service.setValue(available[0].value);
+        }
       },
       error: () => this.craftsmanLoading.set(false),
     });
@@ -209,6 +235,17 @@ export class JobCreateComponent implements OnInit {
 
   getStars(rating: number): number[] {
     return Array.from({ length: 5 }, (_, i) => (i < Math.round(rating) ? 1 : 0));
+  }
+
+  getServiceName(craftsman: CraftsmanDto): string {
+    const isArabic = this.languageService.current() === 'ar';
+    if (isArabic && craftsman.serviceNameAr) {
+      return craftsman.serviceNameAr;
+    }
+    if (!isArabic && craftsman.serviceNameEn) {
+      return craftsman.serviceNameEn;
+    }
+    return craftsman.specialty;
   }
 
   submit(): void {

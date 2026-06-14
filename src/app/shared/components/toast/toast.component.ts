@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ToastMessage } from '../../../core/models/api-error.models';
@@ -16,7 +16,7 @@ import { ToastMessage } from '../../../core/models/api-error.models';
   selector: 'app-toast',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgIf],
+  imports: [NgClass],
   template: `
     @if (message(); as current) {
       <div class="toast-wrapper" [ngClass]="'toast--' + current.type">

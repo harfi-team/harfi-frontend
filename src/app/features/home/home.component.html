@@ -25,12 +25,22 @@
           <div class="search-input-wrap">
             <span class="material-symbols-outlined search-icon">search</span>
             <input
+              #searchInput
               class="search-input"
               type="text"
               [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
+              (keyup.enter)="onSearch(searchInput.value)"
             />
           </div>
-          <button class="search-btn" routerLink="/craftsmen">
+          <button
+            type="button"
+            class="location-btn"
+            (click)="requestPosition()"
+            [title]="'CHAT.SEND_LOCATION' | translate"
+          >
+            <span class="material-symbols-outlined">my_location</span>
+          </button>
+          <button class="search-btn" (click)="onSearch(searchInput.value)">
             {{ 'HOME.SEARCH_BTN' | translate }}
           </button>
         </div>
@@ -44,28 +54,44 @@
         <h3 class="section-title">{{ 'HOME.POPULAR_SERVICES' | translate }}</h3>
         <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
       </div>
-      <div class="services-grid">
-        @for (service of services; track service.labelKey) {
-          <a
-            class="service-card"
-            [routerLink]="['/craftsmen']"
-            [queryParams]="service.slug ? { service: service.slug } : null"
-          >
-            <div [class]="'service-icon-wrap ' + service.variant">
-              <span class="material-symbols-outlined">{{ service.icon }}</span>
-            </div>
-            <span class="service-label">{{ service.labelKey | translate }}</span>
-          </a>
-        }
-      </div>
+
+      @if (loadingServices()) {
+        <div class="featured-state">
+          <span class="loading-spinner"></span>
+          <p>{{ 'LOADING' | translate }}</p>
+        </div>
+      } @else {
+        <div class="services-grid">
+          @for (service of dynamicServices(); track service.slug) {
+            <a class="service-card" (click)="selectService(service.slug)" style="cursor: pointer">
+              <div [class]="'service-icon-wrap ' + service.variant">
+                <span class="material-symbols-outlined">{{ service.icon }}</span>
+              </div>
+              <span class="service-label">{{ service.name }}</span>
+            </a>
+          }
+        </div>
+      }
     </section>
 
-    <!-- Featured Craftsmen -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         Featured Craftsmen  — city-filtered when location is available
+    ════════════════════════════════════════════════════════════════════ -->
     <section>
       <div class="section-header">
-        <h3 class="section-title">{{ 'HOME.FEATURED_CRAFTSMEN' | translate }}</h3>
+        <!-- Title + optional city badge -->
+        <h3 class="section-title">
+          {{ 'HOME.FEATURED_CRAFTSMEN' | translate }}
+          @if (filteringByCity() && detectedCity()) {
+            <span class="city-badge">
+              <span class="material-symbols-outlined city-badge-icon">location_on</span>
+              {{ detectedCity() }}
+            </span>
+          }
+        </h3>
         <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
       </div>
+
       @if (loadingCraftsmen()) {
         <div class="featured-state">
           <span class="loading-spinner"></span>
@@ -78,11 +104,11 @@
       } @else {
         <div class="craftsmen-scroll">
           @for (craftsman of featuredCraftsmen(); track craftsman.id) {
-            <article class="craftsman-card">
+            <article class="craftsman-card" routerLink="/craftsmen/profile/{{ craftsman.id }}">
               <div class="craftsman-header">
                 <div class="craftsman-info">
                   <div class="craftsman-name">{{ craftsman.name }}</div>
-                  <span class="craftsman-specialty">{{ craftsman.specialty }}</span>
+                  <span class="craftsman-specialty">{{ getServiceName(craftsman) }}</span>
                 </div>
                 <div class="craftsman-avatar">
                   @if (craftsman.avatarUrl) {
@@ -107,9 +133,9 @@
                 <div class="craftsman-rating">
                   <span class="material-symbols-outlined star-filled">star</span>
                   <span class="rating-value">{{ craftsman.rating }}</span>
-                  <span class="rating-count"
-                    >({{ craftsman.reviewsCount }} {{ 'HOME.REVIEWS' | translate }})</span
-                  >
+                  <span class="rating-count">
+                    ({{ craftsman.reviewsCount }} {{ 'HOME.REVIEWS' | translate }})
+                  </span>
                 </div>
               </div>
 
@@ -135,7 +161,7 @@
               <div class="craftsman-actions">
                 <a
                   class="craftsman-btn craftsman-btn--profile"
-                  [routerLink]="['/craftsmen', craftsman.id]"
+                  [routerLink]="['/craftsmen', 'profile', craftsman.id]"
                 >
                   <span class="material-symbols-outlined">person</span>
                   <span>{{ 'HOME.VIEW_PROFILE' | translate }}</span>
@@ -157,7 +183,7 @@
       }
     </section>
 
-    <!-- How It Works -- -->
+    <!-- How It Works -->
     <section class="how-section">
       <h3 class="how-title">{{ 'HOME.HOW_TITLE' | translate }}</h3>
       <div class="how-grid">
@@ -221,9 +247,9 @@
                   getStatusLabelKey(order.status) | translate
                 }}</span>
                 @if (order.budget) {
-                  <span class="order-price"
-                    >{{ order.budget }} {{ 'HOME.CURRENCY' | translate }}</span
-                  >
+                  <span class="order-price">
+                    {{ order.budget }} {{ 'HOME.CURRENCY' | translate }}
+                  </span>
                 }
               </div>
             </div>

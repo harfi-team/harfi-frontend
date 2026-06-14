@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { JobAction, JobDto, JobStatus } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
+import { CraftsmanService } from '../../craftsman/craftsman.service';
 import { environment } from '../../../../environments/environment';
 import { RealtimeNotificationOrchestratorService } from '../../../core/services/realtime-notification-orchestrator.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,6 +23,7 @@ type JobFilterTab = 'all' | JobStatus;
 })
 export class JobListComponent implements OnInit {
   private jobsService = inject(JobsService);
+  private craftsmanService = inject(CraftsmanService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
@@ -94,6 +96,11 @@ export class JobListComponent implements OnInit {
         );
         this.jobs.set(sorted);
         this.loading.set(false);
+
+        // Enrich jobs with craftsman names since DB only stores craftsmanId
+        if (this.isCustomer()) {
+          this.enrichWithCraftsmanNames(sorted);
+        }
       },
       error: (error) => {
         this.errorHandler.handle(error);
@@ -103,12 +110,36 @@ export class JobListComponent implements OnInit {
     });
   }
 
+  private enrichWithCraftsmanNames(jobs: JobDto[]): void {
+    const jobsNeedingName = jobs.filter(j => j.craftsmanId && !j.craftsmanName);
+
+    jobsNeedingName.forEach(job => {
+      this.craftsmanService.getCraftsman(String(job.craftsmanId!)).subscribe({
+        next: (craftsman) => {
+          if (!craftsman?.name) {
+            return;
+          }
+          this.jobs.update(current =>
+            current.map(j =>
+              j.id === job.id ? { ...j, craftsmanName: craftsman.name } : j
+            )
+          );
+        },
+        error: () => {}, // silently ignore — name just stays null
+      });
+    });
+  }
+
   setTab(tab: JobFilterTab): void {
     this.activeTab.set(tab);
   }
 
-  createJob(): void {
-    this.router.navigate(['/jobs/create']);
+  RouteToCraftsmenSearch(): void {
+    this.router.navigate(['/craftsmen']);
+  }
+
+  RouteToJobDetails(jobId: string): void {
+    this.router.navigate(['/jobs', jobId]);
   }
 
   performAction(jobId: string, action: JobAction): void {

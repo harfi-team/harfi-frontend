@@ -11,17 +11,7 @@
       <form [formGroup]="form">
         <!-- Service Selection -->
         <div class="service-chips">
-          @for (svc of services; track svc.value) {
-            <button
-              type="button"
-              class="service-chip"
-              [class.active]="form.controls.service.value === svc.value"
-              (click)="form.controls.service.setValue(svc.value)"
-            >
-              <span class="material-symbols-outlined">{{ svc.icon }}</span>
-              <span>{{ svc.labelKey | translate }}</span>
-            </button>
-          }
+          {{ 'JOBS.SERVICE' | translate }}: {{ selectedServiceLabel | translate }}
         </div>
 
         <!-- Problem Description -->
@@ -164,16 +154,16 @@
           </div>
           <div class="craftsman-info">
             <h3 class="craftsman-name">{{ craftsman()!.name }}</h3>
-            <p class="craftsman-specialty">{{ craftsman()!.specialty }}</p>
+            <p class="craftsman-specialty">{{ getServiceName(craftsman()!) }}</p>
             <div class="craftsman-rating">
               <span class="material-symbols-outlined star-icon">star</span>
               <span class="rating-value">{{ craftsman()!.rating | number: '1.1-1' }}</span>
               <span class="rating-count">({{ craftsman()!.reviewsCount }})</span>
             </div>
           </div>
-          <button type="button" class="remove-craftsman" (click)="clearCraftsman()">
+          <!-- <button type="button" class="remove-craftsman" (click)="clearCraftsman()">
             <span class="material-symbols-outlined">close</span>
-          </button>
+          </button> -->
         </div>
       } @else if (craftsmanLoading()) {
         <div class="craftsman-card loading-state">

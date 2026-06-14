@@ -75,7 +75,6 @@
   "PLATFORM_TAGLINE": "Egypt's first craftsmen platform",
   "JOIN_CRAFTSMEN": "Join Thousands of Craftsmen",
   "REGISTER_TAGLINE": "Register now and start your journey with Harfi",
-  "CRAFTSMEN": "Craftsmen",
   "COMPLETED_ORDERS": "Completed Orders",
   "STAT_CRAFTSMEN": "Registered craftsmen",
   "STAT_RATING": "Average rating",
@@ -89,7 +88,6 @@
   "NAV_HOW": "How It Works",
   "NAV_CRAFTSMEN": "Craftsmen",
   "NAV_CONTACT": "Contact Us",
-  "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
 
   "CRAFTSMEN_FILTER": {
@@ -97,8 +95,8 @@
     "TITLE": "Craftsmen for",
     "SUBTITLE": "Browse verified craftsmen, refine the filters, and book the right expert for the job.",
     "BACK_HOME": "Back Home",
-    "SEARCH": "Search by name or specialty",
-    "SEARCH_PLACEHOLDER": "e.g. plumber, electrician...",
+    "SEARCH": "Search by name",
+    "SEARCH_PLACEHOLDER": "e.g. Plumber, Electrician, Carpenter...",
     "SERVICE": "Service",
     "CITY": "City",
     "CITY_PLACEHOLDER": "e.g. Cairo, Giza...",
@@ -110,11 +108,33 @@
     "ALL_SERVICES": "All Services",
     "NO_RESULTS_TITLE": "No craftsmen found",
     "NO_RESULTS_DESC": "Try a different service or relax the filters to see more results.",
+    "FILTER_TITLE": "Filters",
+    "PRICE_LABEL": "Price Range",
+    "SERVICES_HEADER": "Service",
+    "CITY_HEADER": "City",
+    "ALL_CITIES": "All Cities",
+    "RESULTS_TITLE": "Results",
+    "VISIT": "visit",
     "REVIEWS": "reviews",
     "YEARS": "years"
   },
-  
 
+  "CITIES": {
+    "CAIRO": "Cairo",
+    "ALEXANDRIA": "Alexandria",
+    "TANTA": "Tanta",
+    "MANSOURA": "Mansoura",
+    "GIZA": "Giza"
+  },
+
+  "SORT": {
+    "HIGHEST_RATING": "Highest Rated",
+    "LOWEST_PRICE": "Lowest Price",
+    "MOST_EXPERIENCED": "Most Experienced"
+  },
+
+  
+  
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
     "HOME": "Home",
@@ -168,9 +188,6 @@
     "STATUS_REJECTED": "Rejected",
     "ACTION_ACCEPT": "Accept",
     "ACTION_REJECT": "Reject",
-    "SUCCESS_ACCEPTED": "Job accepted successfully",
-    "SUCCESS_REJECTED": "Job rejected",
-    "SUCCESS_COMPLETED": "Job completed successfully",
     "ACTION_COMPLETE": "Mark Completed",
     "SUCCESS_CREATED": "Job created successfully",
     "SUCCESS_ACCEPTED": "Job accepted successfully",
@@ -388,7 +405,6 @@
   "SERVICE": "Service",
   "DATE": "Date",
   "STATUS": "Status",
-  "CITY": "City",
   "STARS": "Stars",
   "ACTIONS": "Actions",
   "SPECIALTY": "Specialty",
@@ -707,7 +723,7 @@
   },
   "CITY_RIYADH": "Riyadh",
   "CITY_JEDDAH": "Jeddah",
-  "CURRENCY": "SAR",
+  "CURRENCY": "EGP",
   "CITY": {
     "RIYADH": "Riyadh",
     "JEDDAH": "Jeddah",
@@ -791,4 +807,5 @@
     "IMAGE_URL": "Profile Picture URL"
   }
 }
+
 

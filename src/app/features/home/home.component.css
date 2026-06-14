@@ -497,6 +497,25 @@
 .search-input::placeholder {
   color: var(--text-secondary);
 }
+
+.location-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: color 0.18s;
+}
+.location-btn:hover {
+  color: var(--accent);
+}
+.location-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
 .search-btn {
   background: var(--accent-purple);
   color: #fff;
@@ -1086,4 +1105,24 @@
 /* ─── bottom spacing ─────────────────────────────────────────────────── */
 .page-bottom {
   height: 32px;
+}
+
+/* ── City badge — appears next to "Featured Craftsmen" when location is detected ── */
+.city-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 10px;
+  padding: 3px 10px 3px 8px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.city-badge-icon {
+  font-size: 15px;
 }

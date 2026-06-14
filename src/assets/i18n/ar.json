@@ -75,7 +75,6 @@
   "PLATFORM_TAGLINE": "منصة الحرفيين الأولى في مصر",
   "JOIN_CRAFTSMEN": "انضم إلى آلاف الحرفيين",
   "REGISTER_TAGLINE": "سجل الآن وابدأ رحلتك مع حرفي",
-  "CRAFTSMEN": "حرفي",
   "COMPLETED_ORDERS": "طلب مكتمل",
   "STAT_CRAFTSMEN": "حرفي مسجل",
   "STAT_RATING": "متوسط التقييم",
@@ -90,31 +89,51 @@
   "NAV_CRAFTSMEN": "الحرفيون",
   "NAV_CONTACT": "تواصل معنا",
 
-  "NOTIFICATIONS": "الإشعارات",
   "AI_ASSISTANT": "المساعد الذكي",
   "CRAFTSMEN_FILTER": {
     "PAGE_LABEL": "بحث الحرفيين",
     "TITLE": "حرفيون لخدمة",
     "SUBTITLE": "تصفح الحرفيين الموثقين، وعدّل الفلاتر، واحجز الخبير المناسب للعمل.",
     "BACK_HOME": "العودة للرئيسية",
-    "SEARCH": "البحث بالاسم أو التخصص",
-    "SEARCH_PLACEHOLDER": "مثال: سباك، كهربائي...",
+    "SEARCH": "البحث بالاسم",
+    "SEARCH_PLACEHOLDER": "ابحث عن اسم الحرفي...",
     "SERVICE": "الخدمة",
     "CITY": "المدينة",
     "CITY_PLACEHOLDER": "مثال: القاهرة، الجيزة...",
     "MIN_RATING": "أقل تقييم",
     "MIN_EXPERIENCE": "أقل خبرة",
-    "APPLY": "تطبيق الفلاتر",
+    "APPLY": "بحث",
     "CLEAR": "مسح",
     "BOOK_NOW": "كلّفه بعمل",
     "ALL_SERVICES": "كل الخدمات",
     "NO_RESULTS_TITLE": "لا يوجد حرفيون",
     "NO_RESULTS_DESC": "جرّب خدمة أخرى أو خفف الفلاتر لعرض نتائج أكثر.",
+    "FILTER_TITLE": "الفلاتر",
+    "PRICE_LABEL": "نطاق السعر",
+    "SERVICES_HEADER": "الحرفة",
+    "CITY_HEADER": "المدينة",
+    "ALL_CITIES": "كل المدن",
+    "RESULTS_TITLE": "النتائج",
+    "VISIT": "زيارة",
     "REVIEWS": "تقييم",
     "YEARS": "سنوات"
   },
-  
 
+  "CITIES": {
+    "CAIRO": "القاهرة",
+    "ALEXANDRIA": "الإسكندرية",
+    "TANTA": "طنطا",
+    "MANSOURA": "المنصورة",
+    "GIZA": "الجيزة"
+  },
+
+  "SORT": {
+    "HIGHEST_RATING": "الأعلى تقييماً",
+    "LOWEST_PRICE": "الأقل سعراً",
+    "MOST_EXPERIENCED": "الأكثر خبرة"
+  },
+
+  
   "NAV": {
     "TAGLINE": "منصة الحرفيين",
     "HOME": "الرئيسية",
@@ -143,7 +162,7 @@
     "SUBMIT_REQUEST": "إرسال الطلب",
     "BACK_TO_JOBS": "العودة إلى الطلبات",
     "SERVICE": "الخدمة",
-    "DESCRIPTION": "الوصف",
+    "DESCRIPTION": "تفاصيل المشكلة",
     "CITY": "المدينة",
     "ADDRESS": "العنوان",
     "SCHEDULED_AT": "التاريخ المفضل",
@@ -169,9 +188,6 @@
     "ACTION_ACCEPT": "قبول",
     "ACTION_REJECT": "رفض",
     "ACTION_COMPLETE": "تم الإنجاز",
-    "SUCCESS_ACCEPTED": "تم قبول الطلب بنجاح",
-    "SUCCESS_REJECTED": "تم رفض الطلب",
-    "SUCCESS_COMPLETED": "تم إكمال الشغلانة بنجاح",
     "SUCCESS_CREATED": "تم إنشاء الطلب بنجاح",
     "SUCCESS_ACCEPTED": "تم قبول الطلب بنجاح",
     "SUCCESS_REJECTED": "تم رفض الطلب بنجاح",
@@ -219,7 +235,7 @@
     "RECENT_ORDERS": "آخر طلباتي",
     "ORDER_HISTORY": "سجل الطلبات",
     "NO_ORDERS": "لا توجد طلبات حتى الآن",
-    "CURRENCY": "ر.س"
+    "CURRENCY": "ج.م"
   },
   "CRAFTSMAN_PROFILE": {
     "ABOUT": "نبذة",
@@ -708,7 +724,7 @@
   },
   "CITY_RIYADH": "الرياض",
   "CITY_JEDDAH": "جدة",
-  "CURRENCY": "رس",
+  "CURRENCY": "ج.م",
 
    "CHAT": {
   "TITLE": "المحادثات",
