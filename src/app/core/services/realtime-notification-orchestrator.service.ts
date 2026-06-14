@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { NotificationHubService } from '../hubs/notification.hub.service';
 import { ChatHubService } from '../hubs/chat.hub.service';
 import { NotificationsService } from '../../features/notifications/notifications.service';
@@ -8,6 +8,7 @@ import { ErrorHandlerService } from './error-handler.service';
 import { AuthService } from './auth.service';
 import { NotificationDto } from '../models/notification.models';
 import { MessageDto } from '../models/chat.models';
+  
 
 @Injectable({ providedIn: 'root' })
 export class RealtimeNotificationOrchestratorService {
@@ -17,6 +18,7 @@ export class RealtimeNotificationOrchestratorService {
   private readonly chatHub = inject(ChatHubService);
   private readonly notifService = inject(NotificationsService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  readonly jobAccepted$ = new Subject<number>();
 
   private subscriptions = new Subscription();
   private readonly recentToastKeys = new Map<string, number>();
@@ -37,33 +39,26 @@ export class RealtimeNotificationOrchestratorService {
     this.notifHub.connect().catch(() => {});
     this.chatHub.connect().catch(() => {});
 
-    this.subscriptions.add(
-      this.notifHub.notification$.subscribe(notif => {
-        if (!notif) return;
+   this.subscriptions.add(
+  this.notifHub.notification$.subscribe(notif => {
+    if (!notif) return;
 
-        if (notif.type === 'new_message' && this.isViewingConversation(notif.conversationId)) {
-          return;
-        }
+    // ✅ job_accepted event
+    if (notif.type === 'job_accepted' && notif.relatedJobId) {
+      this.jobAccepted$.next(notif.relatedJobId);
+    }
 
-        this.notifService.incrementUnread();
-        const message = [notif.title, notif.body].filter(Boolean).join(' - ');
-        const key = this.notificationToastKey(notif);
-        this.showToastWithSound(message, key);
-      })
-    );
+    // ✅ toast - نفس المنطق القديم
+    if (notif.type === 'new_message' && this.isViewingConversation(notif.conversationId)) {
+      return;
+    }
 
-    this.subscriptions.add(
-      this.chatHub.message$.subscribe(msg => {
-        if (!msg) return;
-        if (msg.senderId === this.auth.getUserId()) return;
-        if (this.isViewingConversation(msg.conversationId)) return;
-
-        const preview = this.mapMessagePreview(msg);
-        const message = `${msg.senderName}: ${preview}`;
-        const key = this.chatMessageToastKey(msg);
-        this.showToastWithSound(message, key);
-      })
-    );
+    this.notifService.incrementUnread();
+    const message = [notif.title, notif.body].filter(Boolean).join(' - ');
+    const key = this.notificationToastKey(notif);
+    this.showToastWithSound(message, key);
+  })
+);
   }
 
   async stop(): Promise<void> {

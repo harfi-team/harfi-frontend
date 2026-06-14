@@ -9,6 +9,7 @@ import {
   computed,
   effect,
   inject,
+  ChangeDetectorRef,
   signal
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -59,6 +60,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private location = inject(Location);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly currentUserId = this.tokenSvc.getUser()?.id ?? 0;
 
@@ -145,17 +147,17 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       }
     });
 
-    effect(() => {
-      const payload = this.incomingRead();
-      const id = this.conversationId();
-      if (!payload || payload.conversationId !== id) return;
-      if (payload.readerId === this.currentUserId) return;
+     effect(() => {
+    const payload = this.incomingRead();
+    const id = this.conversationId();
+    if (!payload || payload.conversationId !== id) return;
+    if (Number(payload.readerId) === Number(this.currentUserId)) return;
 
-      this.allMessages.update((list) =>
-        list.map((m) => (m.senderId === this.currentUserId ? { ...m, isRead: true } : m)),
-      );
-    });
-
+    this.allMessages.update((list) =>
+      list.map((m) => (Number(m.senderId) === Number(this.currentUserId) ? { ...m, isRead: true } : m))
+    );
+  this.cdr.markForCheck(); // ✅
+  });
     effect(() => {
       const payload = this.typingFromHub();
       const id = this.conversationId();
@@ -609,8 +611,8 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
   }
 
   isMine(msg: MessageDto): boolean {
-    return !!this.currentUserId && msg.senderId === this.currentUserId;
-  }
+  return !!this.currentUserId && Number(msg.senderId) === Number(this.currentUserId);
+}
 
   trackById(_index: number, msg: MessageDto): number {
     return msg.id;

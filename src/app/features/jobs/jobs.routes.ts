@@ -14,4 +14,10 @@ export const jobsRoutes: Routes = [
       import('./job-create/job-create.component').then((m) => m.JobCreateComponent),
     canActivate: [roleGuard(['customer'])],
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./job-detail/job-detail.component').then((m) => m.JobDetailComponent),
+    canActivate: [roleGuard(['customer', 'craftsman'])],
+  },
 ];

@@ -8,6 +8,9 @@ import { JobAction, JobDto, JobStatus } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
 import { CraftsmanService } from '../../craftsman/craftsman.service';
 import { environment } from '../../../../environments/environment';
+import { RealtimeNotificationOrchestratorService } from '../../../core/services/realtime-notification-orchestrator.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
 
 type JobFilterTab = 'all' | JobStatus;
 
@@ -25,6 +28,8 @@ export class JobListComponent implements OnInit {
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
   private translate = inject(TranslateService);
+  private orchestrator = inject(RealtimeNotificationOrchestratorService);
+  private destroyRef = inject(DestroyRef);
 
   jobs = signal<JobDto[]>([]);
   loading = signal(true);
@@ -56,9 +61,18 @@ export class JobListComponent implements OnInit {
     };
   });
 
-  ngOnInit(): void {
-    this.loadJobs();
-  }
+ ngOnInit(): void {
+  this.loadJobs();
+  this.orchestrator.jobAccepted$
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(jobId => {
+      this.jobsService.getJobById(String(jobId)).subscribe(updated => {
+        this.jobs.update(list =>
+          list.map(j => j.id === String(jobId) ? { ...j, ...updated } : j)
+        );
+      });
+    });
+}
 
   loadJobs(): void {
     const id = this.isCraftsman()
@@ -125,14 +139,20 @@ export class JobListComponent implements OnInit {
   }
 
   performAction(jobId: string, action: JobAction): void {
-    this.jobsService.performAction(jobId, action).subscribe({
-      next: () => {
-        this.errorHandler.success(this.translate.instant(this.getActionSuccessKey(action)));
+  this.jobsService.performAction(jobId, action).subscribe({
+    next: (result) => {
+      this.errorHandler.success(this.translate.instant(this.getActionSuccessKey(action)));
+      if (result && typeof result === 'object') {
+        this.jobs.update(list =>
+          list.map(j => j.id === jobId ? { ...j, ...(result as JobDto) } : j)
+        );
+      } else {
         this.loadJobs();
-      },
-      error: (error) => this.errorHandler.handle(error),
-    });
-  }
+      }
+    },
+    error: (error) => this.errorHandler.handle(error),
+  });
+}
 
   getActionSuccessKey(action: JobAction): string {
     switch (action) {
@@ -210,6 +230,12 @@ export class JobListComponent implements OnInit {
 
   canComplete(job: JobDto): boolean {
     return this.isCraftsman() && job.status === 'in-progress';
+  }
+
+  openChat(job: JobDto): void {
+    if (job.conversationId) {
+      this.router.navigate(['/chat', job.conversationId]);
+    }
   }
 
   trackByJobId(_: number, job: JobDto): string {

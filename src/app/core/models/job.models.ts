@@ -17,8 +17,12 @@ export interface JobDto {
   budget?: number | null;
   preferredDate?: string | null;
   problemImageUrl?: string | null;
+  problemDescription?: string | null;
+  solutionDescription?: string | null;
   status: JobStatus;
+  conversationId?: number;
   createdAt?: string;
+  completedAt?: string | null;
   updatedAt?: string;
 }
 

@@ -155,6 +155,11 @@
     "PAGE_LABEL": "Bookings",
     "PAGE_TITLE": "My Jobs",
     "PAGE_SUBTITLE": "Track service requests, manage progress, and keep every job organized.",
+    "DETAIL_TITLE": "Job Details",
+    "PROBLEM_DESCRIPTION": "Problem Description",
+    "SOLUTION_DESCRIPTION": "Solution Description",
+    "COMPLETED_AT": "Completed At",
+    "VIEW_IMAGE": "View Image",
     "CREATE_TITLE": "Create a Job",
     "CREATE_SUBTITLE": "Send a request now and follow the job lifecycle from one place.",
     "CREATE_JOB": "Create Job",
@@ -186,6 +191,9 @@
     "STATUS_REJECTED": "Rejected",
     "ACTION_ACCEPT": "Accept",
     "ACTION_REJECT": "Reject",
+    "SUCCESS_ACCEPTED": "Job accepted successfully",
+    "SUCCESS_REJECTED": "Job rejected",
+    "SUCCESS_COMPLETED": "Job completed successfully",
     "ACTION_COMPLETE": "Mark Completed",
     "SUCCESS_CREATED": "Job created successfully",
     "SUCCESS_ACCEPTED": "Job accepted successfully",
@@ -204,7 +212,9 @@
     "VISIT_FEE": "Visit Fee",
     "ESTIMATED_TOTAL": "Estimated Total",
     "CONFIRM_BOOKING": "Confirm Booking",
-    "SECURE_INFO": "Private & secure information"
+    "SECURE_INFO": "Private & secure information",
+    "OPEN_CHAT": "Open Chat",
+    "CHAT_PENDING": "Waiting for craftsman to accept"
   },
   "HOME": {
     "USER": "User",
@@ -766,7 +776,11 @@
     "DELETE_CONFIRM_TEXT": "Are you sure you want to delete this message? This action cannot be undone.",
     "REMOVE_SELECTED_IMAGE": "Remove selected image",
     "CLEAR_SELECTED_IMAGES": "Clear all selected images",
-    "CLOSE_IMAGE": "Close image preview"
+    "CLOSE_IMAGE": "Close image preview",
+    "DELETE_CONVERSATION": "Delete conversation",
+    "DELETE_CONV_SUCCESS": "Conversation deleted successfully",
+    "DELETE_CONV_CONFIRM_TITLE": "Hide conversation?",
+    "DELETE_CONV_CONFIRM_TEXT": "This conversation will be hidden from your inbox. The other person can still see it."
   },
 
 
