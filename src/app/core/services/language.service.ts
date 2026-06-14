@@ -3,12 +3,17 @@ import { TranslateService } from '@ngx-translate/core';
 
 export type Language = 'ar' | 'en';
 
-const STORAGE_KEY = 'harfi_lang';
-
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   current = signal<Language>(
-    (localStorage.getItem(STORAGE_KEY) as Language) === 'en' ? 'en' : 'ar'
+    (() => {
+      const saved = localStorage.getItem('harfi_lang') as Language | null;
+      if (saved === 'ar' || saved === 'en') return saved;
+      localStorage.setItem('harfi_lang', 'ar');
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = 'ar';
+      return 'ar';
+    })()
   );
 
   private translate = inject(TranslateService);
@@ -19,13 +24,13 @@ export class LanguageService {
 
   switchTo(lang: Language): void {
     this.current.set(lang);
-    localStorage.setItem(STORAGE_KEY, lang);
+    localStorage.setItem('harfi_lang', lang);
     this.apply(lang);
   }
 
   toggle(): void {
-    const targetLang: Language = this.current() === 'ar' ? 'en' : 'ar';
-    this.switchTo(targetLang);
+    const next = this.current() === 'ar' ? 'en' : 'ar';
+    this.switchTo(next);
   }
 
   private apply(lang: Language): void {
