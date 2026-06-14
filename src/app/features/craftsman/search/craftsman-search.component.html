@@ -43,7 +43,7 @@
           <option value="" selected>{{ 'CRAFTSMEN_FILTER.ALL_CITIES' | translate }}</option>
           @for (city of cityOptions(); track city.value) {
             <option [value]="city.value" [selected]="form.get('city')?.value === city.value">
-              {{ city.labelKey | translate }}
+              {{ city.labelKey }}
             </option>
           }
         </select>

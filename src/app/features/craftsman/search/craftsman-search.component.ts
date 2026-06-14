@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -73,17 +73,28 @@ export class CraftsmanSearchComponent implements OnInit {
 
   readonly canBook = signal(this.authService.getRole() === 'customer');
 
-  serviceOptions = signal<ServiceOption[]>([]);
+  private rawServices = signal<any[]>([]);
+  serviceOptions = computed<ServiceOption[]>(() => {
+    const isArabic = this.languageService.current() === 'ar' || !this.languageService.current();
+    return this.rawServices().map((s) => ({
+      id: s.id ?? null,
+      value: s.nameAr,
+      labelKey: isArabic ? s.nameAr : s.nameEn,
+      backendValue: s.nameAr,
+      originalNameEn: s.nameEn?.toLowerCase(),
+    }));
+  });
 
   selectedService = signal<string>('');
 
-  cityOptions = signal<{ value: string; labelKey: string }[]>([
-    { value: 'القاهرة', labelKey: 'CITIES.CAIRO' },
-    { value: 'الإسكندرية', labelKey: 'CITIES.ALEXANDRIA' },
-    { value: 'طنطا', labelKey: 'CITIES.TANTA' },
-    { value: 'المنصورة', labelKey: 'CITIES.MANSOURA' },
-    { value: 'الجيزة', labelKey: 'CITIES.GIZA' },
-  ]);
+  private rawCities = signal<any[]>([]);
+  cityOptions = computed<{ value: string; labelKey: string }[]>(() => {
+    const isArabic = this.languageService.current() === 'ar' || !this.languageService.current();
+    return this.rawCities().map((c) => ({
+      value: c.nameAr,
+      labelKey: isArabic ? c.nameAr : (c.nameEn || c.nameAr),
+    }));
+  });
 
   // Sort
   sortOptions: SortOption[] = [
@@ -127,6 +138,7 @@ export class CraftsmanSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadServices();
+    this.loadCities();
 
     this.searchControl.valueChanges
       .pipe(debounceTime(400), takeUntilDestroyed(this.destroyRef))
@@ -140,21 +152,9 @@ export class CraftsmanSearchComponent implements OnInit {
   loadServices(): void {
     this.loading.set(true);
 
-    this.http.get<any[]>('http://localhost:5108/api/Services').subscribe({
+    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-services').subscribe({
       next: (data) => {
-        const isArabic =
-          this.languageService.current() === 'ar' || !this.languageService.current();
-
-        const options: ServiceOption[] = data.map((s) => ({
-          id: s.id,
-          value: s.nameAr,
-          labelKey: isArabic ? s.nameAr : s.nameEn,
-          backendValue: s.nameEn,
-          originalNameEn: s.nameEn?.toLowerCase(),
-        }));
-
-        this.serviceOptions.set([...options]);
-
+        this.rawServices.set(data);
         this.loading.set(false);
         this.initRouteSubscription();
       },
@@ -162,6 +162,17 @@ export class CraftsmanSearchComponent implements OnInit {
         console.error('[Harfi] Failed to load services', err);
         this.loading.set(false);
         this.initRouteSubscription();
+      },
+    });
+  }
+
+  loadCities(): void {
+    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-cities').subscribe({
+      next: (data) => {
+        this.rawCities.set(data);
+      },
+      error: (err) => {
+        console.error('[Harfi] Failed to load cities', err);
       },
     });
   }

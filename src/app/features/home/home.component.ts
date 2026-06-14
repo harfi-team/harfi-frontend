@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
@@ -37,9 +37,19 @@ export class HomeComponent implements OnInit {
   loadingOrders = signal(false);
   loadingServices = signal(true); // 4. Signal لحالة التحميل الخاصة بالخدمات
 
+  private rawServices = signal<any[]>([]);
   featuredCraftsmen = signal<CraftsmanDto[]>([]);
   recentOrders = signal<JobDto[]>([]);
-  dynamicServices = signal<DynamicService[]>([]); // 5. Signal يشيل الخدمات الجاية من الداتا بيز
+  dynamicServices = computed<DynamicService[]>(() => {
+    const isArabic = this.languageService.current() === 'ar' || !this.languageService.current();
+    const variants = ['primary', 'secondary', 'tertiary', 'neutral', 'error'];
+    return this.rawServices().map((s, index) => ({
+      icon: s.icon || 'handyman',
+      name: isArabic ? s.nameAr : s.nameEn,
+      variant: variants[index % variants.length],
+      slug: s.nameAr,
+    }));
+  });
 
   detectedCity = signal<string | null>(null);
   filteringByCity = signal(false);
@@ -66,22 +76,10 @@ export class HomeComponent implements OnInit {
   // 7. الدالة الجديدة اللي بتكلم الـ API
   loadActiveServices(): void {
     this.loadingServices.set(true);
-    const isArabic = this.languageService.current() === 'ar' || !this.languageService.current(); // بنشوف اللغة الحالية إيه
 
-    this.http.get<any[]>('http://localhost:5108/api/Services').subscribe({
+    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-services').subscribe({
       next: (data) => {
-        const variants = ['primary', 'secondary', 'tertiary', 'neutral', 'error'];
-        
-        const mappedServices = data.map((s, index) => {
-          return {
-            icon: s.icon || 'handyman', // لو مفيش أيقونة في الداتا بيز، حط دي كاحتياطي
-            name: isArabic ? s.nameAr : s.nameEn, // بنعرض الاسم حسب اللغة
-            variant: variants[index % variants.length], // بنوزع الألوان بالترتيب عشان شكل الـ UI
-            slug: s.nameAr // السيرش في صفحة الحرفيين بيعتمد على الاسم العربي، فبنبعته في الـ URL
-          };
-        });
-        
-        this.dynamicServices.set(mappedServices);
+        this.rawServices.set(data);
         this.loadingServices.set(false);
       },
       error: (err) => {
