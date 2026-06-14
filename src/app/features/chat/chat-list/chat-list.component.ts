@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnDe
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatService } from '../chat.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ChatHubService } from '../../../core/hubs/chat.hub.service';
 import { ConversationDto } from '../../../core/models/chat.models';
 import { TokenService } from '../../../core/services/token.service';
@@ -28,6 +29,8 @@ export class ChatListComponent implements OnDestroy {
   private tokenSvc = inject(TokenService);
   private destroyRef = inject(DestroyRef);
   private cdr = inject(ChangeDetectorRef);
+  private errorHandler = inject(ErrorHandlerService);
+  private translate = inject(TranslateService);
 
   private isLoadingConversations = false;
   private backgroundRefreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -39,6 +42,9 @@ export class ChatListComponent implements OnDestroy {
 
   readonly conversations = signal<ConversationDto[]>([]);
   readonly loading = signal(true);
+
+  readonly confirmDeleteConvId = signal<number | null>(null);
+  readonly deletingConv = signal(false);
 
   private readonly incomingConversationUpdated = toSignal(this.chatHub.conversationUpdated$, {
     initialValue: null as ConversationDto | null
@@ -135,6 +141,34 @@ export class ChatListComponent implements OnDestroy {
     );
 
     this.router.navigate(['/chat', id]);
+  }
+
+  requestDeleteConv(convId: number, event: Event): void {
+    event.stopPropagation();
+    this.confirmDeleteConvId.set(convId);
+  }
+
+  cancelDeleteConv(): void {
+    this.confirmDeleteConvId.set(null);
+    this.deletingConv.set(false);
+  }
+
+  confirmDeleteConv(): void {
+    const convId = this.confirmDeleteConvId();
+    if (!convId) return;
+
+    this.deletingConv.set(true);
+    this.chatService.deleteConversation(convId).subscribe({
+      next: () => {
+        this.conversations.update(list => list.filter(c => c.id !== convId));
+        this.confirmDeleteConvId.set(null);
+        this.deletingConv.set(false);
+        this.errorHandler.success(this.translate.instant('CHAT.DELETE_CONV_SUCCESS'));
+      },
+      error: () => {
+        this.deletingConv.set(false);
+      }
+    });
   }
 
   onCardKeydown(event: KeyboardEvent, id: number): void {

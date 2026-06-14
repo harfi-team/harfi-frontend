@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateJobDto, JobAction, JobDto, JobStatus } from '@core/models/job.models';
+import { CreateJobDto, JobAction, JobDto, JobStatus } from '../../core/models/job.models';
 
 type ApiListResponse<T> = T[] | { items?: T[]; data?: T[]; result?: T[] };
 type ApiItemResponse<T> = T | { item?: T; data?: T; result?: T; job?: T };
@@ -58,8 +58,17 @@ export class JobsService {
     );
   }
 
-  acceptJob(jobId: string): Observable<void> {
-    return this.http.put<void>(`${this.base}/${jobId}/accept`, {});
+ acceptJob(jobId: string): Observable<JobDto> {
+  return this.http.put<any>(`${this.base}/${jobId}/accept`, {}).pipe(
+    map((response) => this.normalizeJob(this.extractItem(response) ?? response))
+  );
+}
+
+  getJobById(id: string): Observable<JobDto> {
+    return this.http.get<ApiItemResponse<any>>(`${this.base}/${id}`).pipe(
+      map((response) => this.extractItem(response)),
+      map((item) => this.normalizeJob(item!)),
+    );
   }
 
   rejectJob(jobId: string): Observable<void> {
@@ -70,18 +79,18 @@ export class JobsService {
     return this.http.put<void>(`${this.base}/${jobId}/complete`, {});
   }
 
-  performAction(jobId: string, action: JobAction): Observable<void> {
-    switch (action) {
-      case 'accept':
-        return this.acceptJob(jobId);
-      case 'reject':
-        return this.rejectJob(jobId);
-      case 'complete':
-        return this.completeJob(jobId);
-      default:
-        throw new Error('Unsupported job action');
-    }
+  performAction(jobId: string, action: JobAction): Observable<JobDto | void> {
+  switch (action) {
+    case 'accept':
+      return this.acceptJob(jobId);
+    case 'reject':
+      return this.rejectJob(jobId);
+    case 'complete':
+      return this.completeJob(jobId);
+    default:
+      throw new Error('Unsupported job action');
   }
+}
 
   private normalizeJob(raw: any): JobDto {
     return {
@@ -97,8 +106,12 @@ export class JobsService {
       budget: raw.budget ?? null,
       preferredDate: raw.preferredDate || null,
       problemImageUrl: raw.problemImageUrl || null,
+      problemDescription: raw.problemDescription || null,
+      solutionDescription: raw.solutionDescription || null,
       status: STATUS_MAP[raw.status] || 'open',
+      conversationId: raw.conversationId,
       createdAt: raw.createdAt,
+      completedAt: raw.completedAt || null,
       updatedAt: raw.updatedAt,
     };
   }

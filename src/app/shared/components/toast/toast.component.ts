@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ToastMessage } from '../../../core/models/api-error.models';
@@ -16,19 +16,33 @@ import { ToastMessage } from '../../../core/models/api-error.models';
   selector: 'app-toast',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [NgClass, NgIf],
   template: `
     @if (message(); as current) {
-      <div class="toast-container" [ngClass]="'toast--' + current.type">
-        <span class="toast-text">{{ current.message }}</span>
-        <button
-          type="button"
-          class="toast-close"
-          aria-label="Close notification"
-          (click)="dismiss($event)"
-        >
-          &times;
-        </button>
+      <div class="toast-wrapper" [ngClass]="'toast--' + current.type">
+        <div class="toast-content">
+          <!-- Icon dynamically changes based on type -->
+          <div class="toast-icon">
+            <span class="material-symbols-outlined">
+              {{ getIcon(current.type) }}
+            </span>
+          </div>
+          
+          <div class="toast-body">
+            <span class="toast-text">{{ current.message }}</span>
+          </div>
+
+          <button
+            type="button"
+            class="toast-close"
+            aria-label="Close"
+            (click)="dismiss($event)"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <!-- Progress bar to show time remaining -->
+        <div class="toast-progress"></div>
       </div>
     }
   `,
@@ -36,61 +50,147 @@ import { ToastMessage } from '../../../core/models/api-error.models';
     `
       :host {
         position: fixed;
-        inset: 0;
-        z-index: 99999;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 999999;
         pointer-events: none;
+        direction: ltr;
       }
-      .toast-container {
-        position: absolute;
-        top: 1rem;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.875rem 1.25rem;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-lg);
+
+      .toast-wrapper {
+        pointer-events: auto;
+        min-width: 320px;
+        max-width: 450px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+                    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        border-left: 5px solid transparent;
+        animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      .toast-content {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        max-width: 420px;
-        animation: slideDown 0.3s ease;
-        direction: ltr;
-        pointer-events: auto;
+        padding: 1rem 1.25rem;
+        gap: 1rem;
       }
-      .toast--success {
-        background: var(--success);
-        color: #fff;
+
+      .toast-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        flex-shrink: 0;
       }
-      .toast--error {
-        background: var(--error);
-        color: #fff;
+
+      .toast-icon .material-symbols-outlined {
+        font-size: 22px;
       }
-      .toast--info {
-        background: var(--info);
-        color: #fff;
-      }
-      .toast-text {
+
+      .toast-body {
         flex: 1;
-        font-size: 0.9375rem;
-        font-weight: 500;
       }
+
+      .toast-text {
+        color: #1f2937;
+        font-size: 0.95rem;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+
       .toast-close {
         background: none;
         border: none;
-        color: inherit;
-        font-size: 1.25rem;
+        color: #9ca3af;
         cursor: pointer;
-        line-height: 1;
-        padding: 0.125rem 0.25rem;
+        padding: 4px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
       }
-      @keyframes slideDown {
+
+      .toast-close:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #4b5563;
+      }
+
+      .toast-close .material-symbols-outlined {
+        font-size: 18px;
+      }
+
+      /* Type Variations */
+      .toast--success {
+        border-left-color: #10b981;
+      }
+      .toast--success .toast-icon {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+      }
+
+      .toast--error {
+        border-left-color: #ef4444;
+      }
+      .toast--error .toast-icon {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+      }
+
+      .toast--info {
+        border-left-color: #3b82f6;
+      }
+      .toast--info .toast-icon {
+        background: rgba(59, 130, 246, 0.15);
+        color: #2563eb;
+      }
+
+      /* Progress Bar Animation */
+      .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .toast-progress::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: inherit;
+        animation: progress 4s linear forwards;
+        background: currentColor;
+        filter: brightness(0.8);
+        opacity: 0.4;
+      }
+
+      .toast--success .toast-progress { color: #10b981; }
+      .toast--error .toast-progress { color: #ef4444; }
+      .toast--info .toast-progress { color: #3b82f6; }
+
+      @keyframes toastIn {
         from {
+          transform: translateX(100%);
           opacity: 0;
-          transform: translateX(-50%) translateY(-1rem);
         }
         to {
+          transform: translateX(0);
           opacity: 1;
-          transform: translateX(-50%) translateY(0);
         }
+      }
+
+      @keyframes progress {
+        from { width: 100%; }
+        to { width: 0%; }
       }
     `,
   ],
@@ -115,6 +215,14 @@ export class ToastComponent {
     });
 
     this.destroyRef.onDestroy(() => this.clearTimer());
+  }
+
+  getIcon(type: string): string {
+    switch (type) {
+      case 'success': return 'check_circle';
+      case 'error': return 'error';
+      default: return 'info';
+    }
   }
 
   dismiss(event?: Event): void {
