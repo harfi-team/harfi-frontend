@@ -56,11 +56,11 @@ export const routes: Routes = [
         path: 'jobs',
         loadChildren: () => import('./features/jobs/jobs.routes').then((m) => m.jobsRoutes),
       },
-      {
-        path: 'reviews',
-        loadChildren: () =>
-          import('./features/reviews/reviews.routes').then((m) => m.reviewsRoutes),
-      },
+      // {
+      //   path: 'reviews',
+      //   loadChildren: () =>
+      //     import('./features/reviews/reviews.routes').then((m) => m.reviewsRoutes),
+      // },
       {
         path: 'chat',
         loadChildren: () => import('./features/chat/chat.routes').then((m) => m.chatRoutes),

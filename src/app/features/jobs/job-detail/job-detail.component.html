@@ -158,8 +158,7 @@
     </div>
 
     @if (canReview()) {
-      <app-review-form [jobId]="jobId()"></app-review-form>
-
+      <app-review-form [jobId]="jobId()" [job]="job()!"> </app-review-form>
       <!-- <div class="harfi-card review-section">
         <div class="section-title">
           <span class="material-symbols-outlined" style="font-size:18px;line-height:1">star</span>
