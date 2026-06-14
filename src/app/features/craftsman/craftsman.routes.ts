@@ -1,18 +1,8 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '../../core/guards/auth.guard';
+import { CraftsmanRegisterComponent } from './register/craftsman-register.component';
+import { CraftsmanProfileComponent } from './profile/craftsman-profile.component';
 
-// Owner: Hadeer — Phase 2: Discovery Engine
 export const craftsmanRoutes: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./search/craftsman-search.component').then((m) => m.CraftsmanSearchComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: ':id',
-    loadComponent: () =>
-      import('./profile/craftsman-profile.component').then((m) => m.CraftsmanProfileComponent),
-    canActivate: [authGuard],
-  },
+  { path: 'register', component: CraftsmanRegisterComponent },
+  { path: 'profile/:id', component: CraftsmanProfileComponent } // المسار الجديد
 ];
