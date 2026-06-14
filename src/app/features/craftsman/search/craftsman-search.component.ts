@@ -325,8 +325,8 @@ export class CraftsmanSearchComponent implements OnInit {
   }
 
   viewProfile(craftsman: SearchCraftsmanDto): void {
-    this.router.navigate(['/craftsmen', craftsman.id]);
-  }
+  this.router.navigate(['/craftsmen/profile', craftsman.id]);
+}
 
   getPriceRange(craftsman: SearchCraftsmanDto): string {
     const min = craftsman.priceRangeMin;

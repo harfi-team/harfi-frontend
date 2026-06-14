@@ -164,18 +164,20 @@
           </div>
         } @else {
           @for (craftsman of paginatedCraftsmen(); track craftsman.id; let i = $index) {
-            <article class="craftsman-card" style="--i: {{ i }}">
-              <!-- Card Image -->
+            <article
+              class="craftsman-card"
+              style="--i: {{ i }} "
+              (click)="viewProfile(craftsman)"
+              style="cursor: pointer"
+            >
               <div class="card-image-wrapper">
                 <div class="card-image-placeholder">
                   <span class="material-symbols-outlined">handyman</span>
                 </div>
-                <!-- Rating Badge -->
                 <div class="rating-badge">
                   <span class="material-symbols-outlined star-icon">star</span>
                   <span>{{ craftsman.rating | number: '1.1-1' }}</span>
                 </div>
-                <!-- Avatar overlaid at bottom -->
                 <div class="card-avatar">
                   @if (craftsman.profileImageUrl) {
                     <img [src]="craftsman.profileImageUrl" [alt]="craftsman.fullName" />
@@ -185,7 +187,6 @@
                 </div>
               </div>
 
-              <!-- Card Body -->
               <div class="card-body">
                 <div class="card-name">{{ craftsman.fullName }}</div>
                 <div class="card-specialty-tags">
@@ -210,12 +211,16 @@
                     <button
                       type="button"
                       class="card-book-btn gradient-btn"
-                      (click)="bookNow(craftsman)"
+                      (click)="$event.stopPropagation(); bookNow(craftsman)"
                     >
                       {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
                     </button>
                   } @else {
-                    <button type="button" class="card-view-btn" (click)="viewProfile(craftsman)">
+                    <button
+                      type="button"
+                      class="card-view-btn"
+                      (click)="$event.stopPropagation(); viewProfile(craftsman)"
+                    >
                       {{ 'VIEW' | translate }}
                     </button>
                   }

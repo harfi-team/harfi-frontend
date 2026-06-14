@@ -63,11 +63,7 @@
       } @else {
         <div class="services-grid">
           @for (service of dynamicServices(); track service.slug) {
-            <a
-              class="service-card"
-              (click)="selectService(service.slug)"
-              style="cursor: pointer;"
-            >
+            <a class="service-card" (click)="selectService(service.slug)" style="cursor: pointer">
               <div [class]="'service-icon-wrap ' + service.variant">
                 <span class="material-symbols-outlined">{{ service.icon }}</span>
               </div>
@@ -108,7 +104,7 @@
       } @else {
         <div class="craftsmen-scroll">
           @for (craftsman of featuredCraftsmen(); track craftsman.id) {
-            <article class="craftsman-card">
+            <article class="craftsman-card" routerLink="/craftsmen/profile/{{ craftsman.id }}">
               <div class="craftsman-header">
                 <div class="craftsman-info">
                   <div class="craftsman-name">{{ craftsman.name }}</div>
@@ -165,7 +161,7 @@
               <div class="craftsman-actions">
                 <a
                   class="craftsman-btn craftsman-btn--profile"
-                  [routerLink]="['/craftsmen', craftsman.id]"
+                  [routerLink]="['/craftsmen', 'profile', craftsman.id]"
                 >
                   <span class="material-symbols-outlined">person</span>
                   <span>{{ 'HOME.VIEW_PROFILE' | translate }}</span>
