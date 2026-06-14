@@ -31,14 +31,23 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--border-color) 0%, var(--card-bg) 50%, var(--border-color) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--border-color) 0%,
+    var(--card-bg) 50%,
+    var(--border-color) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .detail-grid {
@@ -115,10 +124,22 @@
   width: fit-content;
 }
 
-.status-badge.open { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-.status-badge.in-progress { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-.status-badge.done { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-.status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+.status-badge.open {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+.status-badge.in-progress {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+.status-badge.done {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+.status-badge.rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
 
 .person-cell {
   display: flex;
@@ -253,7 +274,9 @@
 .star {
   font-size: 2rem;
   color: var(--border-color);
-  transition: color 0.15s ease, transform 0.1s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.1s ease;
   user-select: none;
   line-height: 1;
 }
@@ -301,7 +324,9 @@
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(233, 64, 87, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -360,9 +385,118 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+/* ══ Craftsman Preview Card ══ */
+.craftsman-preview-card {
+  margin-bottom: 16px;
+  direction: rtl;
+}
 
+.cp-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cp-preview-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cp-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cp-preview-name {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.cp-preview-service,
+.cp-preview-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cp-preview-service .material-symbols-outlined,
+.cp-preview-location .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--brand-red);
+}
+
+/* ── Divider ── */
+.cp-preview-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 14px 0;
+}
+
+/* ── Stats ── */
+.cp-preview-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cp-preview-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cp-preview-stat .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--brand-red);
+}
+
+.cp-preview-stat strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ══ Already Reviewed Card ══ */
+.already-reviewed-card {
+  text-align: center;
+  padding: 2rem;
+  direction: rtl;
+}
+
+.already-reviewed-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.already-reviewed-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--success);
+  margin-bottom: 6px;
+}
+
+.already-reviewed-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 767px) {

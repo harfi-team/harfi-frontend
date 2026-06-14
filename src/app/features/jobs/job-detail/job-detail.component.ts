@@ -9,11 +9,19 @@ import { JobAction, JobDto } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
 import { environment } from '../../../../environments/environment';
 import { ReviewsService } from '../../reviews/reviews.service';
+import { ReviewFormComponent } from '../../reviews/review-form/review-form.component';
 
 @Component({
   selector: 'app-job-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, DatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+    DatePipe,
+    ReviewFormComponent,
+  ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.css',
 })
@@ -135,20 +143,22 @@ export class JobDetailComponent implements OnInit {
     this.reviewSubmitting.set(true);
     this.reviewError.set('');
 
-    this.reviewsService.submitReview({
-      jobId: Number(j.id),
-      stars: this.stars(),
-      comment: this.comment() || undefined,
-    }).subscribe({
-      next: () => {
-        this.reviewSubmitted.set(true);
-        this.reviewSubmitting.set(false);
-      },
-      error: (err) => {
-        this.reviewError.set(err?.error?.message || err?.message || '');
-        this.reviewSubmitting.set(false);
-      },
-    });
+    this.reviewsService
+      .submitReview({
+        jobId: Number(j.id),
+        stars: this.stars(),
+        comment: this.comment() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.reviewSubmitted.set(true);
+          this.reviewSubmitting.set(false);
+        },
+        error: (err) => {
+          this.reviewError.set(err?.error?.message || err?.message || '');
+          this.reviewSubmitting.set(false);
+        },
+      });
   }
 
   goBack(): void {
@@ -157,21 +167,26 @@ export class JobDetailComponent implements OnInit {
 
   getStatusClass(status: string | undefined): string {
     const map: Record<string, string> = {
-      'open': 'open',
+      open: 'open',
       'in-progress': 'in-progress',
-      'done': 'done',
-      'rejected': 'rejected',
+      done: 'done',
+      rejected: 'rejected',
     };
     return map[status || ''] || 'open';
   }
 
   getStatusLabelKey(status: string | undefined): string {
     switch (status) {
-      case 'open': return 'JOBS.STATUS_OPEN';
-      case 'in-progress': return 'JOBS.STATUS_IN_PROGRESS';
-      case 'done': return 'JOBS.STATUS_DONE';
-      case 'rejected': return 'JOBS.STATUS_REJECTED';
-      default: return '';
+      case 'open':
+        return 'JOBS.STATUS_OPEN';
+      case 'in-progress':
+        return 'JOBS.STATUS_IN_PROGRESS';
+      case 'done':
+        return 'JOBS.STATUS_DONE';
+      case 'rejected':
+        return 'JOBS.STATUS_REJECTED';
+      default:
+        return '';
     }
   }
 
@@ -202,5 +217,8 @@ export class JobDetailComponent implements OnInit {
   getImageUrl(path: string): string {
     const serverBase = environment.apiBaseUrl.replace('/api', '');
     return `${serverBase}${path}`;
+  }
+  jobId(): number {
+    return this.job()?.id ? Number(this.job()?.id) : 0;
   }
 }
