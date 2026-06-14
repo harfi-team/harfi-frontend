@@ -155,66 +155,18 @@
         <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">chat</span>
         {{ 'JOBS.OPEN_CHAT' | translate }}
       </button>
+
+      @if (canReview()) {
+        <button class="btn-action btn-review" (click)="openReviewModal()">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">star</span>
+          {{ 'REVIEWS.FORM.SUBMIT_BTN' | translate }}
+        </button>
+      }
     </div>
 
-    @if (canReview()) {
-      <app-review-form [jobId]="jobId()" [job]="job()!"> </app-review-form>
-
-      <!-- <div class="harfi-card review-section">
-        <div class="section-title">
-          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">star</span>
-          {{ 'REVIEWS.FORM.TITLE' | translate }}
-        </div>
-
-        @if (reviewError()) {
-          <div class="review-error">{{ reviewError() }}</div>
-        }
-
-        <div class="review-field">
-          <label class="field-label">{{ 'REVIEWS.FORM.STARS_LABEL' | translate }}</label>
-          <div class="stars-row" (mouseleave)="resetHover()">
-            @for (star of starsArray; track star) {
-              <span
-                class="star"
-                [class.active]="isStarActive(star)"
-                (mouseenter)="hoverStar(star)"
-                (click)="selectStar(star)"
-              >★</span>
-            }
-          </div>
-        </div>
-
-        <div class="review-field">
-          <label class="field-label">{{ 'REVIEWS.FORM.COMMENT_LABEL' | translate }}</label>
-          <textarea
-            class="review-textarea"
-            [ngModel]="comment()"
-            (ngModelChange)="comment.set($event)"
-            rows="4"
-            maxlength="1000"
-            [placeholder]="'REVIEWS.FORM.COMMENT_PLACEHOLDER' | translate"
-          ></textarea>
-        </div>
-
-        <button
-          class="review-submit-btn"
-          (click)="submitReview()"
-          [disabled]="stars() < 1 || reviewSubmitting()"
-        >
-          @if (reviewSubmitting()) {
-            <span class="spinner"></span>
-          }
-          {{ (reviewSubmitting() ? 'REVIEWS.FORM.SUBMITTING_BTN' : 'REVIEWS.FORM.SUBMIT_BTN') | translate }}
-        </button>
-      </div> -->
+    @if (showReviewModal()) {
+      <app-review-form [jobId]="jobId()" [job]="job()!" [visible]="true" (close)="onReviewClose()">
+      </app-review-form>
     }
-
-    <!-- @if (reviewSubmitted()) {
-      <div class="harfi-card review-section done-screen">
-        <div class="done-icon">✅</div>
-        <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
-        <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
-      </div>
-    } -->
   }
 </div>
