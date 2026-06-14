@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,14 +23,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./review-form.component.css'],
 })
 export class ReviewFormComponent implements OnInit {
-  /**
-   * jobId passed from parent component.
-   * Example: <review-form [jobId]="5" />
-   */
   @Input() jobId!: number;
-  @Input() job!: JobDto; // ← زود دي
+  @Input() job!: JobDto;
+  @Input() visible = false;
+  @Output() close = new EventEmitter<void>();
 
-  private cdr = inject(ChangeDetectorRef); // ← زود دي
+  private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private reviewsService = inject(ReviewsService);
 
@@ -90,6 +97,7 @@ export class ReviewFormComponent implements OnInit {
           this.isLoading = false;
           this.isSubmitted = true;
           this.cdr.detectChanges();
+          setTimeout(() => this.closeModal(), 2000);
         },
         error: (err) => {
           this.isLoading = false;
@@ -104,6 +112,15 @@ export class ReviewFormComponent implements OnInit {
   getInitial(name: string | undefined): string {
     return (name || '?').charAt(0);
   }
+  closeModal(): void {
+    if (this.isSubmitted) {
+      this.isSubmitted = false;
+    }
+    this.form.reset({ stars: 0, comment: '' });
+    this.errorMessage = '';
+    this.close.emit();
+  }
+
   get starsControl() {
     return this.form.get('stars');
   }
