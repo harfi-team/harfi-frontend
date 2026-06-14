@@ -88,7 +88,6 @@
   "NAV_HOW": "How It Works",
   "NAV_CRAFTSMEN": "Craftsmen",
   "NAV_CONTACT": "Contact Us",
-  "NOTIFICATIONS": "Notifications",
   "AI_ASSISTANT": "AI Assistant",
 
   "CRAFTSMEN_FILTER": {
@@ -134,9 +133,7 @@
     "MOST_EXPERIENCED": "Most Experienced"
   },
 
-  "RATING": {
-    "AND_ABOVE": "& up"
-  },
+  
   
   "NAV": {
     "TAGLINE": "Craftsmen Platform",
@@ -191,9 +188,6 @@
     "STATUS_REJECTED": "Rejected",
     "ACTION_ACCEPT": "Accept",
     "ACTION_REJECT": "Reject",
-    "SUCCESS_ACCEPTED": "Job accepted successfully",
-    "SUCCESS_REJECTED": "Job rejected",
-    "SUCCESS_COMPLETED": "Job completed successfully",
     "ACTION_COMPLETE": "Mark Completed",
     "SUCCESS_CREATED": "Job created successfully",
     "SUCCESS_ACCEPTED": "Job accepted successfully",
@@ -411,7 +405,6 @@
   "SERVICE": "Service",
   "DATE": "Date",
   "STATUS": "Status",
-  "CITY": "City",
   "STARS": "Stars",
   "ACTIONS": "Actions",
   "SPECIALTY": "Specialty",
@@ -815,6 +808,4 @@
   }
 }
 
-  }
-}
 
