@@ -1,5 +1,4 @@
 <div class="cp-page" dir="rtl">
-
   <!-- HEADER -->
   <div class="cp-header">
     <a class="cp-back" routerLink="/craftsmen">
@@ -27,19 +26,21 @@
   <!-- MAIN CONTENT -->
   @else {
     <div class="cp-layout">
-
       <!-- ══════════════════════════
            SIDEBAR
       ══════════════════════════ -->
       <aside class="cp-sidebar">
-
         <!-- Avatar + gradient top strip -->
         <div class="cp-card cp-id-card">
           <div class="cp-avatar-wrap">
             <div class="cp-avatar-gradient"></div>
             <div class="cp-avatar-circle">
               @if (craftsman()!.avatarUrl) {
-                <img [src]="craftsman()!.avatarUrl" [alt]="craftsman()!.name" class="cp-avatar-img" />
+                <img
+                  [src]="craftsman()!.avatarUrl"
+                  [alt]="craftsman()!.name"
+                  class="cp-avatar-img"
+                />
               } @else {
                 <span class="material-symbols-outlined cp-avatar-icon">person</span>
               }
@@ -53,7 +54,12 @@
             @if (craftsman()!.city) {
               <div class="cp-location">
                 <span class="material-symbols-outlined">location_on</span>
-                <span>{{ craftsman()!.city }}@if (craftsman()!.neighborhood) {، {{ craftsman()!.neighborhood }}}</span>
+                <span
+                  >{{ craftsman()!.city }}
+                  @if (craftsman()!.neighborhood) {
+                    ، {{ craftsman()!.neighborhood }}
+                  }
+                </span>
               </div>
             }
           </div>
@@ -73,7 +79,7 @@
             <div class="cp-stat">
               <span class="cp-stat-num cp-stat-star">
                 <span class="material-symbols-outlined">star</span>
-                {{ displayRating(craftsman()!) | number:'1.1-1' }}
+                {{ displayRating(craftsman()!) | number: '1.1-1' }}
               </span>
               <span class="cp-stat-lbl">تقييم</span>
             </div>
@@ -83,7 +89,9 @@
           @if (getPriceRange(craftsman()!)) {
             <div class="cp-price-row">
               <span class="cp-price-label">سعر الزيارة</span>
-              <span class="cp-price-val">{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / ساعة</span>
+              <span class="cp-price-val"
+                >{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / ساعة</span
+              >
             </div>
           }
 
@@ -99,26 +107,36 @@
             </a>
           }
         </div>
-
       </aside>
 
       <!-- ══════════════════════════
            MAIN
       ══════════════════════════ -->
       <main class="cp-main">
-
         <!-- Tabs -->
         <div class="cp-tabs">
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'about'" (click)="setTab('about')">
+          <button
+            class="cp-tab"
+            [class.cp-tab--active]="activeTab() === 'about'"
+            (click)="setTab('about')"
+          >
             {{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}
           </button>
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'reviews'" (click)="setTab('reviews')">
+          <button
+            class="cp-tab"
+            [class.cp-tab--active]="activeTab() === 'reviews'"
+            (click)="setTab('reviews')"
+          >
             {{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}
             @if (displayReviewsCount(craftsman()!) > 0) {
               <span class="cp-tab-badge">{{ displayReviewsCount(craftsman()!) }}</span>
             }
           </button>
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'portfolio'" (click)="setTab('portfolio')">
+          <button
+            class="cp-tab"
+            [class.cp-tab--active]="activeTab() === 'portfolio'"
+            (click)="setTab('portfolio')"
+          >
             {{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}
           </button>
         </div>
@@ -126,7 +144,6 @@
         <!-- ── TAB: نبذة ── -->
         @if (activeTab() === 'about') {
           <div class="cp-tab-body">
-
             <!-- بيو -->
             @if (craftsman()!.bio) {
               <div class="cp-card cp-section">
@@ -147,7 +164,9 @@
                 </h2>
                 <div class="cp-chips">
                   @for (service of craftsman()!.services; track service) {
-                    <span class="cp-chip">{{ 'SERVICES.' + service.toUpperCase() | translate }}</span>
+                    <span class="cp-chip">{{
+                      'SERVICES.' + service.toUpperCase() | translate
+                    }}</span>
                   }
                 </div>
               </div>
@@ -170,7 +189,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         }
 
@@ -210,13 +228,10 @@
                   <p>لا توجد أعمال سابقة بعد</p>
                 </div>
               }
-
             </div>
           </div>
         }
-
       </main>
     </div>
   }
-
 </div>

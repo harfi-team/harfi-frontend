@@ -17,7 +17,7 @@ export class ReviewFormComponent implements OnInit {
    * Example: <review-form [jobId]="5" />
    */
   @Input() jobId!: number;
-  private cdr = inject(ChangeDetectorRef); // ← زود دي
+  private cdr = inject(ChangeDetectorRef);
 
   private reviewsService = inject(ReviewsService);
 
