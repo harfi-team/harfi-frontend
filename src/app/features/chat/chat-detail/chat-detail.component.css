@@ -184,6 +184,14 @@
   justify-content: flex-start;
 }
 
+[dir="rtl"] .message-wrapper.mine {
+  justify-content: flex-start;
+}
+
+[dir="rtl"] .message-wrapper.theirs {
+  justify-content: flex-end;
+}
+
 .theirs-avatar {
   flex-shrink: 0;
   margin-bottom: 2px;

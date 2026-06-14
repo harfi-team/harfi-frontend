@@ -27,6 +27,10 @@ export class ChatService {
     );
   }
 
+  deleteConversation(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
   uploadImage(file: File): Observable<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
