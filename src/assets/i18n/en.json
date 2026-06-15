@@ -133,8 +133,8 @@
     "MOST_EXPERIENCED": "Most Experienced"
   },
 
-  
-  
+
+
   "NAV": {
     "TAGLINE": "Harfi Platform",
     "HOME": "Home",
@@ -146,7 +146,10 @@
     "DARK_MODE": "Dark Mode",
     "LIGHT_MODE": "Light Mode",
     "LOGOUT": "Logout",
-    "BOOK_NOW": "Book Now"
+    "BOOK_NOW": "Book Now",
+      "DASHBOARD":    "Dashboard",
+    "MY_JOBS":      "My Jobs",
+    "AI_ASSISTANT": "AI Assistant"
   },
   "JOBS": {
     "PAGE_LABEL": "Bookings",
@@ -236,7 +239,24 @@
     "RECENT_ORDERS": "Recent Orders",
     "ORDER_HISTORY": "Order History",
     "NO_ORDERS": "No orders yet",
-    "CURRENCY": "EGP"
+    "CURRENCY": "EGP",
+     "CRAFTSMAN": {
+      "EARNINGS":      "Earnings (This Month)",
+      "RATING":        "Rating",
+      "COMPLETED":     "Completed Jobs",
+      "PENDING":       "New Requests",
+      "MONTHLY_GOAL":  "Monthly Earnings Goal",
+      "FROM":          "of",
+      "GOAL_HINT_1":   "You've earned",
+      "GOAL_HINT_2":   "of your",
+      "GOAL_HINT_3":   "goal this month",
+      "NEW_REQUESTS":  "New Requests",
+      "NO_REQUESTS":   "No new requests",
+      "ACTIVE_JOBS":   "Active Jobs",
+      "COMPLETED_JOBS":"Recently Completed",
+      "ACCEPT":        "Accept Job",
+      "REJECT":        "Reject"
+    }
   },
   "CRAFTSMAN_PROFILE": {
     "ABOUT": "About",

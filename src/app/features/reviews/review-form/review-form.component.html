@@ -1,97 +1,143 @@
-<div class="review-card mt-5">
-  <!-- ══ Thank You ══ -->
-  <div *ngIf="isSubmitted" class="done-screen">
-    <div class="done-icon">✅</div>
-    <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
-    <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
-  </div>
+@if (visible) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="review-card">
+        <button type="button" class="modal-close-btn" (click)="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
 
-  <!-- ══ Form ══ -->
-  <div *ngIf="!isSubmitted">
-    <div class="form-title">{{ 'REVIEWS.FORM.TITLE' | translate }}</div>
+        <!-- ══ Already Reviewed ══ -->
+        @if (alreadyReviewed) {
+          <div class="done-screen">
+            <div class="done-icon">✅</div>
+            <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
+            <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
+          </div>
+        }
 
-    <div *ngIf="errorMessage" class="alert-error">
-      {{ errorMessage }}
+        <!-- ══ Thank You after submit ══ -->
+        @if (!alreadyReviewed && isSubmitted) {
+          <div class="done-screen">
+            <div class="done-icon">✅</div>
+            <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
+            <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
+          </div>
+        }
+
+        <!-- ══ Form ══ -->
+        @if (!alreadyReviewed && !isSubmitted) {
+          <!-- ── Craftsman Info Section ── -->
+          @if (job) {
+            <div class="craftsman-preview">
+              <div class="cp-avatar"></div>
+              <div class="cp-info">
+                <div class="cp-name">{{ job.craftsmanName }}</div>
+                @if (job.service) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">handyman</span>
+                    {{ job.service }}
+                  </div>
+                }
+                @if (job.address) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ job.address }}
+                  </div>
+                }
+                @if (job.completedAt) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">task_alt</span>
+                    {{ job.completedAt | date: 'd MMM, y' }}
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="cp-divider"></div>
+          }
+
+          <!-- ── Form Title ── -->
+          <div class="form-title">{{ 'REVIEWS.FORM.TITLE' | translate }}</div>
+
+          <!-- Backend error -->
+          @if (errorMessage) {
+            <div class="alert-error">{{ errorMessage }}</div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- ── Stars ── -->
+            <div class="mb-4">
+              <label class="form-label">
+                {{ 'REVIEWS.FORM.STARS_LABEL' | translate }}
+                <span style="color: var(--error)">{{ 'COMMON.REQUIRED' | translate }}</span>
+              </label>
+              <div class="stars-row" (mouseleave)="resetHover()">
+                @for (star of starsArray; track star) {
+                  <span
+                    class="star"
+                    [class.active]="isStarActive(star)"
+                    (mouseenter)="hoverStar(star)"
+                    (click)="selectStar(star)"
+                  >
+                    ★
+                  </span>
+                }
+              </div>
+              <small class="star-label">
+                @switch (starsControl?.value) {
+                  @case (1) { {{ 'REVIEWS.FORM.STAR_1' | translate }} }
+                  @case (2) { {{ 'REVIEWS.FORM.STAR_2' | translate }} }
+                  @case (3) { {{ 'REVIEWS.FORM.STAR_3' | translate }} }
+                  @case (4) { {{ 'REVIEWS.FORM.STAR_4' | translate }} }
+                  @case (5) { {{ 'REVIEWS.FORM.STAR_5' | translate }} }
+                  @default { {{ 'REVIEWS.FORM.STARS_PLACEHOLDER' | translate }} }
+                }
+              </small>
+              @if (starsControl?.invalid && starsControl?.touched) {
+                <div class="error-text">{{ 'REVIEWS.FORM.STARS_REQUIRED' | translate }}</div>
+              }
+            </div>
+
+            <!-- ── Comment ── -->
+            <div class="mb-4">
+              <label class="form-label">
+                {{ 'REVIEWS.FORM.COMMENT_LABEL' | translate }}
+                <span style="color: var(--text-secondary); font-weight: 400">
+                  {{ 'COMMON.OPTIONAL' | translate }}
+                </span>
+              </label>
+              <textarea
+                class="form-control"
+                formControlName="comment"
+                rows="4"
+                [placeholder]="'REVIEWS.FORM.COMMENT_PLACEHOLDER' | translate"
+              ></textarea>
+              <div class="char-row">
+                @if (commentControl?.hasError('maxlength')) {
+                  <span class="error-text">{{ 'REVIEWS.FORM.COMMENT_MAX_LENGTH' | translate }}</span>
+                }
+                <span
+                  class="char-count"
+                  [style.color]="
+                    (commentControl?.value?.length || 0) > 900
+                      ? 'var(--warning)'
+                      : 'var(--text-secondary)'
+                  "
+                >
+                  {{ commentControl?.value?.length || 0 }} / 1000
+                </span>
+              </div>
+            </div>
+
+            <!-- ── Submit ── -->
+            <button type="submit" class="submit-btn" [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              {{ (isLoading ? 'REVIEWS.FORM.SUBMITTING_BTN' : 'REVIEWS.FORM.SUBMIT_BTN') | translate }}
+            </button>
+          </form>
+        }
+      </div>
     </div>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <!-- ── Stars ── -->
-      <div class="mb-4">
-        <label class="form-label">
-          <!-- ✅ translate pipe -->
-          {{ 'REVIEWS.FORM.STARS_LABEL' | translate }}
-          <span style="color: var(--error)">
-            {{ 'COMMON.REQUIRED' | translate }}
-          </span>
-        </label>
-
-        <div class="stars-row" (mouseleave)="resetHover()">
-          <span
-            *ngFor="let star of starsArray"
-            class="star"
-            [class.active]="isStarActive(star)"
-            (mouseenter)="hoverStar(star)"
-            (click)="selectStar(star)"
-          >
-            ★
-          </span>
-        </div>
-
-        <small class="star-label">
-          <ng-container [ngSwitch]="starsControl?.value">
-            <span *ngSwitchCase="1">{{ 'REVIEWS.FORM.STAR_1' | translate }}</span>
-            <span *ngSwitchCase="2">{{ 'REVIEWS.FORM.STAR_2' | translate }}</span>
-            <span *ngSwitchCase="3">{{ 'REVIEWS.FORM.STAR_3' | translate }}</span>
-            <span *ngSwitchCase="4">{{ 'REVIEWS.FORM.STAR_4' | translate }}</span>
-            <span *ngSwitchCase="5">{{ 'REVIEWS.FORM.STAR_5' | translate }}</span>
-            <span *ngSwitchDefault>{{ 'REVIEWS.FORM.STARS_PLACEHOLDER' | translate }}</span>
-          </ng-container>
-        </small>
-
-        <div *ngIf="starsControl?.invalid && starsControl?.touched" class="error-text">
-          {{ 'REVIEWS.FORM.STARS_REQUIRED' | translate }}
-        </div>
-      </div>
-
-      <!-- ── Comment ── -->
-      <div class="mb-4">
-        <label class="form-label">
-          {{ 'REVIEWS.FORM.COMMENT_LABEL' | translate }}
-          <span style="color: var(--text-secondary); font-weight: 400">
-            {{ 'COMMON.OPTIONAL' | translate }}
-          </span>
-        </label>
-
-        <textarea
-          class="form-control"
-          formControlName="comment"
-          rows="4"
-          [placeholder]="'REVIEWS.FORM.COMMENT_PLACEHOLDER' | translate"
-        >
-        </textarea>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 4px">
-          <span *ngIf="commentControl?.hasError('maxlength')" class="error-text">
-            {{ 'REVIEWS.FORM.COMMENT_MAX_LENGTH' | translate }}
-          </span>
-          <span class="char-count" style="margin-right: auto">
-            {{ commentControl?.value?.length || 0 }} / 1000
-          </span>
-        </div>
-      </div>
-
-      <!-- ── Submit ── -->
-
-      <button type="submit" class="submit-btn" [disabled]="isLoading">
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-        {{ (isLoading ? 'REVIEWS.FORM.SUBMITTING_BTN' : 'REVIEWS.FORM.SUBMIT_BTN') | translate }}
-      </button>
-      <p
-        *ngIf="isLoading"
-        class="text-center mt-2"
-        style="color: var(--text-secondary); font-size: 0.85rem"
-      >
-        جارٍ حفظ تقييمك...
-      </p>
-    </form>
   </div>
-</div>
+}

@@ -16,248 +16,496 @@
 
   <!-- Page Sections -->
   <div class="content-body">
-    <!-- Hero -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <h2 class="hero-title">{{ 'HOME.HERO_TITLE' | translate }}</h2>
-        <p class="hero-sub">{{ 'HOME.HERO_SUB' | translate }}</p>
-        <div class="search-bar">
-          <div class="search-input-wrap">
-            <span class="material-symbols-outlined search-icon">search</span>
-            <input
-              #searchInput
-              class="search-input"
-              type="text"
-              [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
-              (keyup.enter)="onSearch(searchInput.value)"
-            />
-          </div>
-          <button
-            type="button"
-            class="location-btn"
-            (click)="requestPosition()"
-            [title]="'CHAT.SEND_LOCATION' | translate"
-          >
-            <span class="material-symbols-outlined">my_location</span>
-          </button>
-          <button class="search-btn" (click)="onSearch(searchInput.value)">
-            {{ 'HOME.SEARCH_BTN' | translate }}
-          </button>
-        </div>
-      </div>
-      <div class="hero-deco"></div>
-    </section>
-
-    <!-- Services -->
-    <section>
-      <div class="section-header">
-        <h3 class="section-title">{{ 'HOME.POPULAR_SERVICES' | translate }}</h3>
-        <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
-      </div>
-
-      @if (loadingServices()) {
-        <div class="featured-state">
-          <span class="loading-spinner"></span>
-          <p>{{ 'LOADING' | translate }}</p>
-        </div>
-      } @else {
-        <div class="services-grid">
-          @for (service of dynamicServices(); track service.slug) {
-            <a class="service-card" (click)="selectService(service.slug)" style="cursor: pointer">
-              <div [class]="'service-icon-wrap ' + service.variant">
-                <span class="material-symbols-outlined">{{ service.icon }}</span>
+    <!-- ════════════════════════════════════════
+         CRAFTSMAN DASHBOARD
+    ════════════════════════════════════════ -->
+    @if (isCraftsman) {
+      <!-- ── Stats Row ── -->
+      @if (craftsmanStats(); as stats) {
+        <div class="stats-row mt-2">
+          <div class="stat-card">
+            <div class="stat-icon-wrap earnings">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">
+                {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
               </div>
-              <span class="service-label">{{ service.name }}</span>
-            </a>
-          }
+              <div class="stat-label">{{ 'HOME.CRAFTSMAN.EARNINGS' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap rating">
+              <span class="material-symbols-outlined">star</span>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">★ {{ stats.rating | number: '1.1-1' }}</div>
+              <div class="stat-label">{{ 'HOME.CRAFTSMAN.RATING' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap completed">
+              <span class="material-symbols-outlined">task_alt</span>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.completedJobs }}</div>
+              <div class="stat-label">{{ 'HOME.CRAFTSMAN.COMPLETED' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrap pending">
+              <span class="material-symbols-outlined">pending_actions</span>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.pendingJobs }}</div>
+              <div class="stat-label">{{ 'HOME.CRAFTSMAN.PENDING' | translate }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Monthly Goal ── -->
+        <div class="goal-card">
+          <div class="goal-header">
+            <span class="goal-title">{{ 'HOME.CRAFTSMAN.MONTHLY_GOAL' | translate }}</span>
+            <div class="goal-amounts">
+              <span class="goal-current">
+                {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
+              </span>
+              <span class="goal-target">
+                {{ 'HOME.CRAFTSMAN.FROM' | translate }}
+                {{ stats.monthlyGoal | number }} {{ 'HOME.CURRENCY' | translate }}
+              </span>
+            </div>
+          </div>
+
+          <div class="goal-bar-bg">
+            <div
+              class="goal-bar-fill"
+              [style.width.%]="(stats.totalEarnings / stats.monthlyGoal) * 100"
+            ></div>
+          </div>
+
+          <p class="goal-hint">
+            {{ 'HOME.CRAFTSMAN.GOAL_HINT_1' | translate }}
+            {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
+            {{ 'HOME.CRAFTSMAN.GOAL_HINT_2' | translate }}
+            {{ stats.monthlyGoal | number }} {{ 'HOME.CURRENCY' | translate }}
+            {{ 'HOME.CRAFTSMAN.GOAL_HINT_3' | translate }}
+          </p>
         </div>
       }
-    </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         Featured Craftsmen  — city-filtered when location is available
-    ════════════════════════════════════════════════════════════════════ -->
-    <section>
-      <div class="section-header">
-        <!-- Title + optional city badge -->
-        <h3 class="section-title">
-          {{ 'HOME.FEATURED_CRAFTSMEN' | translate }}
-          @if (filteringByCity() && detectedCity()) {
-            <span class="city-badge">
-              <span class="material-symbols-outlined city-badge-icon">location_on</span>
-              {{ detectedCity() }}
+      <!-- ── New Requests ── -->
+      <section>
+        <div class="section-header">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined dash-title-icon">inbox</span>
+            {{ 'HOME.CRAFTSMAN.NEW_REQUESTS' | translate }}
+          </h3>
+          <a class="section-link" routerLink="/jobs">
+            {{ 'HOME.VIEW_ALL' | translate }}
+          </a>
+        </div>
+
+        @if (loadingStats()) {
+          <div class="featured-state">
+            <span class="loading-spinner"></span>
+            <p>{{ 'LOADING' | translate }}</p>
+          </div>
+        } @else if (pendingJobs().length === 0) {
+          <div class="featured-state empty">
+            <span
+              class="material-symbols-outlined"
+              style="font-size: 2.5rem; color: var(--text-muted)"
+            >
+              inbox
             </span>
-          }
-        </h3>
-        <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
-      </div>
-
-      @if (loadingCraftsmen()) {
-        <div class="featured-state">
-          <span class="loading-spinner"></span>
-          <p>{{ 'LOADING' | translate }}</p>
-        </div>
-      } @else if (featuredCraftsmen().length === 0) {
-        <div class="featured-state empty">
-          <p>{{ 'HOME.NO_CRAFTSMEN' | translate }}</p>
-        </div>
-      } @else {
-        <div class="craftsmen-scroll">
-          @for (craftsman of featuredCraftsmen(); track craftsman.id) {
-            <article class="craftsman-card" routerLink="/craftsmen/profile/{{ craftsman.id }}">
-              <div class="craftsman-header">
-                <div class="craftsman-info">
-                  <div class="craftsman-name">{{ craftsman.name }}</div>
-                  <span class="craftsman-specialty">{{ getServiceName(craftsman) }}</span>
+            <p>{{ 'HOME.CRAFTSMAN.NO_REQUESTS' | translate }}</p>
+          </div>
+        } @else {
+          <div class="requests-list">
+            @for (job of pendingJobs(); track job.id) {
+              <div class="request-card">
+                <div class="request-header">
+                  <div class="request-avatar">
+                    {{ (job.customerName || '?').charAt(0) }}
+                  </div>
+                  <div class="request-info">
+                    <div class="request-customer">{{ job.customerName }}</div>
+                    <div class="request-service">{{ job.service }}</div>
+                  </div>
+                  <div class="request-time">
+                    <span class="material-symbols-outlined">schedule</span>
+                    {{ job.createdAt | date: 'shortTime' }}
+                  </div>
                 </div>
-                <div class="craftsman-avatar">
-                  @if (craftsman.avatarUrl) {
-                    <img
-                      class="craftsman-avatar-img"
-                      [src]="craftsman.avatarUrl"
-                      [alt]="craftsman.name"
-                    />
-                  } @else {
-                    <span class="material-symbols-outlined avatar-icon">person</span>
+
+                <p class="request-desc">{{ job.description }}</p>
+
+                @if (job.address) {
+                  <div class="request-location">
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ job.address }}
+                  </div>
+                }
+
+                <div class="request-actions">
+                  <button
+                    class="req-btn req-btn--accept"
+                    (click)="handleJobAction(job.id, 'accept')"
+                  >
+                    <span class="material-symbols-outlined">check_circle</span>
+                    {{ 'HOME.CRAFTSMAN.ACCEPT' | translate }}
+                  </button>
+                  <button
+                    class="req-btn req-btn--reject"
+                    (click)="handleJobAction(job.id, 'reject')"
+                  >
+                    {{ 'HOME.CRAFTSMAN.REJECT' | translate }}
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+      <!-- ── Active Jobs ── -->
+      @if (activeJobs().length > 0) {
+        <section>
+          <div class="section-header">
+            <h3 class="section-title">
+              <span class="material-symbols-outlined dash-title-icon">construction</span>
+              {{ 'HOME.CRAFTSMAN.ACTIVE_JOBS' | translate }}
+            </h3>
+            <a class="section-link" routerLink="/jobs">
+              {{ 'HOME.VIEW_ALL' | translate }}
+            </a>
+          </div>
+
+          <div class="active-jobs-list">
+            @for (job of activeJobs(); track job.id) {
+              <div class="active-job-card" [routerLink]="['/jobs', job.id]">
+                <div class="active-job-left">
+                  <div class="active-job-icon-wrap">
+                    <span class="material-symbols-outlined">
+                      {{ getServiceIcon(job.service) }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="active-job-title">{{ job.description }}</div>
+                    <div class="active-job-meta">
+                      {{ job.customerName }} •
+                      {{ job.preferredDate | date: 'd MMM' }}
+                    </div>
+                  </div>
+                </div>
+
+                @if (job.budget) {
+                  <div class="active-job-price">
+                    {{ job.budget | number }}
+                    {{ 'HOME.CURRENCY' | translate }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+      <!-- ── Completed Jobs ── -->
+      @if (recentOrders().length > 0) {
+        <section>
+          <div class="section-header">
+            <h3 class="section-title">
+              {{ 'HOME.CRAFTSMAN.COMPLETED_JOBS' | translate }}
+            </h3>
+            <a class="section-link" routerLink="/jobs">
+              {{ 'HOME.VIEW_ALL' | translate }}
+            </a>
+          </div>
+
+          <div class="orders-list">
+            @for (order of recentOrders(); track order.id) {
+              <div class="order-card" [routerLink]="['/jobs', order.id]" style="cursor: pointer">
+                <div class="order-info">
+                  <div class="order-icon-wrap">
+                    <span class="material-symbols-outlined">
+                      {{ getServiceIcon(order.service) }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="order-title">{{ order.description }}</div>
+                    <div class="order-meta">
+                      {{ order.createdAt | date: 'shortDate' }} •
+                      {{ order.customerName }}
+                    </div>
+                  </div>
+                </div>
+                <div class="order-right">
+                  <span class="order-status order-status--done">
+                    {{ 'JOBS.STATUS_DONE' | translate }}
+                  </span>
+                  @if (order.budget) {
+                    <span class="order-price">
+                      {{ order.budget | number }}
+                      {{ 'HOME.CURRENCY' | translate }}
+                    </span>
                   }
                 </div>
               </div>
-
-              <p class="craftsman-bio">{{ craftsman.bio }}</p>
-
-              <div class="craftsman-meta">
-                <span class="craftsman-distance">
-                  <span class="material-symbols-outlined location-icon">location_on</span>
-                  {{ craftsman.city }}
-                </span>
-                <div class="craftsman-rating">
-                  <span class="material-symbols-outlined star-filled">star</span>
-                  <span class="rating-value">{{ craftsman.rating }}</span>
-                  <span class="rating-count">
-                    ({{ craftsman.reviewsCount }} {{ 'HOME.REVIEWS' | translate }})
-                  </span>
-                </div>
-              </div>
-
-              <div class="craftsman-stats">
-                <span class="craftsman-stat">
-                  <span class="material-symbols-outlined">work_history</span>
-                  {{ craftsman.experienceYears }} {{ 'HOME.YEARS' | translate }}
-                </span>
-                @if (getPriceRange(craftsman)) {
-                  <span class="craftsman-stat">
-                    <span class="material-symbols-outlined">payments</span>
-                    {{ getPriceRange(craftsman) }} {{ 'HOME.CURRENCY' | translate }}
-                  </span>
-                }
-              </div>
-
-              <div class="craftsman-tags">
-                <span class="craftsman-tag">{{
-                  getPrimaryServiceLabel(craftsman) | translate
-                }}</span>
-              </div>
-
-              <div class="craftsman-actions">
-                <a
-                  class="craftsman-btn craftsman-btn--profile"
-                  [routerLink]="['/craftsmen', 'profile', craftsman.id]"
-                >
-                  <span class="material-symbols-outlined">person</span>
-                  <span>{{ 'HOME.VIEW_PROFILE' | translate }}</span>
-                </a>
-                @if (isCustomer) {
-                  <button
-                    type="button"
-                    class="craftsman-btn craftsman-btn--apply"
-                    (click)="applyNow(craftsman)"
-                  >
-                    <span class="material-symbols-outlined">add_circle</span>
-                    <span>{{ 'HOME.APPLY_NOW' | translate }}</span>
-                  </button>
-                }
-              </div>
-            </article>
-          }
-        </div>
+            }
+          </div>
+        </section>
       }
-    </section>
+    }
 
-    <!-- How It Works -->
-    <section class="how-section">
-      <h3 class="how-title">{{ 'HOME.HOW_TITLE' | translate }}</h3>
-      <div class="how-grid">
-        <div class="how-step">
-          <div class="how-icon-wrap step1">
-            <span class="material-symbols-outlined">search</span>
+    @if (!isCraftsman) {
+      <!-- Hero -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <h2 class="hero-title">{{ 'HOME.HERO_TITLE' | translate }}</h2>
+          <p class="hero-sub">{{ 'HOME.HERO_SUB' | translate }}</p>
+          <div class="search-bar">
+            <div class="search-input-wrap">
+              <span class="material-symbols-outlined search-icon">search</span>
+              <input
+                #searchInput
+                class="search-input"
+                type="text"
+                [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
+                (keyup.enter)="onSearch(searchInput.value)"
+              />
+            </div>
+            <button
+              type="button"
+              class="location-btn"
+              (click)="requestPosition()"
+              [title]="'CHAT.SEND_LOCATION' | translate"
+            >
+              <span class="material-symbols-outlined">my_location</span>
+            </button>
+            <button class="search-btn" (click)="onSearch(searchInput.value)">
+              {{ 'HOME.SEARCH_BTN' | translate }}
+            </button>
           </div>
-          <h4 class="how-step-title">{{ 'HOME.HOW_STEP1_TITLE' | translate }}</h4>
-          <p class="how-step-desc">{{ 'HOME.HOW_STEP1_DESC' | translate }}</p>
         </div>
-        <div class="how-step">
-          <div class="how-icon-wrap step2">
-            <span class="material-symbols-outlined">touch_app</span>
-          </div>
-          <h4 class="how-step-title">{{ 'HOME.HOW_STEP2_TITLE' | translate }}</h4>
-          <p class="how-step-desc">{{ 'HOME.HOW_STEP2_DESC' | translate }}</p>
-        </div>
-        <div class="how-step">
-          <div class="how-icon-wrap step3">
-            <span class="material-symbols-outlined">task_alt</span>
-          </div>
-          <h4 class="how-step-title">{{ 'HOME.HOW_STEP3_TITLE' | translate }}</h4>
-          <p class="how-step-desc">{{ 'HOME.HOW_STEP3_DESC' | translate }}</p>
-        </div>
-      </div>
-    </section>
+        <div class="hero-deco"></div>
+      </section>
 
-    <!-- Recent Orders -->
-    <section>
-      <div class="section-header">
-        <h3 class="section-title">{{ 'HOME.RECENT_ORDERS' | translate }}</h3>
-        <a class="section-link" routerLink="/jobs">{{ 'HOME.ORDER_HISTORY' | translate }}</a>
-      </div>
-      @if (loadingOrders()) {
-        <div class="featured-state">
-          <span class="loading-spinner"></span>
-          <p>{{ 'LOADING' | translate }}</p>
+      <!-- Services -->
+      <section>
+        <div class="section-header">
+          <h3 class="section-title">{{ 'HOME.POPULAR_SERVICES' | translate }}</h3>
+          <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
         </div>
-      } @else if (recentOrders().length === 0) {
-        <div class="featured-state empty">
-          <p>{{ 'HOME.NO_ORDERS' | translate }}</p>
-        </div>
-      } @else {
-        <div class="orders-list">
-          @for (order of recentOrders(); track order.id) {
-            <div class="order-card">
-              <div class="order-info">
-                <div class="order-icon-wrap">
-                  <span class="material-symbols-outlined">{{ getServiceIcon(order.service) }}</span>
+
+        @if (loadingServices()) {
+          <div class="featured-state">
+            <span class="loading-spinner"></span>
+            <p>{{ 'LOADING' | translate }}</p>
+          </div>
+        } @else {
+          <div class="services-grid">
+            @for (service of dynamicServices(); track service.slug) {
+              <a class="service-card" (click)="selectService(service.slug)" style="cursor: pointer">
+                <div [class]="'service-icon-wrap ' + service.variant">
+                  <span class="material-symbols-outlined">{{ service.icon }}</span>
                 </div>
-                <div>
-                  <div class="order-title">{{ order.description }}</div>
-                  <div class="order-meta">
-                    {{ order.createdAt | date: 'shortDate' }} •
-                    {{ isCraftsman ? order.customerName : order.craftsmanName }}
+                <span class="service-label">{{ service.name }}</span>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
+         Featured Craftsmen  — city-filtered when location is available
+    ════════════════════════════════════════════════════════════════════ -->
+      <section>
+        <div class="section-header">
+          <!-- Title + optional city badge -->
+          <h3 class="section-title">
+            {{ 'HOME.FEATURED_CRAFTSMEN' | translate }}
+            @if (filteringByCity() && detectedCity()) {
+              <span class="city-badge">
+                <span class="material-symbols-outlined city-badge-icon">location_on</span>
+                {{ detectedCity() }}
+              </span>
+            }
+          </h3>
+          <a class="section-link" routerLink="/craftsmen">{{ 'HOME.VIEW_ALL' | translate }}</a>
+        </div>
+
+        @if (loadingCraftsmen()) {
+          <div class="featured-state">
+            <span class="loading-spinner"></span>
+            <p>{{ 'LOADING' | translate }}</p>
+          </div>
+        } @else if (featuredCraftsmen().length === 0) {
+          <div class="featured-state empty">
+            <p>{{ 'HOME.NO_CRAFTSMEN' | translate }}</p>
+          </div>
+        } @else {
+          <div class="craftsmen-scroll">
+            @for (craftsman of featuredCraftsmen(); track craftsman.id) {
+              <article class="craftsman-card" routerLink="/craftsmen/profile/{{ craftsman.id }}">
+                <div class="craftsman-header">
+                  <div class="craftsman-info">
+                    <div class="craftsman-name">{{ craftsman.name }}</div>
+                    <span class="craftsman-specialty">{{ getServiceName(craftsman) }}</span>
+                  </div>
+                  <div class="craftsman-avatar">
+                    @if (craftsman.avatarUrl) {
+                      <img
+                        class="craftsman-avatar-img"
+                        [src]="craftsman.avatarUrl"
+                        [alt]="craftsman.name"
+                      />
+                    } @else {
+                      <span class="material-symbols-outlined avatar-icon">person</span>
+                    }
                   </div>
                 </div>
-              </div>
-              <div class="order-right">
-                <span [class]="getStatusClass(order.status)">{{
-                  getStatusLabelKey(order.status) | translate
-                }}</span>
-                @if (order.budget) {
-                  <span class="order-price">
-                    {{ order.budget }} {{ 'HOME.CURRENCY' | translate }}
-                  </span>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </section>
 
+                <p class="craftsman-bio">{{ craftsman.bio }}</p>
+
+                <div class="craftsman-meta">
+                  <span class="craftsman-distance">
+                    <span class="material-symbols-outlined location-icon">location_on</span>
+                    {{ craftsman.city }}
+                  </span>
+                  <div class="craftsman-rating">
+                    <span class="material-symbols-outlined star-filled">star</span>
+                    <span class="rating-value">{{ craftsman.rating }}</span>
+                    <span class="rating-count">
+                      ({{ craftsman.reviewsCount }} {{ 'HOME.REVIEWS' | translate }})
+                    </span>
+                  </div>
+                </div>
+
+                <div class="craftsman-stats">
+                  <span class="craftsman-stat">
+                    <span class="material-symbols-outlined">work_history</span>
+                    {{ craftsman.experienceYears }} {{ 'HOME.YEARS' | translate }}
+                  </span>
+                  @if (getPriceRange(craftsman)) {
+                    <span class="craftsman-stat">
+                      <span class="material-symbols-outlined">payments</span>
+                      {{ getPriceRange(craftsman) }} {{ 'HOME.CURRENCY' | translate }}
+                    </span>
+                  }
+                </div>
+
+                <div class="craftsman-tags">
+                  <span class="craftsman-tag">{{
+                    getPrimaryServiceLabel(craftsman) | translate
+                  }}</span>
+                </div>
+
+                <div class="craftsman-actions">
+                  <a
+                    class="craftsman-btn craftsman-btn--profile"
+                    [routerLink]="['/craftsmen', 'profile', craftsman.id]"
+                  >
+                    <span class="material-symbols-outlined">person</span>
+                    <span>{{ 'HOME.VIEW_PROFILE' | translate }}</span>
+                  </a>
+                  @if (isCustomer) {
+                    <button
+                      type="button"
+                      class="craftsman-btn craftsman-btn--apply"
+                      (click)="applyNow(craftsman)"
+                    >
+                      <span class="material-symbols-outlined">add_circle</span>
+                      <span>{{ 'HOME.APPLY_NOW' | translate }}</span>
+                    </button>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- How It Works -->
+      <section class="how-section">
+        <h3 class="how-title">{{ 'HOME.HOW_TITLE' | translate }}</h3>
+        <div class="how-grid">
+          <div class="how-step">
+            <div class="how-icon-wrap step1">
+              <span class="material-symbols-outlined">search</span>
+            </div>
+            <h4 class="how-step-title">{{ 'HOME.HOW_STEP1_TITLE' | translate }}</h4>
+            <p class="how-step-desc">{{ 'HOME.HOW_STEP1_DESC' | translate }}</p>
+          </div>
+          <div class="how-step">
+            <div class="how-icon-wrap step2">
+              <span class="material-symbols-outlined">touch_app</span>
+            </div>
+            <h4 class="how-step-title">{{ 'HOME.HOW_STEP2_TITLE' | translate }}</h4>
+            <p class="how-step-desc">{{ 'HOME.HOW_STEP2_DESC' | translate }}</p>
+          </div>
+          <div class="how-step">
+            <div class="how-icon-wrap step3">
+              <span class="material-symbols-outlined">task_alt</span>
+            </div>
+            <h4 class="how-step-title">{{ 'HOME.HOW_STEP3_TITLE' | translate }}</h4>
+            <p class="how-step-desc">{{ 'HOME.HOW_STEP3_DESC' | translate }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Orders -->
+      <section>
+        <div class="section-header">
+          <h3 class="section-title">{{ 'HOME.RECENT_ORDERS' | translate }}</h3>
+          <a class="section-link" routerLink="/jobs">{{ 'HOME.ORDER_HISTORY' | translate }}</a>
+        </div>
+        @if (loadingOrders()) {
+          <div class="featured-state">
+            <span class="loading-spinner"></span>
+            <p>{{ 'LOADING' | translate }}</p>
+          </div>
+        } @else if (recentOrders().length === 0) {
+          <div class="featured-state empty">
+            <p>{{ 'HOME.NO_ORDERS' | translate }}</p>
+          </div>
+        } @else {
+          <div class="orders-list">
+            @for (order of recentOrders(); track order.id) {
+              <div class="order-card">
+                <div class="order-info">
+                  <div class="order-icon-wrap">
+                    <span class="material-symbols-outlined">{{
+                      getServiceIcon(order.service)
+                    }}</span>
+                  </div>
+                  <div>
+                    <div class="order-title">{{ order.description }}</div>
+                    <div class="order-meta">
+                      {{ order.createdAt | date: 'shortDate' }} •
+                      {{ isCraftsman ? order.customerName : order.craftsmanName }}
+                    </div>
+                  </div>
+                </div>
+                <div class="order-right">
+                  <span [class]="getStatusClass(order.status)">{{
+                    getStatusLabelKey(order.status) | translate
+                  }}</span>
+                  @if (order.budget) {
+                    <span class="order-price">
+                      {{ order.budget }} {{ 'HOME.CURRENCY' | translate }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
     <div class="page-bottom"></div>
   </div>
 </main>

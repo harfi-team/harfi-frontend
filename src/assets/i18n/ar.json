@@ -133,7 +133,7 @@
     "MOST_EXPERIENCED": "الأكثر خبرة"
   },
 
-  
+
   "NAV": {
     "TAGLINE": "منصة حرفي",
     "HOME": "الرئيسية",
@@ -145,7 +145,11 @@
     "DARK_MODE": "الوضع الليلي",
     "LIGHT_MODE": "الوضع النهاري",
     "LOGOUT": "خروج",
-    "BOOK_NOW": "احجز الآن"
+    "BOOK_NOW": "احجز الآن" ,
+    "DASHBOARD":    "لوحة التحكم",
+    "MY_JOBS":      "طلباتي",
+    "AI_ASSISTANT": "المساعد الذكي"
+
   },
   "JOBS": {
     "PAGE_LABEL": "الحجوزات",
@@ -235,7 +239,24 @@
     "RECENT_ORDERS": "آخر طلباتي",
     "ORDER_HISTORY": "سجل الطلبات",
     "NO_ORDERS": "لا توجد طلبات حتى الآن",
-    "CURRENCY": "ج.م"
+    "CURRENCY": "ج.م",
+    "CRAFTSMAN": {
+      "EARNINGS":      "الأرباح (هذا الشهر)",
+      "RATING":        "التقييم",
+      "COMPLETED":     "الطلبات المنجزة",
+      "PENDING":       "الطلبات الجديدة",
+      "MONTHLY_GOAL":  "الهدف الشهري للأرباح",
+      "FROM":          "من",
+      "GOAL_HINT_1":   "لقد حققت",
+      "GOAL_HINT_2":   "من هدفك البالغ",
+      "GOAL_HINT_3":   "هذا الشهر",
+      "NEW_REQUESTS":  "الطلبات الجديدة",
+      "NO_REQUESTS":   "لا توجد طلبات جديدة",
+      "ACTIVE_JOBS":   "طلباتي النشطة",
+      "COMPLETED_JOBS":"آخر الأعمال المنجزة",
+      "ACCEPT":        "قبول الطلب",
+      "REJECT":        "رفض"
+    }
   },
   "CRAFTSMAN_PROFILE": {
     "ABOUT": "نبذة",
