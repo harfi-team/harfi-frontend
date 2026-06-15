@@ -67,6 +67,9 @@ export class CraftsmanSearchComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private languageService = inject(LanguageService);
 
+  //  الكود الجديد لمعرفة اتجاه الصفحة الحالي
+  isRtl = computed(() => this.languageService.current() === 'ar' || !this.languageService.current());
+
   loading = signal(false);
   craftsmen = signal<SearchCraftsmanDto[]>([]);
   activeService = signal<string>('');
