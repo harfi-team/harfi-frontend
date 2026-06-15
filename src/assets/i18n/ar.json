@@ -145,7 +145,11 @@
     "DARK_MODE": "الوضع الليلي",
     "LIGHT_MODE": "الوضع النهاري",
     "LOGOUT": "خروج",
-    "BOOK_NOW": "احجز الآن"
+    "BOOK_NOW": "احجز الآن" ,
+    "DASHBOARD":    "لوحة التحكم",
+    "MY_JOBS":      "طلباتي",
+    "AI_ASSISTANT": "المساعد الذكي"
+
   },
   "JOBS": {
     "PAGE_LABEL": "الحجوزات",

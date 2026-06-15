@@ -29,6 +29,12 @@ export class SideNavComponent {
   get isAdmin(): boolean {
     return this.auth.getRole() === 'admin';
   }
+  get isCraftsman(): boolean {
+    return this.auth.getRole() === 'craftsman';
+  }
+  get isCustomer(): boolean {
+    return this.auth.getRole() === 'customer';
+  }
 
   get isDark(): boolean {
     return this.themeService.current() === 'dark';
