@@ -209,6 +209,9 @@ export class CraftsmanSearchComponent implements OnInit {
           { emitEvent: false }
         );
 
+        // NEW: Read maxPrice from URL, fallback to 1000 if not present
+        this.maxPrice = params.get('maxPrice') ? Number(params.get('maxPrice')) : 1000;
+
         this.currentPage = 1;
         this.loadCraftsmen();
       });
@@ -375,6 +378,7 @@ export class CraftsmanSearchComponent implements OnInit {
         next: (items) => {
           const localSearch = raw.search?.trim().toLowerCase() || '';
 
+          // 1. Text Search Filter
           let filtered = localSearch
             ? items.filter(
                 (c) =>
@@ -384,6 +388,13 @@ export class CraftsmanSearchComponent implements OnInit {
                   (c.neighborhood && c.neighborhood.toLowerCase().includes(localSearch))
               )
             : items;
+
+          // 2. Price Filter (NEW)
+          // Filters out any craftsman whose minimum price is strictly greater than maxPrice
+          filtered = filtered.filter((c) => {
+            const minPrice = c.priceRangeMin ?? 0;
+            return minPrice <= this.maxPrice;
+          });
 
           this.craftsmen.set(filtered);
           this.applySorting();
@@ -405,6 +416,7 @@ export class CraftsmanSearchComponent implements OnInit {
       city: raw.city?.trim() || undefined,
       minRating: raw.minRating !== '' ? raw.minRating : undefined,
       minExperience: raw.minExperience !== '' ? raw.minExperience : undefined,
+      maxPrice: this.maxPrice < 1000 ? this.maxPrice : undefined, // NEW: Only add to URL if changed from default
     };
   }
 
