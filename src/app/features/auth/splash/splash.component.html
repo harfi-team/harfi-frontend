@@ -4,24 +4,18 @@
     <img src="assets/images/harfi_logo.png" height="36" alt="حرفي" class="nav-logo-img" />
     <span class="nav-brand-name gradient-text">{{ 'APP_NAME' | translate }}</span>
   </div>
-  <div class="splash-nav-center">
-    <a class="nav-link">{{ 'NAV_HOME' | translate }}</a>
-    <a class="nav-link">{{ 'NAV_HOW' | translate }}</a>
-    <a class="nav-link">{{ 'NAV_CRAFTSMEN' | translate }}</a>
-    <a class="nav-link">{{ 'NAV_CONTACT' | translate }}</a>
-  </div>
+
   <div class="splash-nav-left">
     <button class="nav-ctrl-btn" (click)="theme.toggle()">
-      {{ isDark ? '☀️' : '🌙' }}
+      @if (isDark) {
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">light_mode</span>
+      } @else {
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">dark_mode</span>
+      }
     </button>
     <button class="nav-ctrl-btn" (click)="lang.toggle()">
-      🌐 {{ isArabic ? 'EN' : 'ع' }}
-    </button>
-    <button class="nav-login-btn" (click)="goToLogin()">
-      {{ 'LOGIN' | translate }}
-    </button>
-    <button class="nav-start-btn gradient-btn" (click)="goToRegister()">
-      {{ 'ONBOARDING_START' | translate }}
+      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">translate</span>
+      {{ isArabic ? 'EN' : 'ع' }}
     </button>
   </div>
 </nav>
@@ -39,7 +33,15 @@
     @for (slide of slides; track slide.id) {
       @if (currentSlide === slide.id) {
         <div class="slide-content animate-fade">
-          <div class="slide-icon-box">{{ slide.icon }}</div>
+          <div class="slide-icon-box">
+            @if (slide.id === 0) {
+              <span class="material-symbols-outlined" style="font-size:32px;line-height:1">search</span>
+            } @else if (slide.id === 1) {
+              <span class="material-symbols-outlined" style="font-size:32px;line-height:1">forum</span>
+            } @else {
+              <span class="material-symbols-outlined" style="font-size:32px;line-height:1">star</span>
+            }
+          </div>
           <h2 class="slide-title" [innerHTML]="getSlideTitle(slide)"></h2>
           <p class="slide-desc">{{ slide.desc | translate }}</p>
         </div>
@@ -105,8 +107,16 @@
 <!-- MOBILE FULL-SCREEN (< 768px) -->
 <div class="splash-mobile">
   <div class="mobile-top-bar">
-    <button class="nav-ctrl-btn" (click)="theme.toggle()">{{ isDark ? '☀️' : '🌙' }}</button>
-    <button class="nav-ctrl-btn" (click)="lang.toggle()">🌐</button>
+    <button class="nav-ctrl-btn" (click)="theme.toggle()">
+      @if (isDark) {
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">light_mode</span>
+      } @else {
+        <span class="material-symbols-outlined" style="font-size:18px;line-height:1">dark_mode</span>
+      }
+    </button>
+    <button class="nav-ctrl-btn" (click)="lang.toggle()">
+      <span class="material-symbols-outlined" style="font-size:18px;line-height:1">translate</span>
+    </button>
     <button class="btn-skip-mobile" (click)="skip()">{{ 'ONBOARDING_SKIP' | translate }}</button>
   </div>
   <div class="mobile-content">
