@@ -24,9 +24,8 @@ interface DynamicService {
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-
 export class HomeComponent implements OnInit {
- auth = inject(AuthService);
+  auth = inject(AuthService);
   languageService = inject(LanguageService);
   private router = inject(Router);
   private craftsmanService = inject(CraftsmanService);
@@ -50,7 +49,17 @@ export class HomeComponent implements OnInit {
       slug: s.nameAr,
     }));
   });
+  craftsmanStats = signal<{
+    totalEarnings: number;
+    rating: number;
+    completedJobs: number;
+    pendingJobs: number;
+    monthlyGoal: number;
+  } | null>(null);
 
+  pendingJobs = signal<JobDto[]>([]);
+  activeJobs = signal<JobDto[]>([]);
+  loadingStats = signal(false);
   detectedCity = signal<string | null>(null);
   filteringByCity = signal(false);
 
@@ -68,9 +77,17 @@ export class HomeComponent implements OnInit {
   // ─── Lifecycle ──────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
-    this.loadActiveServices(); // 6. نادينا على الدالة أول ما الصفحة تفتح
-    this.loadRecentOrders();
-    this.initLocationAndCraftsmen();
+    this.loadActiveServices();
+
+    if (this.isCraftsman) {
+      // الحرفي محتاج data مختلفة خالص
+      this.loadCraftsmanDashboard();
+    } else {
+      // الـ customer flow القديم
+      this.loadActiveServices();
+      this.loadRecentOrders();
+      this.initLocationAndCraftsmen();
+    }
   }
 
   // 7. الدالة الجديدة اللي بتكلم الـ API
@@ -85,7 +102,7 @@ export class HomeComponent implements OnInit {
       error: (err) => {
         console.error('[Harfi] Failed to load services', err);
         this.loadingServices.set(false);
-      }
+      },
     });
   }
 
@@ -130,12 +147,17 @@ export class HomeComponent implements OnInit {
         this.reverseGeocode(pos.coords.latitude, pos.coords.longitude);
       },
       (err) => {
-        console.warn('[Harfi] getCurrentPosition error — code:', err.code, '— message:', err.message);
+        console.warn(
+          '[Harfi] getCurrentPosition error — code:',
+          err.code,
+          '— message:',
+          err.message,
+        );
         this.loadFeaturedCraftsmen();
       },
       {
         enableHighAccuracy: true, // Set to true for better accuracy, especially in Egypt's denser cities
-        timeout: 15000,           // Increased to 15 seconds to give the GPS enough time to respond
+        timeout: 15000, // Increased to 15 seconds to give the GPS enough time to respond
         maximumAge: 300_000,
       },
     );
@@ -146,7 +168,7 @@ export class HomeComponent implements OnInit {
     console.log('[Harfi] Reverse geocoding with lang:', lang);
 
     // Removed the manual User-Agent header and added the email parameter per Nominatim's policy
-    const url = 
+    const url =
       `https://nominatim.openstreetmap.org/reverse` +
       `?lat=${lat}&lon=${lng}&format=json&accept-language=${lang}&email=your_email@example.com`; // Add your actual dev email here
 
@@ -183,94 +205,98 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  
-
   private loadCraftsmenByCity(city: string): void {
-  this.loadingCraftsmen.set(true);
+    this.loadingCraftsmen.set(true);
 
-  // تمرير الـ 4 باراميترز كاملة للـ API بناءً على طلب الـ Backend
-  this.craftsmanService.searchCraftsmen({
-    city: city,
-    service: '',          // نص فاضي عشان يجيب كل التخصصات والخدمات في طنطا
-    minExperience: 0,     // 0 عشان يرجع كل سنوات الخبرة
-    minRating: 0          // 0 عشان يرجع كل التقييمات
-  }).subscribe({
-    next: (all) => {
-      
-      const norm = (s: string) => {
-        if (!s) return '';
-        return s
-          .trim()
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[أإآ]/g, 'ا')          
-          .replace(/ة/g, 'ه')             
-          .replace(/ى/g, 'ي');            
-      };
+    // تمرير الـ 4 باراميترز كاملة للـ API بناءً على طلب الـ Backend
+    this.craftsmanService
+      .searchCraftsmen({
+        city: city,
+        service: '', // نص فاضي عشان يجيب كل التخصصات والخدمات في طنطا
+        minExperience: 0, // 0 عشان يرجع كل سنوات الخبرة
+        minRating: 0, // 0 عشان يرجع كل التقييمات
+      })
+      .subscribe({
+        next: (all) => {
+          const norm = (s: string) => {
+            if (!s) return '';
+            return s
+              .trim()
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/[أإآ]/g, 'ا')
+              .replace(/ة/g, 'ه')
+              .replace(/ى/g, 'ي');
+          };
 
-      const cityNorm = norm(city);
+          const cityNorm = norm(city);
 
-      // فلترة للتأكد التام من دقة النصوص (عربي أو إنجليزي)
-      const local = all.filter((c) => {
-        if (!c.city) return false;
-        const cNorm = norm(c.city);
-        
-        return cNorm.includes(cityNorm) || cityNorm.includes(cNorm) || 
-               (cityNorm === 'طنطا' && cNorm.includes('tanta')) ||
-               (cityNorm === 'tanta' && cNorm.includes('طنطا'));
+          // فلترة للتأكد التام من دقة النصوص (عربي أو إنجليزي)
+          const local = all.filter((c) => {
+            if (!c.city) return false;
+            const cNorm = norm(c.city);
+
+            return (
+              cNorm.includes(cityNorm) ||
+              cityNorm.includes(cNorm) ||
+              (cityNorm === 'طنطا' && cNorm.includes('tanta')) ||
+              (cityNorm === 'tanta' && cNorm.includes('طنطا'))
+            );
+          });
+
+          if (local.length > 0) {
+            this.filteringByCity.set(true);
+            // ترتيب الحرفيين اللي في طنطا من الأعلى تقييماً للأقل
+            this.featuredCraftsmen.set(
+              [...local].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 6),
+            );
+          } else {
+            this.filteringByCity.set(false);
+            this.loadFeaturedCraftsmen();
+          }
+
+          this.loadingCraftsmen.set(false);
+        },
+        error: () => {
+          this.loadFeaturedCraftsmen();
+        },
       });
+  }
 
-      if (local.length > 0) {
-        this.filteringByCity.set(true);
-        // ترتيب الحرفيين اللي في طنطا من الأعلى تقييماً للأقل
-        this.featuredCraftsmen.set(
-          [...local].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 6)
-        );
-      } else {
-        this.filteringByCity.set(false);
-        this.loadFeaturedCraftsmen();
-      }
+  loadFeaturedCraftsmen(): void {
+    this.loadingCraftsmen.set(true);
 
-      this.loadingCraftsmen.set(false);
-    },
-    error: () => {
-      this.loadFeaturedCraftsmen();
-    },
-  });
-}
+    // تحديث الـ Fallback أيضاً بالـ 4 باراميترز الأساسية بقيم فارغة ليعود بالجميع
+    this.craftsmanService
+      .searchCraftsmen({
+        city: '',
+        service: '',
+        minExperience: 0,
+        minRating: 0,
+      })
+      .subscribe({
+        next: (craftsmen) => {
+          this.featuredCraftsmen.set(
+            [...craftsmen].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 6),
+          );
+          this.loadingCraftsmen.set(false);
+        },
+        error: () => {
+          this.featuredCraftsmen.set([]);
+          this.loadingCraftsmen.set(false);
+        },
+      });
+  }
 
-loadFeaturedCraftsmen(): void {
-  this.loadingCraftsmen.set(true);
-  
-  // تحديث الـ Fallback أيضاً بالـ 4 باراميترز الأساسية بقيم فارغة ليعود بالجميع
-  this.craftsmanService.searchCraftsmen({
-    city: '',
-    service: '',
-    minExperience: 0,
-    minRating: 0
-  }).subscribe({
-    next: (craftsmen) => {
-      this.featuredCraftsmen.set(
-        [...craftsmen]
-          .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-          .slice(0, 6),
-      );
-      this.loadingCraftsmen.set(false);
-    },
-    error: () => {
-      this.featuredCraftsmen.set([]);
-      this.loadingCraftsmen.set(false);
-    },
-  });
-}
-
- 
   // ─── Orders ─────────────────────────────────────────────────────────────────
 
   loadRecentOrders(): void {
     const id = this.isCraftsman ? this.auth.getCraftsmanId() : this.auth.getUserId();
-    if (!id) { this.recentOrders.set([]); return; }
+    if (!id) {
+      this.recentOrders.set([]);
+      return;
+    }
 
     this.loadingOrders.set(true);
     const req = this.isCraftsman
@@ -280,8 +306,7 @@ loadFeaturedCraftsmen(): void {
     req.subscribe({
       next: (jobs) => {
         const sorted = [...jobs].sort(
-          (a, b) =>
-            new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
+          (a, b) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime(),
         );
         this.recentOrders.set(sorted.slice(0, 5));
         this.loadingOrders.set(false);
@@ -297,10 +322,10 @@ loadFeaturedCraftsmen(): void {
 
   getStatusLabelKey(status: JobStatus): string {
     const map: Record<string, string> = {
-      'open':        'JOBS.STATUS_OPEN',
+      open: 'JOBS.STATUS_OPEN',
       'in-progress': 'JOBS.STATUS_IN_PROGRESS',
-      'done':        'JOBS.STATUS_DONE',
-      'rejected':    'JOBS.STATUS_REJECTED',
+      done: 'JOBS.STATUS_DONE',
+      rejected: 'JOBS.STATUS_REJECTED',
     };
     return map[status] ?? 'JOBS.STATUS_OPEN';
   }
@@ -312,22 +337,22 @@ loadFeaturedCraftsmen(): void {
   getServiceIcon(serviceType: string): string {
     if (!serviceType) return 'handyman';
     const iconMap: Record<string, string> = {
-      'سباك':          'plumbing',
-      'كهربائي':       'electrical_services',
-      'نجار':          'carpenter',
-      'نقاش':          'format_paint',
-      'تكييف':         'ac_unit',
-      'نظافة':         'cleaning_services',
-      'نقل':           'local_shipping',
+      سباك: 'plumbing',
+      كهربائي: 'electrical_services',
+      نجار: 'carpenter',
+      نقاش: 'format_paint',
+      تكييف: 'ac_unit',
+      نظافة: 'cleaning_services',
+      نقل: 'local_shipping',
       'مكافحة حشرات': 'pest_control',
-      plumbing:        'plumbing',
-      electrical:      'electrical_services',
-      carpentry:       'carpenter',
-      painting:        'format_paint',
-      ac:              'ac_unit',
-      cleaning:        'cleaning_services',
-      moving:          'local_shipping',
-      pest:            'pest_control',
+      plumbing: 'plumbing',
+      electrical: 'electrical_services',
+      carpentry: 'carpenter',
+      painting: 'format_paint',
+      ac: 'ac_unit',
+      cleaning: 'cleaning_services',
+      moving: 'local_shipping',
+      pest: 'pest_control',
     };
     return iconMap[serviceType] ?? 'handyman';
   }
@@ -356,25 +381,69 @@ loadFeaturedCraftsmen(): void {
     const service = this.craftsmanService.getPrimaryService(craftsman);
     this.router.navigate(['/jobs/create'], {
       queryParams: {
-        craftsmanId:   craftsman.id,
+        craftsmanId: craftsman.id,
         craftsmanName: craftsman.name,
-        service:       service || undefined,
+        service: service || undefined,
       },
     });
   }
 
   onSearch(value: string): void {
-  if (!value.trim()) return;
-  
-  // بنوجه العميل لصفحة البحث وبنحط الكلمة اللي كتبها في الـ search param
-  this.router.navigate(['/craftsmen'], {
-    queryParams: { search: value.trim() }
-  });
-}
+    if (!value.trim()) return;
 
-selectService(serviceSlug: string): void {
-  this.router.navigate(['/craftsmen'], {
-    queryParams: { service: serviceSlug }
-  });
-}
+    // بنوجه العميل لصفحة البحث وبنحط الكلمة اللي كتبها في الـ search param
+    this.router.navigate(['/craftsmen'], {
+      queryParams: { search: value.trim() },
+    });
+  }
+
+  selectService(serviceSlug: string): void {
+    this.router.navigate(['/craftsmen'], {
+      queryParams: { service: serviceSlug },
+    });
+  }
+  loadCraftsmanDashboard(): void {
+    this.loadingStats.set(true);
+    const craftsmanId = this.auth.getCraftsmanId();
+    if (!craftsmanId) return;
+
+    // جيب كل الجوبز بتاعت الحرفي
+    this.jobsService.getCraftsmanJobs(craftsmanId).subscribe({
+      next: (jobs) => {
+        const done = jobs.filter((j) => j.status === 'done');
+        const pending = jobs.filter((j) => j.status === 'open');
+        const active = jobs.filter((j) => j.status === 'in-progress');
+
+        // احسب الأرباح من الجوبز المنتهية
+        const earnings = done.reduce((sum, j) => sum + (j.budget || 0), 0);
+
+        this.pendingJobs.set(pending.slice(0, 5));
+        this.activeJobs.set(active.slice(0, 5));
+        this.recentOrders.set(done.slice(0, 5));
+
+        this.craftsmanStats.set({
+          totalEarnings: earnings,
+          rating: 5, // موقعياً 5 عشان الـ MVP، بعدين نجيبها من الـ API
+          completedJobs: done.length,
+          pendingJobs: pending.length,
+          monthlyGoal: 5000, // static للـ MVP
+        });
+
+        this.loadingStats.set(false);
+      },
+      error: () => {
+        this.loadingStats.set(false);
+      },
+    });
+  }
+  handleJobAction(jobId: string, action: 'accept' | 'reject'): void {
+    this.jobsService.performAction(jobId, action).subscribe({
+      next: () => {
+        this.loadCraftsmanDashboard(); // reload
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
 }
