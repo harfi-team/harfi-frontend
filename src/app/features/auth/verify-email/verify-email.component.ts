@@ -46,7 +46,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     if (this.form.invalid) return;
     this.loading = true;
     this.authService.verifyEmail({ email: this.email, code: this.form.value.code! }).subscribe({
-      next: () => this.router.navigate(['/auth/verify-phone'], { queryParams: { email: this.email } }),
+      next: () => this.router.navigate(['/home'], { queryParams: { email: this.email } }),
       error: (err) => {
         this.errorHandler.handle(err);
         this.loading = false;

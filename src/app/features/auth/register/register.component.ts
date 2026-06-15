@@ -68,24 +68,21 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
-    this.loading = true;
-    this.authService.register(this.form.value as any).subscribe({
-      next: (res) => {
-        if (res.requiresPhoneVerification) {
-          const queryParams: Record<string, string> = { email: res.user.email };
-          if (res.user?.phone) queryParams['phone'] = res.user.phone;
-          this.router.navigate(['/auth/verify-phone'], { queryParams });
-        } else {
-          this.router.navigate(['/auth/verify-email'], { queryParams: { email: res.user.email } });
-        }
-      },
-      error: (err) => {
-        this.errorHandler.handle(err);
-        this.loading = false;
-      },
-    });
-  }
+  if (this.form.invalid) return;
+  this.loading = true;
+  this.authService.register(this.form.value as any).subscribe({
+    next: (res) => {
+      // التوجيه مباشرة لصفحة تفعيل الإيميل وتمريره في الـ Query Params
+      this.router.navigate(['/auth/verify-email'], { 
+        queryParams: { email: res.user?.email } 
+      });
+    },
+    error: (err) => {
+      this.errorHandler.handle(err);
+      this.loading = false;
+    },
+  });
+}
 
   togglePassword(field: 'password' | 'confirm'): void {
     if (field === 'password') this.showPassword = !this.showPassword;
