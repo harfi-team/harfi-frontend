@@ -1126,3 +1126,363 @@
 .city-badge-icon {
   font-size: 15px;
 }
+/* ══ Craftsman Stats Row ══ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .stats-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1.5px solid var(--border-card);
+  box-shadow: 0 2px 10px var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow 0.18s;
+}
+.stat-card:hover {
+  box-shadow: 0 6px 20px var(--shadow-hover);
+}
+
+.stat-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-icon-wrap .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.stat-icon-wrap.earnings {
+  background: #d1fae5;
+  color: #065f46;
+}
+.stat-icon-wrap.rating {
+  background: #fef3c7;
+  color: #92400e;
+}
+.stat-icon-wrap.completed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.stat-icon-wrap.pending {
+  background: #ffdada;
+  color: #b51536;
+}
+
+:host-context([data-theme='dark']) .stat-icon-wrap.earnings {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+:host-context([data-theme='dark']) .stat-icon-wrap.rating {
+  background: #451a03;
+  color: #fcd34d;
+}
+:host-context([data-theme='dark']) .stat-icon-wrap.completed {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+:host-context([data-theme='dark']) .stat-icon-wrap.pending {
+  background: #4a0f1e;
+  color: #ff8a9e;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* ══ Goal Card ══ */
+.goal-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1.5px solid var(--border-card);
+  box-shadow: 0 2px 14px var(--shadow-card);
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.goal-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.goal-amounts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.goal-current {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.goal-target {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.goal-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: var(--order-icon-bg);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.goal-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #b51536 0%, #993295 100%);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+  max-width: 100%;
+}
+
+.goal-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+/* ══ Section title with icon ══ */
+.dash-title-icon {
+  font-size: 20px;
+  vertical-align: middle;
+  margin-left: 6px;
+  color: var(--accent);
+}
+:host-context([lang='en']) .dash-title-icon {
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+/* ══ Request Cards ══ */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.request-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1.5px solid var(--border-card);
+  box-shadow: 0 2px 10px var(--shadow-card);
+  transition: box-shadow 0.18s;
+}
+.request-card:hover {
+  box-shadow: 0 6px 20px var(--shadow-hover);
+}
+
+.request-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.request-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b51536, #993295);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.request-info {
+  flex: 1;
+}
+
+.request-customer {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.request-service {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.request-time {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.request-time .material-symbols-outlined {
+  font-size: 14px;
+}
+
+.request-desc {
+  font-size: 0.87rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 10px 0;
+}
+
+.request-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.request-location .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.request-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.req-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.18s;
+}
+
+.req-btn--accept {
+  background: linear-gradient(135deg, #b51536, #993295);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(181, 21, 54, 0.28);
+}
+.req-btn--accept:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.req-btn--reject {
+  background: var(--tag-bg);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-craft);
+}
+.req-btn--reject:hover {
+  border-color: #b91c1c;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+:host-context([data-theme='dark']) .req-btn--reject:hover {
+  background: #3d1010;
+  color: #ff8a8a;
+  border-color: #ff8a8a;
+}
+
+/* ══ Active Jobs ══ */
+.active-jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.active-job-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 16px 20px;
+  border: 1.5px solid var(--border-card);
+  box-shadow: 0 2px 8px var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition:
+    box-shadow 0.18s,
+    transform 0.18s;
+}
+.active-job-card:hover {
+  box-shadow: 0 6px 20px var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.active-job-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.active-job-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--order-icon-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.active-job-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.active-job-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.active-job-price {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
