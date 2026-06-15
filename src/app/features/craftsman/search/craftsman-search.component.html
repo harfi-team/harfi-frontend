@@ -164,35 +164,41 @@
           </div>
         } @else {
           @for (craftsman of paginatedCraftsmen(); track craftsman.id; let i = $index) {
-            <article
-              class="craftsman-card"
-              style="--i: {{ i }} "
-              (click)="viewProfile(craftsman)"
-              style="cursor: pointer"
-            >
-              <div class="card-image-wrapper">
-                <div class="card-image-placeholder">
-                  <span class="material-symbols-outlined">handyman</span>
+            <article class="craftsman-card" [style.--i]="i" (click)="viewProfile(craftsman)">
+              <div class="card-header-section">
+                <div class="card-avatar-wrapper">
+                  @if (craftsman.profileImageUrl) {
+                    <img
+                      [src]="craftsman.profileImageUrl"
+                      [alt]="craftsman.fullName"
+                      class="card-avatar-img"
+                    />
+                  } @else {
+                    <div class="card-avatar-fallback">
+                      <span class="material-symbols-outlined">person</span>
+                    </div>
+                  }
                 </div>
+
                 <div class="rating-badge">
                   <span class="material-symbols-outlined star-icon">star</span>
                   <span>{{ craftsman.rating | number: '1.1-1' }}</span>
                 </div>
-                <div class="card-avatar">
-                  @if (craftsman.profileImageUrl) {
-                    <img [src]="craftsman.profileImageUrl" [alt]="craftsman.fullName" />
-                  } @else {
-                    <span class="material-symbols-outlined">person</span>
-                  }
-                </div>
               </div>
 
               <div class="card-body">
-                <div class="card-name">{{ craftsman.fullName }}</div>
+                <h3 class="card-name">{{ craftsman.fullName }}</h3>
+
                 <div class="card-specialty-tags">
-                  <span class="specialty-tag">{{ getServiceName(craftsman) }}</span>
+                  <span class="specialty-tag primary-tag">
+                    <span class="material-symbols-outlined tag-icon">handyman</span>
+                    {{ getServiceName(craftsman) }}
+                  </span>
                   @if (craftsman.neighborhood) {
-                    <span class="specialty-tag secondary">{{ craftsman.neighborhood }}</span>
+                    <span class="specialty-tag location-tag">
+                      <span class="material-symbols-outlined tag-icon">location_on</span>
+                      {{ craftsman.neighborhood }}
+                    </span>
                   }
                 </div>
 
@@ -201,29 +207,32 @@
                     <div class="card-price">
                       <span class="price-value">{{ getPriceRange(craftsman) }}</span>
                       <span class="price-unit">
-                        {{ 'CURRENCY' | translate }} /
-                        {{ 'CRAFTSMEN_FILTER.VISIT' | translate }}</span
-                      >
+                        {{ 'CURRENCY' | translate }} / {{ 'CRAFTSMEN_FILTER.VISIT' | translate }}
+                      </span>
                     </div>
+                  } @else {
+                    <div class="card-price-empty"></div>
                   }
 
-                  @if (canBook()) {
-                    <button
-                      type="button"
-                      class="card-book-btn gradient-btn"
-                      (click)="$event.stopPropagation(); bookNow(craftsman)"
-                    >
-                      {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
-                    </button>
-                  } @else {
-                    <button
-                      type="button"
-                      class="card-view-btn"
-                      (click)="$event.stopPropagation(); viewProfile(craftsman)"
-                    >
-                      {{ 'VIEW' | translate }}
-                    </button>
-                  }
+                  <div class="card-action">
+                    @if (canBook()) {
+                      <button
+                        type="button"
+                        class="card-book-btn"
+                        (click)="$event.stopPropagation(); bookNow(craftsman)"
+                      >
+                        {{ 'CRAFTSMEN_FILTER.BOOK_NOW' | translate }}
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        class="card-view-btn"
+                        (click)="$event.stopPropagation(); viewProfile(craftsman)"
+                      >
+                        {{ 'VIEW' | translate }}
+                      </button>
+                    }
+                  </div>
                 </div>
               </div>
             </article>
