@@ -16,8 +16,7 @@
   content: '';
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   height: 5.5rem;
   background: var(--page-background);
   z-index: 1005;
@@ -28,8 +27,8 @@
 .top-search-bar {
   position: fixed;
   top: 1.5rem;
-  left: calc(260px + 3rem);
-  right: calc(var(--main-sidebar-width) + 1.5rem);
+  inset-inline-start: calc(260px + 3rem);
+  inset-inline-end: calc(var(--main-sidebar-width) + 1.5rem);
   z-index: 10001;
   padding: 0.6rem 1.25rem;
   border-radius: 50px !important;
@@ -58,7 +57,7 @@
   outline: none;
   font-size: 1rem;
   color: var(--text-primary, #111827);
-  text-align: right;
+  text-align: end;
   font-family: inherit;
 }
 
@@ -80,8 +79,8 @@
 .results-area {
   flex: 1;
   min-width: 0;
-  margin-left: 285px;
-  margin-right: 0;
+  margin-inline-end: 285px;
+  margin-inline-start: 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -91,8 +90,8 @@
 .results-header {
   position: fixed;
   top: 5.5rem;
-  left: calc(260px + 3rem);
-  right: calc(var(--main-sidebar-width) + 1.5rem);
+  inset-inline-start: calc(260px + 3rem);
+  inset-inline-end: calc(var(--main-sidebar-width) + 1.5rem);
   z-index: 1000;
   padding: 1rem 1.25rem;
   border-radius: 12px;
@@ -201,7 +200,7 @@
 .filter-dropdown {
   width: 100%;
   padding: 0.75rem 1.1rem;
-  padding-left: 2.5rem;
+  padding-inline-start: 2.5rem;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary, #111827);
@@ -222,6 +221,10 @@
 
 .filter-dropdown:hover {
   border-color: #d1d5db;
+}
+
+.craftsman-search-page.rtl .filter-dropdown {
+  background-position: right 1.1rem center;
 }
 
 .filter-dropdown:focus {
@@ -307,12 +310,20 @@
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
-    to left,
+    to right,
     var(--brand-purple, #6c4de6) var(--slider-pct, 50%),
     var(--border-color, #e5e7eb) var(--slider-pct, 50%)
   );
   outline: none;
   cursor: pointer;
+}
+
+.craftsman-search-page.rtl .price-slider {
+  background: linear-gradient(
+    to left,
+    var(--brand-purple, #6c4de6) var(--slider-pct, 50%),
+    var(--border-color, #e5e7eb) var(--slider-pct, 50%)
+  );
 }
 
 .price-slider::-webkit-slider-thumb {
@@ -729,10 +740,10 @@
     padding: 1.25rem;
   }
   .results-area {
-    margin-left: 255px;
+    margin-inline-end: 255px;
   }
   .results-header {
-    left: calc(230px + 3rem);
+    inset-inline-start: calc(230px + 3rem);
   }
   .results-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -752,8 +763,7 @@
   .top-search-bar {
     position: fixed;
     top: 1rem;
-    left: 1rem;
-    right: 1rem;
+    inset-inline: 1rem;
     width: auto;
     z-index: 10002;
   }
@@ -766,7 +776,7 @@
   .filter-sidebar {
     position: relative;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     width: 100%;
     height: auto;
     display: grid;
@@ -790,16 +800,14 @@
   }
 
   .results-area {
-    margin-left: 0;
-    margin-right: 0;
+    margin-inline: 0;
     gap: 1.25rem;
   }
 
   .results-header {
     position: fixed;
     top: 5.5rem;
-    left: 1rem;
-    right: 1rem;
+    inset-inline: 1rem;
     width: auto;
     z-index: 1000;
     padding: 0.8rem 1rem;

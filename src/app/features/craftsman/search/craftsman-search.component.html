@@ -248,7 +248,7 @@
             [disabled]="currentPage === 1"
             (click)="goToPage(currentPage - 1)"
           >
-            <span class="material-symbols-outlined">chevron_right</span>
+            <span class="material-symbols-outlined">{{ isRtl() ? 'chevron_right' : 'chevron_left' }}</span>
           </button>
           @for (page of visiblePages(); track page) {
             @if (page === -1) {
@@ -268,7 +268,7 @@
             [disabled]="currentPage === totalPages"
             (click)="goToPage(currentPage + 1)"
           >
-            <span class="material-symbols-outlined">chevron_left</span>
+            <span class="material-symbols-outlined">{{ isRtl() ? 'chevron_left' : 'chevron_right' }}</span>
           </button>
         </div>
       }
