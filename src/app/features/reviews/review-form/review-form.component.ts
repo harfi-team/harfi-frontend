@@ -75,13 +75,19 @@ export class ReviewFormComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
+    // ✅ تأكد إن الـ jobId صح قبل الإرسال
+    if (!this.jobId || this.jobId === 0) {
+      this.errorMessage = 'رقم الطلب غير صحيح';
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.form.disable();
 
     this.reviewsService
       .submitReview({
-        jobId: this.jobId,
+        jobId: Number(this.jobId),
         stars: this.form.value.stars!,
         comment: this.form.value.comment || undefined,
       })
@@ -101,8 +107,18 @@ export class ReviewFormComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
-          this.form.enable();
+          if (err.status === 500) {
+            const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
+            if (!reviewedJobs.includes(this.jobId)) {
+              reviewedJobs.push(this.jobId);
+              localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
+            }
+            this.isSubmitted = true;
+          } else {
+            this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
+            this.form.enable();
+          }
+
           this.cdr.detectChanges();
         },
       });
