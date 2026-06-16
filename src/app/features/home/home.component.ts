@@ -9,6 +9,7 @@ import { CraftsmanService } from '../craftsman/craftsman.service';
 import { JobsService } from '../jobs/jobs.service';
 import { JobDto, JobStatus } from '../../core/models/job.models';
 import { HttpClient } from '@angular/common/http'; // 1. ضفنا الـ HttpClient
+import { forkJoin } from 'rxjs';
 
 interface DynamicService {
   icon: string;
@@ -407,14 +408,15 @@ export class HomeComponent implements OnInit {
     const craftsmanId = this.auth.getCraftsmanId();
     if (!craftsmanId) return;
 
-    // جيب كل الجوبز بتاعت الحرفي
-    this.jobsService.getCraftsmanJobs(craftsmanId).subscribe({
-      next: (jobs) => {
+    // ✅ جيب بيانات الحرفي والجوبز مع بعض
+    forkJoin({
+      profile: this.craftsmanService.getCraftsmanReviews(craftsmanId),
+      jobs: this.jobsService.getCraftsmanJobs(craftsmanId),
+    }).subscribe({
+      next: ({ profile, jobs }) => {
         const done = jobs.filter((j) => j.status === 'done');
         const pending = jobs.filter((j) => j.status === 'open');
         const active = jobs.filter((j) => j.status === 'in-progress');
-
-        // احسب الأرباح من الجوبز المنتهية
         const earnings = done.reduce((sum, j) => sum + (j.budget || 0), 0);
 
         this.pendingJobs.set(pending.slice(0, 5));
@@ -423,10 +425,10 @@ export class HomeComponent implements OnInit {
 
         this.craftsmanStats.set({
           totalEarnings: earnings,
-          rating: 5, // موقعياً 5 عشان الـ MVP، بعدين نجيبها من الـ API
+          rating: profile.averageStars || 0, // ✅ من الـ profile
           completedJobs: done.length,
           pendingJobs: pending.length,
-          monthlyGoal: 5000, // static للـ MVP
+          monthlyGoal: 5000,
         });
 
         this.loadingStats.set(false);
