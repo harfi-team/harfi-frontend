@@ -67,24 +67,27 @@ export class CraftsmanRegisterComponent implements OnInit {
 
   // ── استخراج userId من أي شكل ممكن يتخزن فيه بعد اللوجين ──
   private getCurrentUserId(): number {
-    try {
-      const keys = ['currentUser', 'user', 'authUser', 'userData'];
-      for (const key of keys) {
-        const raw = localStorage.getItem(key) ?? sessionStorage.getItem(key);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          const id = parsed?.id ?? parsed?.userId ?? parsed?.user?.id;
-          if (id) return Number(id);
-        }
+  try {
+    // 1. نقرأ المفتاح الصحيح من الـ Local Storage
+    const raw = localStorage.getItem('harfi_user'); 
+    
+    if (raw) {
+      // 2. نحول النص إلى Object
+      const parsed = JSON.parse(raw);
+      
+      // 3. نجيب الـ id من جواه
+      const id = parsed?.id; 
+      
+      // 4. نتأكد إنه بيتحول لرقم ونرجعه
+      if (id) {
+        return Number(id);
       }
-      // userId مخزون كـ string مباشراً
-      const directId = localStorage.getItem('userId') ?? sessionStorage.getItem('userId');
-      if (directId) return Number(directId);
-    } catch { /* silent */ }
-
-   
-    return 0;
+    }
+  } catch (error) {
+    console.error("خطأ في قراءة بيانات المستخدم:", error);
   }
+  return 0; // يرجع 0 فقط لو مفيش يوزر مسجل
+}
 
   get f() { return this.registerForm.controls; }
 
