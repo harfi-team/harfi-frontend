@@ -1,0 +1,102 @@
+@if (visible) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="solution-card">
+        <button type="button" class="modal-close-btn" (click)="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- ══ Success Screen ══ -->
+        @if (isSubmitted) {
+          <div class="done-screen">
+            <div class="done-icon">✅</div>
+            <div class="done-title">تم إرسال خطوات الحل بنجاح!</div>
+            <div class="done-subtitle">تم حفظ الحل وإرساله للعميل بنجاح.</div>
+          </div>
+        }
+
+        <!-- ══ Form ══ -->
+        @if (!isSubmitted) {
+          <!-- ── Job Info Section ── -->
+          @if (job) {
+            <div class="craftsman-preview">
+              <div class="cp-avatar">
+                <span class="material-symbols-outlined" style="font-size: 26px">build_circle</span>
+              </div>
+              <div class="cp-info">
+                <div class="cp-name">طلب #{{ job.id }}</div>
+                @if (job.service) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">handyman</span>
+                    {{ job.service }}
+                  </div>
+                }
+                @if (job.customerName) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">person</span>
+                    {{ job.customerName }}
+                  </div>
+                }
+                @if (job.address) {
+                  <div class="cp-meta">
+                    <span class="material-symbols-outlined">location_on</span>
+                    {{ job.address }}
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="cp-divider"></div>
+          }
+
+          <div class="form-title">أدخل خطوات الحل</div>
+          <div class="form-subtitle">اشرح للعميل الخطوات اللي اتعملت لحل المشكلة</div>
+
+          @if (errorMessage) {
+            <div class="alert-error">
+              <span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle; margin-left: 6px">error</span>
+              {{ errorMessage }}
+            </div>
+          }
+
+          <form (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <label class="form-label">
+                خطوات الحل
+                <span style="color: var(--error)">*</span>
+              </label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="solutionSteps"
+                name="solutionSteps"
+                rows="6"
+                placeholder="مثال:&#10;1. تم فحص الدائرة الكهربائية&#10;2. تم تبديل القاطع المحترق&#10;3. تم اختبار التوصيلات..."
+                [disabled]="isLoading"
+              ></textarea>
+              <div class="char-row">
+                <span
+                  class="char-count"
+                  [style.color]="solutionSteps.length > 900 ? 'var(--warning)' : 'var(--text-secondary)'"
+                >
+                  {{ solutionSteps.length }} / 1000
+                </span>
+              </div>
+              @if (showValidation && !solutionSteps.trim()) {
+                <div class="error-text">من فضلك أدخل خطوات الحل</div>
+              }
+              @if (showValidation && solutionSteps.length > 1000) {
+                <div class="error-text">الخطوات يجب أن تكون أقل من 1000 حرف</div>
+              }
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              {{ isLoading ? 'جاري الإرسال...' : 'إرسال خطوات الحل' }}
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+}

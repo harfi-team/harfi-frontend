@@ -23,303 +23,214 @@
     </div>
   }
 
-  <h1 class="craftsman-name">{{ craftsman()!.name }}</h1>
-  <span class="specialty-badge">{{ getServiceName(craftsman()!) }}</span>
+  @else {
+    <h1 class="craftsman-name">{{ craftsman()!.name }}</h1>
+    <span class="specialty-badge">{{ getServiceName(craftsman()!) }}</span>
 
-  <!-- ══════════════════════════
-           SIDEBAR
-      ══════════════════════════ -->
-      <aside class="cp-sidebar">
-        <div class="cp-card cp-id-card">
+    <!-- ══════════════════════════
+             SIDEBAR
+        ══════════════════════════ -->
+    <aside class="cp-sidebar">
+      <div class="cp-card cp-id-card">
 
-          <!-- Avatar + gradient top strip -->
-          <div class="cp-avatar-wrap">
-            <div class="cp-avatar-gradient"></div>
-            <div class="cp-avatar-circle">
-              @if (craftsman()!.avatarUrl) {
-                <img [src]="craftsman()!.avatarUrl" [alt]="craftsman()!.name" class="cp-avatar-img" />
-              } @else {
-                <span class="material-symbols-outlined cp-avatar-icon">person</span>
-              }
-            </div>
-          </div>
-
-          <!-- Info -->
-          <div class="cp-id-info">
-            <h1 class="cp-name">{{ craftsman()!.name }}</h1>
-            <span class="cp-specialty">{{ craftsman()!.specialty }}</span>
-            @if (craftsman()!.city) {
-              <div class="cp-location">
-                <span class="material-symbols-outlined">location_on</span>
-                <span>{{ craftsman()!.city }}@if (craftsman()!.neighborhood) {، {{ craftsman()!.neighborhood }}}</span>
-              </div>
+        <!-- Avatar + gradient top strip -->
+        <div class="cp-avatar-wrap">
+          <div class="cp-avatar-gradient"></div>
+          <div class="cp-avatar-circle">
+            @if (craftsman()!.avatarUrl) {
+              <img [src]="craftsman()!.avatarUrl" [alt]="craftsman()!.name" class="cp-avatar-img" />
+            } @else {
+              <span class="material-symbols-outlined cp-avatar-icon">person</span>
             }
           </div>
-
-          <!-- Stats row -->
-          <div class="cp-stats-row">
-            <div class="cp-stat">
-              <span class="cp-stat-num">{{ craftsman()!.experienceYears }}</span>
-              <span class="cp-stat-lbl">سنوات خبرة</span>
-            </div>
-            <div class="cp-stat-sep"></div>
-            <div class="cp-stat">
-              <span class="cp-stat-num">+{{ displayReviewsCount(craftsman()!) }}</span>
-              <span class="cp-stat-lbl">عملية</span>
-            </div>
-            <div class="cp-stat-sep"></div>
-            <div class="cp-stat">
-              <span class="cp-stat-num cp-stat-star">
-                <span class="material-symbols-outlined">star</span>
-                {{ displayRating(craftsman()!) | number:'1.1-1' }}
-              </span>
-              <span class="cp-stat-lbl">تقييم</span>
-            </div>
-          </div>
-
-          <!-- Price -->
-          @if (getPriceRange(craftsman()!)) {
-            <div class="cp-price-row">
-              <span class="cp-price-label">سعر الزيارة</span>
-              <span class="cp-price-val">{{ getPriceRange(craftsman()!) }} ج.م / ساعة</span>
-            </div>
-          }
-
-          <!-- Action buttons -->
-          @if (isCustomer) {
-            <button class="cp-btn-primary" (click)="assignJob(craftsman()!)">
-              <span class="material-symbols-outlined">calendar_add_on</span>
-              <span>احجز الآن</span>
-            </button>
-            <a class="cp-btn-outline" routerLink="/chat">
-              <span class="material-symbols-outlined">forum</span>
-              <span>التواصل مع الحرفي</span>
-            </a>
-          }
-
         </div>
-      </aside>
 
-        @if (craftsman()!.city) {
-          <div class="cp-location">
-            <span class="material-symbols-outlined">location_on</span>
-            <span
-              >{{ craftsman()!.city }}
-              @if (craftsman()!.neighborhood) {
-                ، {{ craftsman()!.neighborhood }}
-              }
+        <!-- Info -->
+        <div class="cp-id-info">
+          <h1 class="cp-name">{{ craftsman()!.name }}</h1>
+          <span class="cp-specialty">{{ craftsman()!.specialty }}</span>
+          @if (craftsman()!.city) {
+            <div class="cp-location">
+              <span class="material-symbols-outlined">location_on</span>
+              <span>{{ craftsman()!.city }}@if (craftsman()!.neighborhood) {، {{ craftsman()!.neighborhood }}}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Stats row -->
+        <div class="cp-stats-row">
+          <div class="cp-stat">
+            <span class="cp-stat-num">{{ craftsman()!.experienceYears }}</span>
+            <span class="cp-stat-lbl">{{ 'HOME.YEARS' | translate }}</span>
+          </div>
+          <div class="cp-stat-sep"></div>
+          <div class="cp-stat">
+            <span class="cp-stat-num">+{{ displayReviewsCount(craftsman()!) }}</span>
+            <span class="cp-stat-lbl">عملية</span>
+          </div>
+          <div class="cp-stat-sep"></div>
+          <div class="cp-stat">
+            <span class="cp-stat-num cp-stat-star">
+              <span class="material-symbols-outlined">star</span>
+              {{ displayRating(craftsman()!) | number:'1.1-1' }}
             </span>
+            <span class="cp-stat-lbl">تقييم</span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        @if (getPriceRange(craftsman()!)) {
+          <div class="cp-price-row">
+            <span class="cp-price-label">سعر الزيارة</span>
+            <span class="cp-price-val">{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / ساعة</span>
           </div>
         }
+
+        <!-- Action buttons -->
+        @if (isCustomer) {
+          <button class="cp-btn-primary" (click)="assignJob(craftsman()!)">
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            <span>{{ 'CRAFTSMAN_PROFILE.BOOK_NOW' | translate }}</span>
+          </button>
+          <a class="cp-btn-outline" routerLink="/chat">
+            <span class="material-symbols-outlined">forum</span>
+            <span>التواصل مع الحرفي</span>
+          </a>
+        }
+
       </div>
+    </aside>
 
-      <!-- Stats row -->
-      <div class="cp-stats-row">
-        <div class="cp-stat">
-          <span class="cp-stat-num">{{ craftsman()!.experienceYears }}</span>
-          <span class="cp-stat-lbl">{{ 'HOME.YEARS' | translate }}</span>
-        </div>
-        <div class="cp-stat-sep"></div>
-        <div class="cp-stat">
-          <span class="cp-stat-num">+{{ displayReviewsCount(craftsman()!) }}</span>
-          <span class="cp-stat-lbl">عمليه</span>
-        </div>
-        <div class="cp-stat-sep"></div>
-        <div class="cp-stat">
-          <span class="cp-stat-num cp-stat-star">
-            <span class="material-symbols-outlined">star</span>
-            {{ displayRating(craftsman()!) | number: '1.1-1' }}
-          </span>
-          <span class="cp-stat-lbl">تقييم</span>
-        </div>
-      </div>
-
-      <!-- Price -->
-      @if (getPriceRange(craftsman()!)) {
-        <div class="cp-price-row">
-          <span class="cp-price-label">سعر الزيارة</span>
-          <span class="cp-price-val"
-            >{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / ساعة</span
-          >
-        </div>
-      }
-
-      <!-- Action buttons -->
-      @if (isCustomer) {
-        <button class="cp-btn-primary" (click)="assignJob(craftsman()!)">
-          <span class="material-symbols-outlined">calendar_add_on</span>
-          <span>{{ 'CRAFTSMAN_PROFILE.BOOK_NOW' | translate }}</span>
+    <!-- ══════════════════════════
+             MAIN
+        ══════════════════════════ -->
+    <main class="cp-main">
+      <!-- Tabs -->
+      <div class="cp-tabs">
+        <button
+          class="cp-tab"
+          [class.cp-tab--active]="activeTab() === 'about'"
+          (click)="setTab('about')"
+        >
+          {{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}
         </button>
-        <a class="cp-btn-outline" routerLink="/chat">
-          <span class="material-symbols-outlined">forum</span>
-          <span>التواصل مع الحرفي</span>
-        </a>
-      }
-    </div>
-  </aside>
-
-  <!-- ══════════════════════════
-           MAIN
-      ══════════════════════════ -->
-  <main class="cp-main">
-    <!-- Tabs -->
-    <div class="cp-tabs">
-      <button
-        class="cp-tab"
-        [class.cp-tab--active]="activeTab() === 'about'"
-        (click)="setTab('about')"
-      >
-        {{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}
-      </button>
-      <button
-        class="cp-tab"
-        [class.cp-tab--active]="activeTab() === 'reviews'"
-        (click)="setTab('reviews')"
-      >
-        {{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}
-        @if (displayReviewsCount(craftsman()!) > 0) {
-          <span class="cp-tab-badge">{{ displayReviewsCount(craftsman()!) }}</span>
-        }
-      </button>
-      <button
-        class="cp-tab"
-        [class.cp-tab--active]="activeTab() === 'portfolio'"
-        (click)="setTab('portfolio')"
-      >
-        {{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}
-      </button>
-    </div>
-
-        <!-- Tabs -->
-        <div class="cp-tabs">
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'about'" (click)="setTab('about')">
-            نبذة
-          </button>
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'reviews'" (click)="setTab('reviews')">
-            المراجعات والتقييمات
-            @if (displayReviewsCount(craftsman()!) > 0) {
-              <span class="cp-tab-badge">{{ displayReviewsCount(craftsman()!) }}</span>
-            }
-          </button>
-          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'portfolio'" (click)="setTab('portfolio')">
-            أعمال سابقة
-          </button>
-        </div>
+        <button
+          class="cp-tab"
+          [class.cp-tab--active]="activeTab() === 'reviews'"
+          (click)="setTab('reviews')"
+        >
+          {{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}
+          @if (displayReviewsCount(craftsman()!) > 0) {
+            <span class="cp-tab-badge">{{ displayReviewsCount(craftsman()!) }}</span>
+          }
+        </button>
+        <button
+          class="cp-tab"
+          [class.cp-tab--active]="activeTab() === 'portfolio'"
+          (click)="setTab('portfolio')"
+        >
+          {{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}
+        </button>
       </div>
-    }
 
-    <!-- ── TAB: المراجعات ── -->
-    @if (activeTab() === 'reviews') {
-      <div class="cp-tab-body">
-        <div class="cp-card cp-section">
-          <h2 class="cp-section-title">
-            <span class="material-symbols-outlined">star</span>
-            المراجعات والتقييمات
-          </h2>
-          <app-craftsman-reviews [craftsmanId]="craftsmanIdAsNumber()" />
-        </div>
-      </div>
-    }
+      <!-- ── TAB: نبذة ── -->
+      @if (activeTab() === 'about') {
+        <div class="cp-tab-body">
 
-            @if (craftsman()!.bio) {
-              <div class="cp-card cp-section">
-                <h2 class="cp-section-title">
-                  <span class="material-symbols-outlined">info</span>
-                  عن الحرفي
-                </h2>
-                <p class="cp-bio">{{ craftsman()!.bio }}</p>
-              </div>
-            }
-
-            @if (craftsman()!.services.length) {
-              <div class="cp-card cp-section">
-                <h2 class="cp-section-title">
-                  <span class="material-symbols-outlined">build</span>
-                  المهارات والتخصصات
-                </h2>
-                <div class="cp-chips">
-                  @for (service of craftsman()!.services; track service) {
-                    <span class="cp-chip">{{
-                      service === 'plumbing'   ? 'سباكة'         :
-                      service === 'electrical' ? 'كهرباء'        :
-                      service === 'carpentry'  ? 'نجارة'         :
-                      service === 'painting'   ? 'دهان'          :
-                      service === 'ac'         ? 'تكييف'         :
-                      service === 'cleaning'   ? 'تنظيف'        :
-                      service === 'moving'     ? 'نقل عفش'      :
-                      service === 'pest'       ? 'مكافحة حشرات' :
-                      service === 'roofing'    ? 'عزل أسطح'     :
-                      craftsman()!.specialty
-                    }}</span>
-                  }
-                </div>
-              </div>
-            }
-
-            <div class="cp-trust-row">
-              <div class="cp-trust-card cp-trust-gold">
-                <span class="material-symbols-outlined">verified_user</span>
-                <div>
-                  <strong>ضمان الجودة</strong>
-                  <span>خدمة مضمونة</span>
-                </div>
-              </div>
-              <div class="cp-trust-card cp-trust-pink">
-                <span class="material-symbols-outlined">bolt</span>
-                <div>
-                  <strong>سريع الاستجابة</strong>
-                  <span>رد في أقل من ساعة</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        }
-
-        <!-- ── TAB: المراجعات ── -->
-        @if (activeTab() === 'reviews') {
-          <div class="cp-tab-body">
+          @if (craftsman()!.bio) {
             <div class="cp-card cp-section">
               <h2 class="cp-section-title">
-                <span class="material-symbols-outlined">star</span>
-                المراجعات والتقييمات
+                <span class="material-symbols-outlined">info</span>
+                عن الحرفي
               </h2>
-              <app-craftsman-reviews [craftsmanId]="craftsmanIdAsNumber()" />
-            </div>
-          </div>
-        }
-
-        <!-- ── TAB: أعمال سابقة ── -->
-        @if (activeTab() === 'portfolio') {
-          <div class="cp-tab-body">
-            <div class="cp-card cp-section">
-              <h2 class="cp-section-title">
-                <span class="material-symbols-outlined">photo_library</span>
-                أعمال سابقة
-              </h2>
-              @if (craftsman()!.portfolioImages && craftsman()!.portfolioImages!.length) {
-                <div class="cp-portfolio">
-                  @for (img of craftsman()!.portfolioImages; track img; let i = $index) {
-                    <div class="cp-portfolio-item" [class.cp-portfolio-item--wide]="i === 0">
-                      <img [src]="img" alt="" loading="lazy" />
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="cp-empty">
-                  <span class="material-symbols-outlined">photo_library</span>
-                  <p>لا توجد أعمال سابقة بعد</p>
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="cp-empty">
-              <span class="material-symbols-outlined">photo_library</span>
-              <p>لا توجد أعمال سابقة بعد</p>
+              <p class="cp-bio">{{ craftsman()!.bio }}</p>
             </div>
           }
+
+          @if (craftsman()!.services.length) {
+            <div class="cp-card cp-section">
+              <h2 class="cp-section-title">
+                <span class="material-symbols-outlined">build</span>
+                المهارات والتخصصات
+              </h2>
+              <div class="cp-chips">
+                @for (service of craftsman()!.services; track service) {
+                  <span class="cp-chip">{{
+                    service === 'plumbing'   ? 'سباكة'         :
+                    service === 'electrical' ? 'كهرباء'        :
+                    service === 'carpentry'  ? 'نجارة'         :
+                    service === 'painting'   ? 'دهان'          :
+                    service === 'ac'         ? 'تكييف'         :
+                    service === 'cleaning'   ? 'تنظيف'        :
+                    service === 'moving'     ? 'نقل عفش'      :
+                    service === 'pest'       ? 'مكافحة حشرات' :
+                    service === 'roofing'    ? 'عزل أسطح'     :
+                    craftsman()!.specialty
+                  }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          <div class="cp-trust-row">
+            <div class="cp-trust-card cp-trust-gold">
+              <span class="material-symbols-outlined">verified_user</span>
+              <div>
+                <strong>ضمان الجودة</strong>
+                <span>خدمة مضمونة</span>
+              </div>
+            </div>
+            <div class="cp-trust-card cp-trust-pink">
+              <span class="material-symbols-outlined">bolt</span>
+              <div>
+                <strong>سريع الاستجابة</strong>
+                <span>رد في أقل من ساعة</span>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-    }
-  </main>
+      }
+
+      <!-- ── TAB: المراجعات ── -->
+      @if (activeTab() === 'reviews') {
+        <div class="cp-tab-body">
+          <div class="cp-card cp-section">
+            <h2 class="cp-section-title">
+              <span class="material-symbols-outlined">star</span>
+              المراجعات والتقييمات
+            </h2>
+            <app-craftsman-reviews [craftsmanId]="craftsmanIdAsNumber()" />
+          </div>
+        </div>
+      }
+
+      <!-- ── TAB: أعمال سابقة ── -->
+      @if (activeTab() === 'portfolio') {
+        <div class="cp-tab-body">
+          <div class="cp-card cp-section">
+            <h2 class="cp-section-title">
+              <span class="material-symbols-outlined">photo_library</span>
+              أعمال سابقة
+            </h2>
+            @if (craftsman()!.portfolioImages && craftsman()!.portfolioImages!.length) {
+              <div class="cp-portfolio">
+                @for (img of craftsman()!.portfolioImages; track img; let i = $index) {
+                  <div class="cp-portfolio-item" [class.cp-portfolio-item--wide]="i === 0">
+                    <img [src]="img" alt="" loading="lazy" />
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="cp-empty">
+                <span class="material-symbols-outlined">photo_library</span>
+                <p>لا توجد أعمال سابقة بعد</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </main>
+  }
 </div>

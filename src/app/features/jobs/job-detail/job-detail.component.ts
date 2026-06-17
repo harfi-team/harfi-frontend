@@ -8,6 +8,8 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { JobAction, JobDto } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
 import { environment } from '../../../../environments/environment';
+import { SolutionFormComponent } from '../solution-form/solution-form.component';
+
 import { ReviewFormComponent } from '../../reviews/review-form/review-form.component';
 
 @Component({
@@ -20,6 +22,8 @@ import { ReviewFormComponent } from '../../reviews/review-form/review-form.compo
     TranslateModule,
     DatePipe,
     ReviewFormComponent,
+      SolutionFormComponent,   // ← أضف السطر ده
+
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.css',
@@ -35,6 +39,7 @@ export class JobDetailComponent implements OnInit {
   job = signal<JobDto | null>(null);
   loading = signal(true);
   showReviewModal = signal(false);
+showSolutionModal = signal(false);   // ← أضف السطر ده
 
   readonly isCustomer = computed(() => this.authService.getRole() === 'customer');
   readonly isCraftsman = computed(() => this.authService.getRole() === 'craftsman');
@@ -117,6 +122,29 @@ export class JobDetailComponent implements OnInit {
   onReviewClose(): void {
     this.showReviewModal.set(false);
   }
+
+
+
+// ← أضف الدوال الثلاثة دي بعدها
+readonly canSubmitSolution = computed(() => {
+  const j = this.job();
+  return this.isCraftsman() && j?.status === 'done';
+});
+
+openSolutionModal(): void {
+  this.showSolutionModal.set(true);
+}
+
+onSolutionClose(): void {
+  this.showSolutionModal.set(false);
+}
+
+onSolutionSubmitted(): void {
+  const j = this.job();
+  if (j) this.loadJob(j.id);
+}
+
+
 
   goBack(): void {
     this.router.navigate(['/jobs']);

@@ -1,0 +1,99 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  direction: rtl;
+}
+.modal-container {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeIn 0.25s ease;
+}
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+.modal-close-btn:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); }
+.solution-card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px 28px;
+  direction: rtl;
+}
+.craftsman-preview { display: flex; align-items: center; gap: 14px; margin-bottom: 0; }
+.cp-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--brand-gradient); color: white;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cp-info { display: flex; flex-direction: column; gap: 4px; }
+.cp-name { font-weight: 800; font-size: 1rem; color: var(--text-primary); }
+.cp-meta { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; color: var(--text-secondary); }
+.cp-meta .material-symbols-outlined { font-size: 14px; color: var(--brand-red); }
+.cp-divider { height: 1px; background: var(--border-color); margin: 16px 0; }
+.form-title {
+  font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.2rem;
+  color: var(--text-primary); text-align: center; margin-bottom: 6px;
+}
+.form-subtitle { font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 1.5rem; }
+.form-label { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 8px; display: block; }
+.form-control {
+  width: 100%; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color); padding: 10px 14px;
+  font-family: 'Cairo', 'Tajawal', sans-serif; font-size: 0.92rem;
+  resize: vertical; background: var(--bg-color); color: var(--text-primary);
+  transition: border-color 0.2s ease; line-height: 1.7;
+}
+.form-control:focus { border-color: var(--brand-red); box-shadow: 0 0 0 3px rgba(233,64,87,0.1); outline: none; }
+.form-control::placeholder { color: var(--text-secondary); font-size: 0.85rem; }
+.form-control:disabled { opacity: 0.6; cursor: not-allowed; }
+.char-row { display: flex; justify-content: flex-end; margin-top: 4px; }
+.char-count { font-size: 0.78rem; color: var(--text-secondary); }
+.error-text { font-size: 0.8rem; color: var(--error); margin-top: 4px; }
+.submit-btn {
+  width: 100%; padding: 13px; font-size: 1rem;
+  font-family: 'Cairo', sans-serif; font-weight: 700;
+  border-radius: var(--radius-md); background: var(--brand-gradient);
+  color: white; border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(233,64,87,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 4px;
+}
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(233,64,87,0.45); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.alert-error {
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+  color: var(--error); padding: 10px 14px; border-radius: var(--radius-md);
+  font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.6;
+}
+.done-screen { text-align: center; padding: 2rem 0; animation: fadeIn 0.5s ease forwards; }
+.done-icon { font-size: 3.5rem; margin-bottom: 12px; }
+.done-title { font-weight: 800; font-size: 1.2rem; color: var(--success); margin-bottom: 8px; }
+.done-subtitle { color: var(--text-secondary); font-size: 0.9rem; }
+.mb-4 { margin-bottom: 1.2rem; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
