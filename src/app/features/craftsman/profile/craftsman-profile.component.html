@@ -21,23 +21,24 @@
       <span class="material-symbols-outlined cp-state-icon">person_off</span>
       <p>الصفحة غير موجودة</p>
     </div>
-  }
 
-  @else {
+  } @else {
     <div class="cp-layout">
-
       <!-- ══════════════════════════
                SIDEBAR
           ══════════════════════════ -->
       <aside class="cp-sidebar">
         <div class="cp-card cp-id-card">
-
           <!-- Avatar + gradient top strip -->
           <div class="cp-avatar-wrap">
             <div class="cp-avatar-gradient"></div>
             <div class="cp-avatar-circle">
               @if (craftsman()!.avatarUrl) {
-                <img [src]="getImageUrl(craftsman()!.avatarUrl)" [alt]="craftsman()!.name" class="cp-avatar-img" />
+                <img
+                  [src]="getImageUrl(craftsman()!.avatarUrl)"
+                  [alt]="craftsman()!.name"
+                  class="cp-avatar-img"
+                />
               } @else {
                 <span class="material-symbols-outlined cp-avatar-icon">person</span>
               }
@@ -51,7 +52,12 @@
             @if (craftsman()!.city) {
               <div class="cp-location">
                 <span class="material-symbols-outlined">location_on</span>
-                <span>{{ craftsman()!.city }}@if (craftsman()!.neighborhood) {، {{ craftsman()!.neighborhood }}}</span>
+                <span
+                  >{{ craftsman()!.city }}
+                  @if (craftsman()!.neighborhood) {
+                    ، {{ craftsman()!.neighborhood }}
+                  }
+                </span>
               </div>
             }
           </div>
@@ -71,7 +77,7 @@
             <div class="cp-stat">
               <span class="cp-stat-num cp-stat-star">
                 <span class="material-symbols-outlined">star</span>
-                {{ displayRating(craftsman()!) | number:'1.1-1' }}
+                {{ displayRating(craftsman()!) | number: '1.1-1' }}
               </span>
               <span class="cp-stat-lbl">{{ 'CRAFTSMAN_PROFILE.RAT' | translate }}</span>
             </div>
@@ -81,7 +87,10 @@
           @if (getPriceRange(craftsman()!)) {
             <div class="cp-price-row">
               <span class="cp-price-label">{{ 'CRAFTSMAN_PROFILE.VISIT_PRICE' | translate }}</span>
-              <span class="cp-price-val">{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / {{ 'CRAFTSMAN_PROFILE.time' | translate }}</span>
+              <span class="cp-price-val"
+                >{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} /
+                {{ 'CRAFTSMAN_PROFILE.time' | translate }}</span
+              >
             </div>
           }
 
@@ -91,9 +100,7 @@
               <span class="material-symbols-outlined">calendar_add_on</span>
               <span>{{ 'CRAFTSMAN_PROFILE.BOOK_NOW' | translate }}</span>
             </button>
-           
           }
-
         </div>
 
       </aside>
@@ -133,7 +140,6 @@
         <!-- ── TAB: نبذة ── -->
         @if (activeTab() === 'about') {
           <div class="cp-tab-body">
-
             @if (craftsman()!.bio) {
               <div class="cp-card cp-section">
                 <h2 class="cp-section-title">
@@ -153,16 +159,25 @@
                 <div class="cp-chips">
                   @for (service of craftsman()!.services; track service) {
                     <span class="cp-chip">{{
-                      service === 'plumbing'   ? 'سباكة'         :
-                      service === 'electrical' ? 'كهرباء'        :
-                      service === 'carpentry'  ? 'نجارة'         :
-                      service === 'painting'   ? 'دهان'          :
-                      service === 'ac'         ? 'تكييف'         :
-                      service === 'cleaning'   ? 'تنظيف'        :
-                      service === 'moving'     ? 'نقل عفش'      :
-                      service === 'pest'       ? 'مكافحة حشرات' :
-                      service === 'roofing'    ? 'عزل أسطح'     :
-                      craftsman()!.specialty
+                      service === 'plumbing'
+                        ? 'سباكة'
+                        : service === 'electrical'
+                          ? 'كهرباء'
+                          : service === 'carpentry'
+                            ? 'نجارة'
+                            : service === 'painting'
+                              ? 'دهان'
+                              : service === 'ac'
+                                ? 'تكييف'
+                                : service === 'cleaning'
+                                  ? 'تنظيف'
+                                  : service === 'moving'
+                                    ? 'نقل عفش'
+                                    : service === 'pest'
+                                      ? 'مكافحة حشرات'
+                                      : service === 'roofing'
+                                        ? 'عزل أسطح'
+                                        : craftsman()!.specialty
                     }}</span>
                   }
                 </div>
@@ -185,7 +200,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         }
 
@@ -227,7 +241,6 @@
             </div>
           </div>
         }
-
       </main>
     </div>
   }
