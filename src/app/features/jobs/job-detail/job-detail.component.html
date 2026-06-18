@@ -162,11 +162,30 @@
           {{ 'REVIEWS.FORM.SUBMIT_BTN' | translate }}
         </button>
       }
+      <!-- ← أضف الكود ده بعده -->
+@if (canSubmitSolution()) {
+  <button class="btn-action btn-solution" (click)="openSolutionModal()">
+    <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">task_alt</span>
+    إرسال خطوات الحل
+  </button>
+}
     </div>
 
     @if (showReviewModal()) {
       <app-review-form [jobId]="jobId()" [job]="job()!" [visible]="true" (close)="onReviewClose()">
       </app-review-form>
     }
+
+<!-- ← أضف الكود ده بعده -->
+@if (showSolutionModal()) {
+  <app-solution-form
+    [jobId]="jobId()"
+    [job]="job()!"
+    [visible]="true"
+    (close)="onSolutionClose()"
+    (submitted)="onSolutionSubmitted()"
+  >
+  </app-solution-form>
+}
   }
 </div>
