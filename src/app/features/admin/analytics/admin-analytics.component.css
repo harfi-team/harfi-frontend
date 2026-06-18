@@ -366,6 +366,48 @@
   text-align: right;
 }
 
+/* ─── Config Section (Services & Cities) ────────────────────────── */
+.config-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.config-card {
+  padding: 24px;
+}
+
+.config-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.chip {
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 767px) {
+  .config-section {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .charts-row {
