@@ -51,6 +51,9 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
   loading = signal(false);
   exporting = signal(false);
 
+  serviceTypes = signal<string[]>([]);
+  cities = signal<string[]>([]);
+
   overviewData = signal<OverviewStats | null>(null);
   craftsmanAnalytics = signal<CraftsmenAnalytics | null>(null);
   jobAnalytics = signal<JobsAnalytics | null>(null);
@@ -158,6 +161,12 @@ export class AdminAnalyticsComponent implements AfterViewInit, OnDestroy {
 
   constructor() {
     this.loadAll();
+    this.adminService.getServiceTypes().subscribe(data =>
+      this.serviceTypes.set(data.map(s => s.nameAr))
+    );
+    this.adminService.getCities().subscribe(data =>
+      this.cities.set(data.map(c => c.nameAr))
+    );
     effect(() => {
       const tab = this.activeTab();
       setTimeout(() => {

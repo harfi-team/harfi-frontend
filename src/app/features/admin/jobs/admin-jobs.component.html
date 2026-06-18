@@ -84,13 +84,21 @@
                 <td class="order-id-cell">{{ job.id | jobId }}</td>
                 <td>
                   <div class="person-cell">
-                    <div class="avatar-sm">{{ job.customerName.charAt(0) }}</div>
+                    @if (job.customerProfileImageUrl) {
+                      <img [src]="getImageUrl(job.customerProfileImageUrl)" [alt]="job.customerName" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-sm">{{ job.customerName.charAt(0) }}</div>
+                    }
                     <span>{{ job.customerName }}</span>
                   </div>
                 </td>
                 <td>
                   <div class="person-cell">
-                    <div class="avatar-sm">{{ job.craftsmanName.charAt(0) }}</div>
+                    @if (job.craftsmanProfileImageUrl) {
+                      <img [src]="getImageUrl(job.craftsmanProfileImageUrl)" [alt]="job.craftsmanName" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-sm">{{ job.craftsmanName.charAt(0) }}</div>
+                    }
                     <span>{{ job.craftsmanName }}</span>
                   </div>
                 </td>

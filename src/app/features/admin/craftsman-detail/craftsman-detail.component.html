@@ -20,7 +20,7 @@
       <div class="harfi-card profile-card">
         <div class="profile-header">
           @if (c.profileImageUrl) {
-            <img [src]="c.profileImageUrl" [alt]="c.fullName" class="profile-img" />
+            <img [src]="getImageUrl(c.profileImageUrl)" [alt]="c.fullName" class="profile-img" />
           } @else {
             <div class="avatar-large">{{ c.fullName.charAt(0) || '?' }}</div>
           }

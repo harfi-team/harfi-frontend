@@ -256,38 +256,8 @@ export class AdminService {
       .pipe(catchError(this.handleError.bind(this)));
   }
 
-  createServiceType(dto: Omit<ServiceType, 'id'>): Observable<ServiceType> {
-    return this.http.post<ServiceType>(`${this.base}/config/service-types`, dto)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  updateServiceType(id: number, dto: Omit<ServiceType, 'id'>): Observable<ServiceType> {
-    return this.http.put<ServiceType>(`${this.base}/config/service-types/${id}`, dto)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  deleteServiceType(id: number): Observable<AdminActionResponse> {
-    return this.http.delete<AdminActionResponse>(`${this.base}/config/service-types/${id}`)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
   getCities(): Observable<City[]> {
     return this.http.get<City[]>(`${this.base}/config/cities`)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  createCity(dto: Omit<City, 'id'>): Observable<City> {
-    return this.http.post<City>(`${this.base}/config/cities`, dto)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  updateCity(id: number, dto: Omit<City, 'id'>): Observable<City> {
-    return this.http.put<City>(`${this.base}/config/cities/${id}`, dto)
-      .pipe(catchError(this.handleError.bind(this)));
-  }
-
-  deleteCity(id: number): Observable<AdminActionResponse> {
-    return this.http.delete<AdminActionResponse>(`${this.base}/config/cities/${id}`)
       .pipe(catchError(this.handleError.bind(this)));
   }
 

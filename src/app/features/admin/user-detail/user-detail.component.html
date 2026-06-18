@@ -24,7 +24,7 @@
     <div class="harfi-card profile-card">
       <div class="profile-avatar">
         @if (u.profileImageUrl) {
-          <img [src]="u.profileImageUrl" alt="avatar" class="avatar-img" />
+          <img [src]="getImageUrl(u.profileImageUrl)" alt="avatar" class="avatar-img" />
         } @else {
           <div class="avatar-circle">{{ u.name.charAt(0) }}</div>
         }
