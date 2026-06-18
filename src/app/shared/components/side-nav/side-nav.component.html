@@ -95,7 +95,12 @@
         <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
       </a>
 
-      <a class="nav-item" routerLink="/user" routerLinkActive="active" (click)="closeDrawer()">
+      <a
+        class="nav-item"
+        [routerLink]="['/craftsmen/profile', craftsmanId]"
+        routerLinkActive="active"
+        (click)="closeDrawer()"
+      >
         <span class="material-symbols-outlined">person</span>
         <span>{{ 'NAV.PROFILE' | translate }}</span>
       </a>
