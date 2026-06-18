@@ -1,13 +1,9 @@
 <div class="chat-wrapper" dir="rtl">
 
-  <!-- ═══ SIDEBAR OVERLAY ═══ -->
-  <div class="sidebar-overlay" [class.active]="sidebarOpen" (click)="toggleSidebar()"></div>
-
-  <!-- ═══ HISTORY SIDEBAR ═══ -->
-  <aside class="history-sidebar" [class.open]="sidebarOpen">
-    <div class="sidebar-header">
+  <!-- ═══ HISTORY PANEL (ثابت جنب الشات) ═══ -->
+  <aside class="history-panel">
+    <div class="panel-header">
       <div class="sidebar-title">💬 المحادثات</div>
-      <button class="sidebar-close" (click)="toggleSidebar()">✕</button>
     </div>
 
     <button class="new-chat-btn" (click)="newChat()">
@@ -50,14 +46,6 @@
     <!-- HEADER -->
     <header class="header">
       <div class="header-brand">
-        <button class="history-btn" (click)="toggleSidebar()" title="المحادثات السابقة">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-          <span class="history-badge" *ngIf="sessions.length > 0">{{ sessions.length }}</span>
-        </button>
         <div class="brand-logo">🔧</div>
         <div>
           <div class="brand-name">حرفي</div>
