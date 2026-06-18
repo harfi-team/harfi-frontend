@@ -38,7 +38,11 @@
               <tr [class.row-deleted]="u.isDeleted">
                 <td>
                   <div class="craftsman-cell">
-                    <div class="avatar-circle">{{ u.name.charAt(0) || '?' }}</div>
+                    @if (u.profileImageUrl) {
+                      <img [src]="getImageUrl(u.profileImageUrl)" alt="avatar" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-circle">{{ u.name.charAt(0) || '?' }}</div>
+                    }
                     <div class="craftsman-info">
                       <span class="craftsman-name">{{ u.name }}</span>
                       <span class="craftsman-phone">{{ u.email }}</span>

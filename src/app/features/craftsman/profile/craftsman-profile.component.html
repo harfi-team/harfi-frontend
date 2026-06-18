@@ -1,9 +1,9 @@
 <div class="cp-page" [dir]="direction()">
   <!-- HEADER -->
   <div class="cp-header">
-    <a class="cp-back" routerLink="/craftsmen">
+    <a class="cp-back" routerLink="/home">
       <span class="material-symbols-outlined">arrow_forward</span>
-      <span>العودة للبحث</span>
+      <span>{{ 'CRAFTSMAN_PROFILE.BACK_TO_HOME' | translate }}</span>
     </a>
   </div>
 
@@ -21,7 +21,6 @@
       <span class="material-symbols-outlined cp-state-icon">person_off</span>
       <p>الصفحة غير موجودة</p>
     </div>
-
   } @else {
     <div class="cp-layout">
       <!-- SIDEBAR -->

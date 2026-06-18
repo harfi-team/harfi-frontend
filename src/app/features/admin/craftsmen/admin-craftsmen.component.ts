@@ -8,6 +8,7 @@ import { AdminService } from '../admin.service';
 import { PendingCraftsman, ApprovedCraftsman, RejectedCraftsman, ServiceType, City } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { environment } from '@env/environment';
 
 type FilterTab = 'all' | 'pending' | 'approved' | 'rejected';
 
@@ -147,6 +148,12 @@ export class AdminCraftsmenComponent {
 
   viewDetail(id: number): void {
     this.router.navigate(['/admin/craftsmen', id]);
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   emptyMessage(): string {

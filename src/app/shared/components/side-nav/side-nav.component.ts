@@ -57,4 +57,8 @@ export class SideNavComponent {
   navigateToAddCraftsman(): void {
     // Removed - no backend endpoint exists
   }
+
+  get craftsmanId(): number | null {
+  return this.auth.getCraftsmanId(); // 👈 اسم الدالة اللي بتجيب آيدي الحرفي من السيرفيس
+  }
 }

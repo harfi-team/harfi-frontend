@@ -3,8 +3,9 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AdminService } from '../admin.service';
-import { OverviewStats, PendingCraftsman, AdminJob, JobsAnalytics } from '@core/models/admin.models';
+import { OverviewStats, JobsAnalytics } from '@core/models/admin.models';
 import { JobIdPipe } from '@shared/pipes/job-id.pipe';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -17,8 +18,6 @@ export class AdminDashboardComponent {
   private adminService = inject(AdminService);
 
   stats = signal<OverviewStats | null>(null);
-  pendingCraftsmen = signal<PendingCraftsman[]>([]);
-  latestJobs = signal<AdminJob[]>([]);
   jobsAnalytics = signal<JobsAnalytics | null>(null);
   loading = signal(true);
 
@@ -31,20 +30,16 @@ export class AdminDashboardComponent {
       error: () => this.loading.set(false),
     });
 
-    this.adminService.getPendingCraftsmen(1, 2).subscribe({
-      next: (data) => this.pendingCraftsmen.set(data.items),
-      error: () => {},
-    });
-
-    this.adminService.getJobs(undefined, undefined, undefined, undefined, undefined, 1, 2).subscribe({
-      next: (data) => this.latestJobs.set(data.items),
-      error: () => {},
-    });
-
     this.adminService.getJobsAnalytics().subscribe({
       next: (data) => this.jobsAnalytics.set(data),
       error: () => {},
     });
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   getServiceDistribution(jobAnalytics: JobsAnalytics | null): { label: string; pct: number; color: string }[] {

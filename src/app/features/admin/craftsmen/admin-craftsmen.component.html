@@ -36,13 +36,13 @@
     </div>
     <select class="filter-select" [(ngModel)]="cityFilter">
       <option value="">{{ 'ADMIN.ALL_CITIES' | translate }}</option>
-      @for (c of cities(); track c.id) {
+      @for (c of cities(); track c.nameAr) {
         <option [value]="c.nameAr">{{ c.nameAr }}</option>
       }
     </select>
     <select class="filter-select" [(ngModel)]="specialtyFilter">
       <option value="">{{ 'ADMIN.ALL_SPECIALTIES' | translate }}</option>
-      @for (s of serviceTypes(); track s.id) {
+      @for (s of serviceTypes(); track s.nameAr) {
         <option [value]="s.nameAr">{{ s.nameAr }}</option>
       }
     </select>
@@ -84,7 +84,11 @@
               <tr [class.row-deleted]="c.isDeleted">
                 <td>
                   <div class="craftsman-cell">
-                    <div class="avatar-circle">{{ c.fullName.charAt(0) || '?' }}</div>
+                    @if (c.profileImageUrl) {
+                      <img [src]="getImageUrl(c.profileImageUrl)" alt="avatar" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-circle">{{ c.fullName.charAt(0) || '?' }}</div>
+                    }
                     <div class="craftsman-info">
                       <span class="craftsman-name">{{ c.fullName }}</span>
                       <span class="craftsman-phone">{{ c.phone }}</span>

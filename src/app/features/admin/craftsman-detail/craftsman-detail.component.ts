@@ -6,6 +6,7 @@ import { AdminService } from '../admin.service';
 import { CraftsmanDetail } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-craftsman-detail',
@@ -85,6 +86,12 @@ export class CraftsmanDetailComponent {
       case 'deleted': return 'status--deleted';
       default: return '';
     }
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   viewNationalId(): void {

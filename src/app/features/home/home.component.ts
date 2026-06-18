@@ -429,7 +429,7 @@ export class HomeComponent implements OnInit {
           rating: profile.averageStars || 0, // ✅ من الـ profile
           completedJobs: done.length,
           pendingJobs: pending.length,
-          monthlyGoal: 5000,
+          monthlyGoal: 10,
         });
 
         this.loadingStats.set(false);
