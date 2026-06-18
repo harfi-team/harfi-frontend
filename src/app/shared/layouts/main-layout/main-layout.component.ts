@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal ,computed} from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationsService } from '../../../features/notifications/notifications.service';
-
 
 @Component({
   selector: 'app-main-layout',
@@ -27,6 +26,7 @@ export class MainLayoutComponent {
   currentUrl = signal(this.router.url);
   readonly unreadCount = this.notificationsService.unreadCount;
 
+  readonly isCustomer = computed(() => this.auth.getRole() === 'customer');
 
   constructor() {
     this.router.events

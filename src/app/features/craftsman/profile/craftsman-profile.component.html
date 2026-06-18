@@ -24,12 +24,10 @@
 
   } @else {
     <div class="cp-layout">
-      <!-- ══════════════════════════
-               SIDEBAR
-          ══════════════════════════ -->
+      <!-- SIDEBAR -->
       <aside class="cp-sidebar">
         <div class="cp-card cp-id-card">
-          <!-- Avatar + gradient top strip -->
+          <!-- Avatar -->
           <div class="cp-avatar-wrap">
             <div class="cp-avatar-gradient"></div>
             <div class="cp-avatar-circle">
@@ -52,8 +50,7 @@
             @if (craftsman()!.city) {
               <div class="cp-location">
                 <span class="material-symbols-outlined">location_on</span>
-                <span
-                  >{{ craftsman()!.city }}
+                <span>{{ craftsman()!.city }}
                   @if (craftsman()!.neighborhood) {
                     ، {{ craftsman()!.neighborhood }}
                   }
@@ -87,57 +84,46 @@
           @if (getPriceRange(craftsman()!)) {
             <div class="cp-price-row">
               <span class="cp-price-label">{{ 'CRAFTSMAN_PROFILE.VISIT_PRICE' | translate }}</span>
-              <span class="cp-price-val"
-                >{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} /
-                {{ 'CRAFTSMAN_PROFILE.time' | translate }}</span
-              >
+              <span class="cp-price-val">{{ getPriceRange(craftsman()!) }} {{ 'HOME.CURRENCY' | translate }} / {{ 'CRAFTSMAN_PROFILE.time' | translate }}</span>
             </div>
           }
 
-          <!-- Action buttons -->
+          <!-- Action buttons: يظهر للـ customer فقط -->
           @if (isCustomer) {
             <button class="cp-btn-primary" (click)="assignJob(craftsman()!)">
               <span class="material-symbols-outlined">calendar_add_on</span>
               <span>{{ 'CRAFTSMAN_PROFILE.BOOK_NOW' | translate }}</span>
             </button>
           }
-        </div>
 
+          @if (isOwnProfile) {
+            <button class="cp-btn-outline" (click)="openEditModal()">
+              <span class="material-symbols-outlined">edit</span>
+              <span>تعديل البيانات</span>
+            </button>
+          }
+        </div>
       </aside>
 
-      <!-- ══════════════════════════
-               MAIN
-          ══════════════════════════ -->
+      <!-- MAIN -->
       <main class="cp-main">
         <!-- Tabs -->
         <div class="cp-tabs">
-          <button
-            class="cp-tab"
-            [class.cp-tab--active]="activeTab() === 'about'"
-            (click)="setTab('about')"
-          >
+          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'about'" (click)="setTab('about')">
             {{ 'CRAFTSMAN_PROFILE.ABOUT' | translate }}
           </button>
-          <button
-            class="cp-tab"
-            [class.cp-tab--active]="activeTab() === 'reviews'"
-            (click)="setTab('reviews')"
-          >
+          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'reviews'" (click)="setTab('reviews')">
             {{ 'CRAFTSMAN_PROFILE.REVIEWS_TAB' | translate }}
             @if (displayReviewsCount(craftsman()!) > 0) {
               <span class="cp-tab-badge">{{ displayReviewsCount(craftsman()!) }}</span>
             }
           </button>
-          <button
-            class="cp-tab"
-            [class.cp-tab--active]="activeTab() === 'portfolio'"
-            (click)="setTab('portfolio')"
-          >
+          <button class="cp-tab" [class.cp-tab--active]="activeTab() === 'portfolio'" (click)="setTab('portfolio')">
             {{ 'CRAFTSMAN_PROFILE.PORTFOLIO' | translate }}
           </button>
         </div>
 
-        <!-- ── TAB: نبذة ── -->
+        <!-- TAB: نبذة -->
         @if (activeTab() === 'about') {
           <div class="cp-tab-body">
             @if (craftsman()!.bio) {
@@ -159,25 +145,16 @@
                 <div class="cp-chips">
                   @for (service of craftsman()!.services; track service) {
                     <span class="cp-chip">{{
-                      service === 'plumbing'
-                        ? 'سباكة'
-                        : service === 'electrical'
-                          ? 'كهرباء'
-                          : service === 'carpentry'
-                            ? 'نجارة'
-                            : service === 'painting'
-                              ? 'دهان'
-                              : service === 'ac'
-                                ? 'تكييف'
-                                : service === 'cleaning'
-                                  ? 'تنظيف'
-                                  : service === 'moving'
-                                    ? 'نقل عفش'
-                                    : service === 'pest'
-                                      ? 'مكافحة حشرات'
-                                      : service === 'roofing'
-                                        ? 'عزل أسطح'
-                                        : craftsman()!.specialty
+                      service === 'plumbing' ? 'سباكة' :
+                      service === 'electrical' ? 'كهرباء' :
+                      service === 'carpentry' ? 'نجارة' :
+                      service === 'painting' ? 'دهان' :
+                      service === 'ac' ? 'تكييف' :
+                      service === 'cleaning' ? 'تنظيف' :
+                      service === 'moving' ? 'نقل عفش' :
+                      service === 'pest' ? 'مكافحة حشرات' :
+                      service === 'roofing' ? 'عزل أسطح' :
+                      craftsman()!.specialty
                     }}</span>
                   }
                 </div>
@@ -203,7 +180,7 @@
           </div>
         }
 
-        <!-- ── TAB: المراجعات ── -->
+        <!-- TAB: المراجعات -->
         @if (activeTab() === 'reviews') {
           <div class="cp-tab-body">
             <div class="cp-card cp-section">
@@ -216,7 +193,7 @@
           </div>
         }
 
-        <!-- ── TAB: أعمال سابقة ── -->
+        <!-- TAB: أعمال سابقة -->
         @if (activeTab() === 'portfolio') {
           <div class="cp-tab-body">
             <div class="cp-card cp-section">
@@ -224,18 +201,73 @@
                 <span class="material-symbols-outlined">photo_library</span>
                 {{ 'CRAFTSMAN_PROFILE.PORTFOLIO_TITLE' | translate }}
               </h2>
-              @if (craftsman()!.portfolioImages && craftsman()!.portfolioImages!.length) {
-                <div class="cp-portfolio">
-                  @for (img of craftsman()!.portfolioImages; track img; let i = $index) {
-                    <div class="cp-portfolio-item" [class.cp-portfolio-item--wide]="i === 0">
-                      <img [src]="img" alt="" loading="lazy" />
-                    </div>
-                  }
+
+              @if (loadingJobs()) {
+                <div class="cp-portfolio-skeleton">
+                  <div class="skeleton" style="height:120px; border-radius:12px; margin-bottom:12px;"></div>
+                  <div class="skeleton" style="height:120px; border-radius:12px; margin-bottom:12px;"></div>
+                  <div class="skeleton" style="height:120px; border-radius:12px;"></div>
+                </div>
+              } @else if (jobs().length === 0) {
+                <div class="cp-empty">
+                  <span class="material-symbols-outlined">work_off</span>
+                  <p>{{ 'CRAFTSMAN_PROFILE.NO_PORTFOLIO' | translate }}</p>
                 </div>
               } @else {
-                <div class="cp-empty">
-                  <span class="material-symbols-outlined">photo_library</span>
-                  <p>{{ 'CRAFTSMAN_PROFILE.NO_PORTFOLIO' | translate }}</p>
+                <div class="portfolio-list">
+                  @for (job of jobs(); track job.id) {
+                    <div class="portfolio-item">
+                      <div class="portfolio-item__header">
+                        <div class="portfolio-item__customer">
+                          <span class="material-symbols-outlined">person</span>
+                          <span class="customer-name">{{ job.customerName || 'عميل' }}</span>
+                        </div>
+                        <span class="portfolio-item__service harfi-chip">{{ job.service }}</span>
+                      </div>
+
+                      @if (job.address) {
+                        <div class="portfolio-item__address">
+                          <span class="material-symbols-outlined">location_on</span>
+                          <span>{{ job.address }}</span>
+                        </div>
+                      }
+
+                      @if (job.problemImageUrl) {
+                        <img
+                          [src]="getImageUrl(job.problemImageUrl)"
+                          alt="{{ job.description }}"
+                          class="portfolio-item__image"
+                          loading="lazy"
+                        />
+                      }
+
+                      <div class="portfolio-item__body">
+                        <h4 class="portfolio-item__title">{{ job.description }}</h4>
+                        <p class="portfolio-item__desc" *ngIf="job.problemDescription">
+                          {{ job.problemDescription }}
+                        </p>
+                        @if (job.solutionDescription) {
+                          <details class="portfolio-item__solution">
+                            <summary>
+                              <span class="material-symbols-outlined">expand_more</span>
+                              عرض خطوات الحل
+                            </summary>
+                            <ol class="solution-steps">
+                              @for (line of getSolutionLines(job.solutionDescription!); track $index) {
+                                <li class="solution-step">{{ line }}</li>
+                              }
+                            </ol>
+                          </details>
+                        }
+                      </div>
+
+                      <div class="portfolio-item__footer">
+                        <span class="portfolio-item__date">
+                          {{ (job.completedAt || job.createdAt) | date: 'd MMM, y' }}
+                        </span>
+                      </div>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -245,3 +277,74 @@
     </div>
   }
 </div>
+
+<!-- ══════════════════════════════════
+     EDIT MODAL
+══════════════════════════════════ -->
+@if (showEditModal()) {
+  <div class="cp-modal-overlay" (click)="closeEditModal()">
+    <div class="cp-modal" [dir]="direction()" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="cp-modal-header">
+        <h2 class="cp-modal-title">تعديل البيانات</h2>
+        <button class="cp-modal-close" (click)="closeEditModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Avatar -->
+      <div class="cp-modal-avatar-wrap">
+        <div class="cp-modal-avatar" (click)="avatarInput.click()">
+          @if (craftsman()!.avatarUrl) {
+            <img [src]="getImageUrl(craftsman()!.avatarUrl)" alt="avatar" class="cp-modal-avatar-img" />
+          } @else {
+            <span class="material-symbols-outlined cp-modal-avatar-icon">person</span>
+          }
+          <div class="cp-modal-avatar-overlay">
+            @if (editUploading()) {
+              <span class="cp-modal-spinner"></span>
+            } @else {
+              <span class="material-symbols-outlined">photo_camera</span>
+            }
+          </div>
+        </div>
+        <input #avatarInput type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
+        <p class="cp-modal-avatar-hint">اضغط لتغيير الصورة</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="cp-modal-form">
+        <div class="cp-modal-field-row">
+          <div class="cp-modal-field">
+            <label>الاسم</label>
+            <input type="text" formControlName="name" class="cp-modal-input"
+              [class.cp-modal-input--invalid]="editForm.get('name')?.invalid && editForm.get('name')?.touched" />
+            @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
+              <span class="cp-modal-error">الاسم مطلوب</span>
+            }
+          </div>
+          <div class="cp-modal-field">
+            <label>رقم الهاتف</label>
+            <input type="tel" formControlName="phone" class="cp-modal-input"
+              [class.cp-modal-input--invalid]="editForm.get('phone')?.invalid && editForm.get('phone')?.touched" />
+            @if (editForm.get('phone')?.invalid && editForm.get('phone')?.touched) {
+              <span class="cp-modal-error">رقم هاتف غير صحيح</span>
+            }
+          </div>
+        </div>
+
+        @if (editSuccess()) {
+          <div class="cp-modal-success">✅ تم حفظ التغييرات بنجاح</div>
+        }
+        @if (editError()) {
+          <div class="cp-modal-err">{{ editError() }}</div>
+        }
+
+        <button type="submit" class="cp-btn-primary cp-modal-save" [disabled]="editForm.invalid || editSaving()">
+          @if (editSaving()) { جاري الحفظ... } @else { حفظ التغييرات }
+        </button>
+      </form>
+    </div>
+  </div>
+}
