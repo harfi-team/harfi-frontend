@@ -24,7 +24,7 @@
       [attr.aria-label]="conv.otherUserName">
 
       <div class="conv-avatar">
-        <img *ngIf="conv.otherUserAvatar" [src]="conv.otherUserAvatar" [alt]="conv.otherUserName" />
+        <img *ngIf="conv.otherUserAvatar" [src]="getImageUrl(conv.otherUserAvatar)" [alt]="conv.otherUserName" />
         <div *ngIf="!conv.otherUserAvatar" class="conv-avatar-initials" aria-hidden="true">
           {{ initials(conv.otherUserName) }}
         </div>

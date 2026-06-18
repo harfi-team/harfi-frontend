@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { environment } from '../../../../environments/environment';
 import { JobsService } from '../jobs.service';
 import { CraftsmanService } from '../../craftsman/craftsman.service';
 import { CraftsmanDto } from '../../../core/models/craftsman.models';
@@ -290,6 +291,12 @@ export class JobCreateComponent implements OnInit {
     } else {
       this.createJob(body);
     }
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   private createJob(body: CreateJobDto): void {

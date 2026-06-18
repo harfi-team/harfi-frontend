@@ -263,7 +263,24 @@
     "DETAILS": "Details",
     "EXPERIENCE": "Experience",
     "PRICE_RANGE": "Price Range",
-    "SERVICES": "Services"
+    "SERVICES": "Services",
+    "BOOK_NOW": "Book Now",
+    "REVIEWS_TAB": "Reviews",
+    "PORTFOLIO": "Portfolio",
+    "ABOUT_TITLE": "About the Craftsman",
+    "SKILLS_TITLE": "Skills & Specializations",
+    "REVIEWS_TITLE": "Reviews & Ratings",
+    "PORTFOLIO_TITLE": "Previous Work",
+    "NO_PORTFOLIO": "No previous work yet",
+    "CONTACT_CRAFTSMAN": "Contact Craftsman",
+    "VISIT_PRICE": "Visit Price",
+    "QUALITY_GUARANTEE": "Quality Guarantee",
+    "QUALITY_GUARANTEE_SUB": "Guaranteed Service",
+    "FAST_RESPONSE": "Fast Response",
+    "FAST_RESPONSE_SUB": "Responds in under an hour",
+    "num": "jobs completed",
+    "time": "hour",
+    "RAT": "Rating"
   },
   "SERVICES": {
     "PLUMBING": "Plumbing",
@@ -314,15 +331,15 @@
       "GENERIC_ERROR": "An error occurred, please try again"
     },
     "CRAFTSMAN": {
-  "TITLE": "Reviews",
-  "REVIEWS_COUNT": "reviews",
-  "NO_REVIEWS": "No reviews yet",
-  "NO_COMMENT": "No comment",
-  "SHOW_MORE": "Show more",
-  "SHOW_LESS": "Show less",
-  "LOAD_ERROR": "Failed to load reviews",
-  "RETRY_BTN": "Try again"
-},
+      "TITLE": "Reviews",
+      "REVIEWS_COUNT": "reviews",
+      "NO_REVIEWS": "No reviews yet",
+      "NO_COMMENT": "No comment",
+      "SHOW_MORE": "Show more",
+      "SHOW_LESS": "Show less",
+      "LOAD_ERROR": "Failed to load reviews",
+      "RETRY_BTN": "Try again"
+    },
     "SUCCESS": {
       "ICON": "✅",
       "TITLE": "Thank you for your review!",

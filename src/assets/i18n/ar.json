@@ -263,7 +263,24 @@
     "DETAILS": "التفاصيل",
     "EXPERIENCE": "سنوات الخبرة",
     "PRICE_RANGE": "نطاق السعر",
-    "SERVICES": "الخدمات"
+    "SERVICES": "الخدمات",
+    "BOOK_NOW": "احجز الآن",
+    "REVIEWS_TAB": "التقييمات",
+    "PORTFOLIO": "أعمال سابقة",
+    "ABOUT_TITLE": "عن الحرفي",
+    "SKILLS_TITLE": "المهارات والتخصصات",
+    "REVIEWS_TITLE": "المراجعات والتقييمات",
+    "PORTFOLIO_TITLE": "أعمال سابقة",
+    "NO_PORTFOLIO": "لا توجد أعمال سابقة بعد",
+    "CONTACT_CRAFTSMAN": "التواصل مع الحرفي",
+    "VISIT_PRICE": "سعر الزيارة",
+    "QUALITY_GUARANTEE": "ضمان الجودة",
+    "QUALITY_GUARANTEE_SUB": "خدمة مضمونة",
+    "FAST_RESPONSE": "سريع الاستجابة",
+    "FAST_RESPONSE_SUB": "رد في أقل من ساعة",
+    "num": "العمليات المنجزة",
+    "time": "ساعة",
+    "RAT": "التقييم"
   },
   "SERVICES": {
     "PLUMBING": "سباكة",
@@ -314,15 +331,15 @@
       "GENERIC_ERROR": "حدث خطأ، يرجى المحاولة مرة أخرى"
     },
     "CRAFTSMAN": {
-  "TITLE": "التقييمات",
-  "REVIEWS_COUNT": "تقييم",
-  "NO_REVIEWS": "لا توجد تقييمات بعد",
-  "NO_COMMENT": "بدون تعليق",
-  "SHOW_MORE": "عرض المزيد",
-  "SHOW_LESS": "عرض أقل",
-  "LOAD_ERROR": "حدث خطأ في تحميل التقييمات",
-  "RETRY_BTN": "إعادة المحاولة"
-},
+      "TITLE": "التقييمات",
+      "REVIEWS_COUNT": "تقييم",
+      "NO_REVIEWS": "لا توجد تقييمات بعد",
+      "NO_COMMENT": "بدون تعليق",
+      "SHOW_MORE": "عرض المزيد",
+      "SHOW_LESS": "عرض أقل",
+      "LOAD_ERROR": "حدث خطأ في تحميل التقييمات",
+      "RETRY_BTN": "إعادة المحاولة"
+    },
     "SUCCESS": {
       "ICON": "✅",
       "TITLE": "شكراً على تقييمك!",

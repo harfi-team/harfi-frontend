@@ -3,6 +3,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { environment } from '../../../../environments/environment';
 import { ChatService } from '../chat.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ChatHubService } from '../../../core/hubs/chat.hub.service';
@@ -181,6 +182,12 @@ export class ChatListComponent implements OnDestroy {
   initials(name: string | null | undefined): string {
     if (!name) return '?';
     return name.charAt(0).toUpperCase();
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   trackById(_index: number, conv: ConversationDto): number {

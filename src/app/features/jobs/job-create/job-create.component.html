@@ -147,7 +147,7 @@
         <div class="craftsman-card">
           <div class="craftsman-avatar">
             @if (craftsman()!.avatarUrl) {
-              <img [src]="craftsman()!.avatarUrl" [alt]="craftsman()!.name" />
+              <img [src]="getImageUrl(craftsman()!.avatarUrl)" [alt]="craftsman()!.name" />
             } @else {
               <span class="material-symbols-outlined avatar-placeholder">person</span>
             }

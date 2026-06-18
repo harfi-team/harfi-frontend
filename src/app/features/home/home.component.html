@@ -360,7 +360,7 @@
                     @if (craftsman.avatarUrl) {
                       <img
                         class="craftsman-avatar-img"
-                        [src]="craftsman.avatarUrl"
+                        [src]="getImageUrl(craftsman.avatarUrl)"
                         [alt]="craftsman.name"
                       />
                     } @else {

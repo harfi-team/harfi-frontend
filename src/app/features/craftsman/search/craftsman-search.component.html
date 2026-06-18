@@ -169,7 +169,7 @@
                 <div class="card-avatar-wrapper">
                   @if (craftsman.profileImageUrl) {
                     <img
-                      [src]="craftsman.profileImageUrl"
+                      [src]="getImageUrl(craftsman.profileImageUrl)"
                       [alt]="craftsman.fullName"
                       class="card-avatar-img"
                     />

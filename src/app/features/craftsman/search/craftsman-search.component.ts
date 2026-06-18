@@ -6,6 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -347,6 +348,12 @@ export class CraftsmanSearchComponent implements OnInit {
     if (isArabic && craftsman.serviceNameAr) return craftsman.serviceNameAr;
     if (!isArabic && craftsman.serviceNameEn) return craftsman.serviceNameEn;
     return craftsman.serviceType;
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   get activeServiceLabel(): string {
