@@ -24,18 +24,6 @@
       @if (craftsmanStats(); as stats) {
         <div class="stats-row mt-2">
           <div class="stat-card">
-            <div class="stat-icon-wrap earnings">
-              <span class="material-symbols-outlined">payments</span>
-            </div>
-            <div class="stat-info">
-              <div class="stat-value">
-                {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
-              </div>
-              <div class="stat-label">{{ 'HOME.CRAFTSMAN.EARNINGS' | translate }}</div>
-            </div>
-          </div>
-
-          <div class="stat-card">
             <div class="stat-icon-wrap rating">
               <span class="material-symbols-outlined">star</span>
             </div>
@@ -67,33 +55,27 @@
         </div>
 
         <!-- ── Monthly Goal ── -->
-        <div class="goal-card">
+        <div class="goal-card animate-slide-up">
           <div class="goal-header">
             <span class="goal-title">{{ 'HOME.CRAFTSMAN.MONTHLY_GOAL' | translate }}</span>
             <div class="goal-amounts">
-              <span class="goal-current">
-                {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
+              <span class="goal-current gradient-text">
+                {{ stats.completedJobs }} / {{ stats.monthlyGoal }}
               </span>
-              <span class="goal-target">
-                {{ 'HOME.CRAFTSMAN.FROM' | translate }}
-                {{ stats.monthlyGoal | number }} {{ 'HOME.CURRENCY' | translate }}
-              </span>
+              <span class="goal-target">{{ 'HOME.CRAFTSMAN.COMPLETED' | translate }}</span>
             </div>
           </div>
 
           <div class="goal-bar-bg">
             <div
               class="goal-bar-fill"
-              [style.width.%]="(stats.totalEarnings / stats.monthlyGoal) * 100"
+              [style.width.%]="(stats.completedJobs / stats.monthlyGoal) * 100"
             ></div>
           </div>
 
           <p class="goal-hint">
-            {{ 'HOME.CRAFTSMAN.GOAL_HINT_1' | translate }}
-            {{ stats.totalEarnings | number }} {{ 'HOME.CURRENCY' | translate }}
-            {{ 'HOME.CRAFTSMAN.GOAL_HINT_2' | translate }}
-            {{ stats.monthlyGoal | number }} {{ 'HOME.CURRENCY' | translate }}
-            {{ 'HOME.CRAFTSMAN.GOAL_HINT_3' | translate }}
+            {{ stats.completedJobs }} {{ 'HOME.CRAFTSMAN.FROM' | translate }}
+            {{ stats.monthlyGoal }} {{ 'HOME.CRAFTSMAN.COMPLETED' | translate }}
           </p>
         </div>
       }
