@@ -98,6 +98,20 @@ export class UserDetailComponent {
     return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
+  getActionLabel(action: string): string {
+    const map: Record<string, string> = {
+      'delete_user': 'حذف المستخدم',
+      'deactivate_user': 'إيقاف تفعيل المستخدم',
+      'activate_user': 'إعادة تفعيل المستخدم',
+      'reactivate_user': 'إعادة تفعيل المستخدم',
+      'approve_craftsman': 'قبول الحرفي',
+      'reject_craftsman': 'رفض الحرفي',
+      'update_user': 'تعديل بيانات المستخدم',
+      'ban_user': 'حظر المستخدم',
+    };
+    return map[action] ?? action;
+  }
+
   onDialogConfirmed(reason?: string): void {
     if (!this.pendingAction) return;
     const u = this.user();

@@ -20,6 +20,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   private errorHandler = inject(ErrorHandlerService);
 
   email = '';
+  role = '';
   loading = false;
   resendLoading = false;
   countdown = 0;
@@ -32,6 +33,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.email = params['email'] || '';
+      this.role = params['role'] || '';
       if (!this.email) {
         this.router.navigate(['/auth/login']);
       }
@@ -46,7 +48,13 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     if (this.form.invalid) return;
     this.loading = true;
     this.authService.verifyEmail({ email: this.email, code: this.form.value.code! }).subscribe({
-      next: () => this.router.navigate(['/home'], { queryParams: { email: this.email } }),
+      next: () => {
+        if (this.role === 'craftsman') {
+          this.router.navigate(['/craftsmen/register']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
       error: (err) => {
         this.errorHandler.handle(err);
         this.loading = false;

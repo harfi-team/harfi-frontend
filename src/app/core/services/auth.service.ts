@@ -25,6 +25,19 @@ export class AuthService {
 
   private base = `${environment.apiBaseUrl}/auth`;
 
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/forgot-password`, { email });
+  }
+
+  resetPassword(data: {
+    email: string;
+    code: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.base}/reset-password`, data);
+  }
+
   login(body: LoginDto): Observable<AuthResponseDto> {
     return this.http.post<AuthResponseDto>(`${this.base}/login`, body).pipe(
       tap(r => this.storeSession(r))
