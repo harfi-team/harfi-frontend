@@ -280,7 +280,8 @@
     "FAST_RESPONSE_SUB": "Responds in under an hour",
     "num": "jobs completed",
     "time": "hour",
-    "RAT": "Rating"
+    "RAT": "Rating",
+    "BACK_TO_HOME": "Back to Home"
   },
   "SERVICES": {
     "PLUMBING": "Plumbing",
