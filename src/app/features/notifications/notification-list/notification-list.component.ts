@@ -12,6 +12,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuthService } from '../../../core/services/auth.service';
 import { NotificationsService } from '../notifications.service';
 import { NotificationHubService } from '../../../core/hubs/notification.hub.service';
 import { NotificationDto } from '../../../core/models/notification.models';
@@ -31,6 +32,7 @@ export class NotificationListComponent implements OnDestroy {
   private notifService = inject(NotificationsService);
   private notifHub = inject(NotificationHubService);
   private router = inject(Router);
+  private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private errorTimer: ReturnType<typeof setTimeout> | null = null;
   private cdr = inject(ChangeDetectorRef);
@@ -108,11 +110,19 @@ export class NotificationListComponent implements OnDestroy {
       case 'job_completed':
       case 'job_rejected':
       case 'new_order':
-      case 'new_review':
         if (notif.relatedJobId) {
           this.router.navigate(['/jobs', notif.relatedJobId]);
         }
         break;
+      case 'new_review': {
+        const craftsmanId = this.authService.getCraftsmanId();
+        if (craftsmanId) {
+          this.router.navigate(['/craftsmen/profile', craftsmanId], {
+            queryParams: { tab: 'reviews' },
+          });
+        }
+        break;
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -447,5 +448,11 @@ export class HomeComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 }

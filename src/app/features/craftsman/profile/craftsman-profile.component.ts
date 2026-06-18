@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { CraftsmanDto, CraftsmanReviewsResponse } from '../../../core/models/craftsman.models';
@@ -25,6 +26,8 @@ export class CraftsmanProfileComponent implements OnInit {
   loading = signal(true);
   craftsman = signal<CraftsmanDto | null>(null);
   readonly isCustomer = this.auth.getRole() === 'customer';
+
+  direction = computed(() => this.languageService.current() === 'ar' ? 'rtl' : 'ltr');
 
   // ── ملخص التقييمات: متوسط النجوم + عدد المراجعات ──
   reviewsSummary = signal<CraftsmanReviewsResponse | null>(null);
@@ -59,12 +62,16 @@ export class CraftsmanProfileComponent implements OnInit {
           }),
       });
     }
+
+    // ── فتح تبويب المراجعات إذا كان رابط الإشعار يحمل ?tab=reviews ──
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab === 'reviews') {
+      this.activeTab.set('reviews');
+    }
   }
 
   // CraftsmanReviewsComponent expects a number @Input
-  craftsmanIdAsNumber(): number {
-    return Number(this.route.snapshot.paramMap.get('id') ?? 0);
-  }
+  craftsmanId = computed(() => Number(this.route.snapshot.paramMap.get('id') ?? 0));
 
   setTab(tab: 'about' | 'portfolio' | 'reviews'): void {
     this.activeTab.set(tab);
@@ -88,6 +95,12 @@ export class CraftsmanProfileComponent implements OnInit {
   getServiceLabel(craftsman: CraftsmanDto): string {
     const service = this.craftsmanService.getPrimaryService(craftsman);
     return service ? `SERVICES.${service.toUpperCase()}` : this.getServiceName(craftsman);
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   getServiceName(craftsman: CraftsmanDto): string {
