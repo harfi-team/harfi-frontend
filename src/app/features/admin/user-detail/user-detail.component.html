@@ -103,9 +103,9 @@
             <div class="activity-item">
               <div class="activity-dot"></div>
               <div class="activity-content">
-                <span class="activity-action">{{ a.action }}</span>
+                <span class="activity-action">{{ getActionLabel(a.action) }}</span>
                 @if (a.details) {
-                  <p class="activity-details">{{ a.details }}</p>
+                  <p class="activity-reason">{{ a.details }}</p>
                 }
               </div>
               <span class="activity-time">{{ a.timestamp | date:'d MMM, y h:mm a' }}</span>

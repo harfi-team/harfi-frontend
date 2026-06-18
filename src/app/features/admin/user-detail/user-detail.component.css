@@ -316,6 +316,31 @@
   color: var(--text-primary);
 }
 
+.activity-reason {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #888);
+  margin-top: 4px;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: normal;
+  direction: rtl;
+  text-align: right;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.activity-date {
+  font-size: 0.78rem;
+  color: var(--text-muted, #aaa);
+  white-space: nowrap;
+}
+
 .activity-details {
   font-size: 13px;
   color: var(--text-secondary);
@@ -333,6 +358,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 32px;
 }
 
 .btn {

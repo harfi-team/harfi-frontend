@@ -72,9 +72,8 @@ export class RegisterComponent {
   this.loading = true;
   this.authService.register(this.form.value as any).subscribe({
     next: (res) => {
-      // التوجيه مباشرة لصفحة تفعيل الإيميل وتمريره في الـ Query Params
-      this.router.navigate(['/auth/verify-email'], { 
-        queryParams: { email: res.user?.email } 
+      this.router.navigate(['/auth/verify-email'], {
+        queryParams: { email: res.user?.email, role: this.form.controls.role.value },
       });
     },
     error: (err) => {
