@@ -127,11 +127,15 @@
             </tr>
           </thead>
           <tbody>
-            @for (c of pendingCraftsmen(); track c.id) {
+            @for (c of stats()?.recentCraftsmen; track c.id) {
               <tr>
                 <td>
                   <div class="craftsman-cell">
-                    <div class="avatar-sm">{{ c.fullName.charAt(0) }}</div>
+                    @if (c.profileImageUrl) {
+                      <img [src]="getImageUrl(c.profileImageUrl)" [alt]="c.fullName" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-sm">{{ c.fullName.charAt(0) }}</div>
+                    }
                     <div>
                       <div class="craftsman-name">{{ c.fullName }}</div>
                       <div class="craftsman-city text-muted">{{ c.city }}</div>
@@ -139,7 +143,7 @@
                   </div>
                 </td>
                 <td><span class="harfi-chip">{{ c.serviceType }}</span></td>
-                <td><span class="status-badge rejected">{{ 'ADMIN.REVIEW_STATUS' | translate }}</span></td>
+                <td><span class="status-badge rejected">{{ c.status }}</span></td>
               </tr>
             } @empty {
               <tr><td colspan="3" class="text-muted" style="text-align:center">{{ 'NO_DATA' | translate }}</td></tr>
@@ -161,7 +165,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (job of latestJobs(); track job.id) {
+            @for (job of stats()?.recentOrders; track job.id) {
               <tr>
                 <td>
                   <span class="order-id">{{ job.id | jobId }}</span>

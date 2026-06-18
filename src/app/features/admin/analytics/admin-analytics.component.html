@@ -131,6 +131,26 @@
           <div class="stat-card__label">{{ 'ADMIN.AVERAGE_RATING' | translate }}</div>
         </div>
       </div>
+
+      <div class="config-section">
+        <div class="harfi-card config-card">
+          <h3 class="config-title">أنواع الخدمات المتاحة</h3>
+          <div class="chip-list">
+            @for (s of serviceTypes(); track s) {
+              <span class="chip">{{ s }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="harfi-card config-card">
+          <h3 class="config-title">المدن المتاحة</h3>
+          <div class="chip-list">
+            @for (c of cities(); track c) {
+              <span class="chip">{{ c }}</span>
+            }
+          </div>
+        </div>
+      </div>
     }
   }
 

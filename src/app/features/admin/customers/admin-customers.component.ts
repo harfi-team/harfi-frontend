@@ -7,6 +7,7 @@ import { AdminService } from '../admin.service';
 import { AdminUser } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-admin-customers',
@@ -104,6 +105,12 @@ export class AdminCustomersComponent {
       reactivate: u.isActive === false && u.isDeleted !== true,
       delete: u.isDeleted !== true,
     };
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   get totalPages(): number {

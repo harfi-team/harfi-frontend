@@ -303,6 +303,13 @@
   font-size: 13px;
 }
 
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 20px;
+}
+
 .flag-key {
   font-family: 'Courier New', monospace;
   font-size: 13px;

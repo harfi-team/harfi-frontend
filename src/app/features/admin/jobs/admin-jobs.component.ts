@@ -7,6 +7,7 @@ import { AdminService } from '../admin.service';
 import { AdminJob, JobsAnalytics } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { JobIdPipe } from '@shared/pipes/job-id.pipe';
+import { environment } from '@env/environment';
 
 
 type JobFilterTab = 'all' | 'open' | 'in-progress' | 'completed' | 'disputed';
@@ -107,6 +108,12 @@ export class AdminJobsComponent {
       case 'disputed': return 'ADMIN.DISPUTED';
       default: return status;
     }
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   get disputedCount(): number {

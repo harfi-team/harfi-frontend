@@ -23,6 +23,25 @@ export interface OverviewStats {
   totalReviews: number;
   newUsersThisMonth: number;
   averageRating: number;
+  recentCraftsmen: RecentCraftsman[];
+  recentOrders: RecentOrder[];
+}
+
+export interface RecentCraftsman {
+  id: number;
+  fullName: string;
+  profileImageUrl: string | null;
+  serviceType: string;
+  city: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface RecentOrder {
+  id: number;
+  serviceType: string;
+  status: string;
+  createdAt: string;
 }
 
 export interface PendingCraftsman {
@@ -31,6 +50,7 @@ export interface PendingCraftsman {
   fullName: string;
   email: string;
   phone: string;
+  profileImageUrl: string | null;
   serviceType: string;
   city: string;
   neighborhood: string;
@@ -54,6 +74,7 @@ export interface RejectedCraftsman {
   fullName: string;
   email: string;
   phone: string;
+  profileImageUrl: string | null;
   serviceType: string;
   city: string;
   rejectionReason: string;
@@ -122,6 +143,8 @@ export interface AdminJob {
   customerName: string;
   craftsmanId: number;
   craftsmanName: string;
+  customerProfileImageUrl: string | null;
+  craftsmanProfileImageUrl: string | null;
   status: string;
   serviceType: string;
   description: string;
@@ -198,19 +221,11 @@ export interface AuditLog {
 }
 
 export interface ServiceType {
-  id: number;
   nameAr: string;
-  nameEn: string;
-  icon: string | null;
-  isActive: boolean;
 }
 
 export interface City {
-  id: number;
   nameAr: string;
-  nameEn: string;
-  governorate: string | null;
-  isActive: boolean;
 }
 
 export interface FeatureFlag {

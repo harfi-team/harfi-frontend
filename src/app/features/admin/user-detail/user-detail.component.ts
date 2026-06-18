@@ -7,6 +7,7 @@ import { AdminService } from '../admin.service';
 import { AdminUserDetail } from '@core/models/admin.models';
 import { ErrorHandlerService } from '@core/services/error-handler.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-user-detail',
@@ -89,6 +90,12 @@ export class UserDetailComponent {
     this.dialogReasonLabel.set('ADMIN.DELETION_REASON');
     this.dialogConfirmLabel.set('DELETE');
     this.dialogVisible.set(true);
+  }
+
+  getImageUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
 
   onDialogConfirmed(reason?: string): void {
