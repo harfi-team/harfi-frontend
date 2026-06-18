@@ -12,7 +12,7 @@ import { CraftsmanReviewsComponent } from './craftsman-reviews/craftsman-reviews
 @Component({
   selector: 'app-craftsman-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, CraftsmanReviewsComponent],
+  imports: [CommonModule, TranslateModule, CraftsmanReviewsComponent],
   templateUrl: './craftsman-profile.component.html',
   styleUrl: './craftsman-profile.component.css',
 })
