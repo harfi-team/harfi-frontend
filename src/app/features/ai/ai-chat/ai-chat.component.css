@@ -3,19 +3,47 @@
    Restrained use of brand gradient (like the auth pages),
    project tokens, Cairo font, light/dark theme support.
    ════════════════════════════════════════════════════════════════ */
+:host {
+  display: flex;
+  justify-content: center; 
+  align-items: stretch;
+  width: 100%;
+  height: calc(100vh - 40px); 
+  margin: 10px 0;
+  overflow: hidden;
+}
+
 .chat-root {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  width: 100%;
+  max-width: 1000px; 
+  height: 100%;
   min-height: 0;
   min-width: 0;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
   background: var(--bg-color);
   font-family: 'Cairo', 'Tajawal', sans-serif;
   overflow: hidden;
+  position: relative;
+    border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
+@media (max-width: 767px) {
+  :host {
+    height: calc(100vh - 60px - env(safe-area-inset-bottom)); 
+    margin: 0;
+    padding: 0;
+  }
+  
+  .chat-root {
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
 
 /* ═══ HEADER ═══ */
 .header {
@@ -888,37 +916,24 @@
 .audio-wave i:nth-child(5) { height: 7px;  }
 
 /* ═══════════════════════════════════════════════════════
-   ★ LAYOUT — FIX
+   ★ LAYOUT — FIX (تم إزالة chat-wrapper)
    ═══════════════════════════════════════════════════════ */
-.chat-wrapper {
-  position: fixed;
-  top: 30px;
-  left: 0;
-  right: 250px;
-  bottom: 0;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
-  background: var(--bg-color);
-  z-index: 200;
-}
-
-:host-context([lang='en']) .chat-wrapper {
-  left: 260px;
-  right: 0;
-}
+/* تم إزالة chat-wrapper بالكامل */
 
 /* ═══ HISTORY PANEL ═══ */
 .history-panel {
-  width: 300px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  width: 0;
   background: var(--card-bg);
-  border-inline-end: 1px solid var(--border-color); /* FIX: كان inline-start — في RTL: inline-end = الجانب الأيسر (بين الـ panel والـ chat) */
+  border-inline-start: 1px solid var(--border-color);
   overflow: hidden;
-  transform: translateX(300px);
-  transition: transform 0.25s ease;
+  transition: width 0.25s ease;
+}
+
+.history-panel.open {
+  width: 270px;
 }
 
 .history-panel.open {
@@ -926,19 +941,75 @@
 }
 
 :host-context([lang='en']) .history-panel {
-  transform: translateX(-300px);
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.15);
 }
 
 :host-context([lang='en']) .history-panel.open {
   transform: translateX(0);
 }
 
+/* إضافة زر toggle في header */
+.history-toggle {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .5rem .8rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.history-toggle:hover {
+  border-color: var(--brand-red);
+  background: rgba(233, 64, 87, 0.04);
+}
+
+.history-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
 .panel-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border-color);
 }
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.close-panel {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  transition: background .2s ease;
+}
+
+.close-panel:hover {
+  background: rgba(0,0,0,0.05);
+}
+
 .sidebar-title { font-size: .95rem; font-weight: 800; color: var(--text-primary); }
 
 .new-chat-btn {
@@ -1011,37 +1082,11 @@
 .sessions-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 999px; }
 
 /* ═══ Responsive ═══ */
-@media (max-width: 768px) {
-  .chat-wrapper {
-    left: 0;
-    right: 0;
-    top: 0;
-  }
 
-  .history-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 280px;
-    z-index: 500;
-    transform: translateX(100%);
-    box-shadow: -6px 0 24px rgba(0, 0, 0, 0.2);
-  }
 
-  .history-panel.open {
-    transform: translateX(0);
-  }
-
-  :host-context([lang='en']) .history-panel {
-    left: 0;
-    right: auto;
-    transform: translateX(-100%);
-    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.2);
-  }
-
-  :host-context([lang='en']) .history-panel.open {
-    transform: translateX(0);
+@media (min-width: 769px) {
+  .sidebar-backdrop {
+    display: none !important;
   }
 }
 

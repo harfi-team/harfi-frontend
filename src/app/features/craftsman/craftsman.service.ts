@@ -10,6 +10,17 @@ import {
   CraftsmanReviewsResponse,
 } from '../../core/models/craftsman.models';
 
+export interface UpdateCraftsmanProfileDto {
+  fullname: string;
+  profileImageUrl: string;
+  city: string;
+  neighborhood?: string | null;
+  priceRangeMin?: number | null;
+  priceRangeMax?: number | null;
+  experience: number;
+  bio?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CraftsmanService {
   private http = inject(HttpClient);
@@ -43,6 +54,10 @@ export class CraftsmanService {
       map((response) => this.normalizeCraftsman(response)),
       catchError(() => of(null)),
     );
+  }
+
+  updateCraftsmanProfile(id: string, dto: UpdateCraftsmanProfileDto): Observable<any> {
+    return this.http.put(`${this.base}/${id}`, dto);
   }
 
   searchCraftsmen(params: CraftsmanSearchParams): Observable<CraftsmanDto[]> {
@@ -143,6 +158,7 @@ export class CraftsmanService {
       ),
       serviceNameAr: this.pickString(typed, ['serviceNameAr', 'ServiceNameAr']),
       serviceNameEn: this.pickString(typed, ['serviceNameEn', 'ServiceNameEn']),
+      phone: this.pickString(typed, ['phone', 'Phone']),
       services,
       rating,
       reviewsCount,

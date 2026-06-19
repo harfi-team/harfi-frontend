@@ -43,7 +43,7 @@
   </main>
 </div>
 <!-- زر المساعد الذكي يظهر فقط للعملاء -->
-@if (isCustomer()) {
+@if (isCustomer() && !isAiRoute()) {
   <button class="ai-fab" routerLink="/ai" title="المساعد الذكي">
     <svg
       class="ai-fab-icon"
