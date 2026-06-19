@@ -1,8 +1,10 @@
-<app-side-nav [isDrawerOpen]="mobileNavOpen()" (drawerClosed)="closeMobileNav()" />
+@if (!isRegisterPage()) {
+  <app-side-nav [isDrawerOpen]="mobileNavOpen()" (drawerClosed)="closeMobileNav()" />
+}
 @if (mobileNavOpen()) {
   <div class="drawer-backdrop" (click)="closeMobileNav()"></div>
 }
-<div class="page-content">
+<div class="page-content" [class.full-width]="isRegisterPage()">
   <!-- <header class="app-topbar">
     <div class="topbar-left">
       <button class="hamburger-btn" (click)="toggleMobileNav()" aria-label="Toggle navigation">

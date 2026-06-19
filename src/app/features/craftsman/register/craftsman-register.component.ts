@@ -1,9 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {FormBuilder,FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors,} from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { CraftsmanService } from '../craftsman.service';
-import { CraftsmanRegistrationDto } from '../../../core/models/craftsman.models';
+import {
+  ActiveCityDto,
+  ActiveServiceDto,
+  CraftsmanRegistrationDto,
+} from '../../../core/models/craftsman.models';
+import { UserService } from '../../user/user.service';
 
 // ── Validator: priceRangeMax يجب أن يكون أكبر من priceRangeMin ──
 function priceRangeValidator(group: AbstractControl): ValidationErrors | null {
@@ -33,14 +39,17 @@ export class CraftsmanRegisterComponent implements OnInit {
   showSuccessModal: boolean = false;
   errorMessage: string = '';
 
-  serviceTypes: string[] = [
-    'سباكة', 'كهرباء', 'نجارة', 'دهان', 'تكييف', 'تنظيف', 'أخرى',
-  ];
+  activeServices: ActiveServiceDto[] = [];
+  activeCities: ActiveCityDto[] = [];
+  profileImageFile: File | null = null;
+  nationalIdFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private craftsmanService: CraftsmanService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -57,12 +66,25 @@ export class CraftsmanRegisterComponent implements OnInit {
         priceRangeMax: [null, [Validators.required, Validators.min(1)]],
         experience: [1, [Validators.required, Validators.min(0), Validators.max(50)]],
         bio: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(300)]],
-        nationalIdUrl: ['', [Validators.required, Validators.pattern('https?://.+')]],
+        nationalIdUrl: [''],
       },
       { validators: priceRangeValidator }
     );
 
-    
+    // ── تحميل الخدمات والمدن المتاحة ──
+    forkJoin({
+      services: this.craftsmanService.getActiveServices(),
+      cities: this.craftsmanService.getActiveCities(),
+    }).subscribe({
+      next: ({ services, cities }) => {
+        this.activeServices = services;
+        this.activeCities = cities;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('[Register] Failed to load active services/cities:', err);
+      },
+    });
   }
 
   // ── استخراج userId من أي شكل ممكن يتخزن فيه بعد اللوجين ──
@@ -108,6 +130,16 @@ export class CraftsmanRegisterComponent implements OnInit {
     if (file) this.selectedFileName = file.name;
   }
 
+  onProfileImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.profileImageFile = file ?? null;
+  }
+
+  onNationalIdSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.nationalIdFile = file ?? null;
+  }
+
   setServiceType(type: string): void {
     this.registerForm.get('serviceType')?.setValue(type);
     this.registerForm.get('serviceType')?.markAsTouched();
@@ -124,6 +156,14 @@ export class CraftsmanRegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // 1. التأكد من وجود صورة البطاقة أولاً
+    if (!this.nationalIdFile) {
+      this.errorMessage = 'يرجى إرفاق صورة الهوية الوطنية.';
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      return;
+    }
+
+    // 2. التأكد من صحة باقي الفورم
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -134,28 +174,46 @@ export class CraftsmanRegisterComponent implements OnInit {
     this.errorMessage = '';
 
     const v = this.registerForm.value;
+    
+    // 3. بناء الـ FormData (البيانات + صورة البطاقة فقط)
+    const formData = new FormData();
 
-    // ── payload يطابق بالظبط شكل API: POST /api/Craftsmen/register ──
-    const payload: CraftsmanRegistrationDto = {
-      userId:        Number(v.userId),
-      serviceType:   v.serviceType,
-      city:          v.city,
-      neighborhood:  v.neighborhood,
-      priceRangeMin: Number(v.priceRangeMin),
-      priceRangeMax: Number(v.priceRangeMax),
-      experience:    Number(v.experience),
-      bio:           v.bio,
-      nationalIdUrl: v.nationalIdUrl,
-    };
+    formData.append('UserId', String(v.userId));
+    formData.append('ServiceType', v.serviceType);
+    formData.append('City', v.city);
+    formData.append('Neighborhood', v.neighborhood);
+    formData.append('PriceRangeMin', String(v.priceRangeMin));
+    formData.append('PriceRangeMax', String(v.priceRangeMax));
+    formData.append('Experience', String(v.experience));
+    formData.append('Bio', v.bio);
 
-    // ── DEBUG: اطبع الـ payload في الكونسول قبل الإرسال ──
-    console.log('[Register] payload:', payload);
+    // إرفاق ملف البطاقة (الاسم هنا لازم يطابق الـ Swagger بالظبط)
+    formData.append('NationalIdFile', this.nationalIdFile);
 
-    this.craftsmanService.register(payload).subscribe({
-      next: (res) => {
-        console.log('[Register] success:', res);
-        this.isLoading = false;
-        this.showSuccessModal = true;
+    // 4. إرسال الطلب للباك إند
+    this.craftsmanService.register(formData).subscribe({
+      next: (regRes) => {
+        console.log('[Register] success:', regRes);
+        
+        // 5. بعد نجاح التسجيل، نرفع الصورة الشخصية (لو موجودة) باستخدام UserService
+        if (this.profileImageFile) {
+          this.userService.uploadProfileImage(v.userId, this.profileImageFile).subscribe({
+            next: () => {
+              console.log('[Register] profile image uploaded');
+              this.isLoading = false;
+              this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
+            },
+            error: (imgErr) => {
+              console.error('[Register] profile image upload error:', imgErr);
+              this.isLoading = false;
+              this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
+            },
+          });
+        } else {
+          // لو مفيش صورة شخصية، نوجه اليوزر لصفحة الانتظار على طول
+          this.isLoading = false;
+          this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
+        }
       },
       error: (err) => {
         console.error('[Register] error:', err.status, err.error);

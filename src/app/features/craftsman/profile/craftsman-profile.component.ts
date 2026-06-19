@@ -194,9 +194,27 @@ export class CraftsmanProfileComponent implements OnInit {
       priceMin: c?.priceMin ?? null,
       priceMax: c?.priceMax ?? null,
     });
+    
     this.editError.set('');
     this.editSuccess.set(false);
     this.showEditModal.set(true);
+
+    // 2. نكلم الباك إند نجيب البروفايل الكامل (اللي جواه رقم التليفون)
+    const userId = user?.id;
+    if (userId) {
+      this.userService.getProfile(userId).subscribe({
+        next: (profileData: any) => {
+          // 3. أول ما الداتا تيجي، نحدث الفورم برقم التليفون الحقيقي
+          this.editForm.patchValue({
+            name: profileData.name ?? this.editForm.value.name,
+            phone: profileData.phone ?? '',
+          });
+        },
+        error: (err) => {
+          console.error('فشل في جلب بيانات المستخدم:', err);
+        }
+      });
+    }
   }
 
   closeEditModal(): void {
@@ -337,7 +355,3 @@ export class CraftsmanProfileComponent implements OnInit {
   });
 }
 }
-  // ─────────────────────────────────────────────────────────
-  // تحويل نص الخطوات إلى مصفوفة سطور
-  // يدعم: \n  أو  "1. "  أو  "- "
-  // ─────────────────────────────────────────────────────────
