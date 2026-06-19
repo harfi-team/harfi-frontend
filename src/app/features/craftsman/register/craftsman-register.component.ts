@@ -64,7 +64,7 @@ export class CraftsmanRegisterComponent implements OnInit {
         priceRangeMax: [null, [Validators.required, Validators.min(1)]],
         experience: [1, [Validators.required, Validators.min(0), Validators.max(50)]],
         bio: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(300)]],
-        nationalIdUrl: ['', Validators.required],
+        nationalIdUrl: [''],
       },
       { validators: priceRangeValidator }
     );
@@ -154,16 +154,16 @@ export class CraftsmanRegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!this.nationalIdFile) {
+      this.errorMessage = 'يرجى إرفاق صورة الهوية الوطنية.';
+      this.registerForm.get('nationalIdUrl')?.markAsTouched();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       return;
     }
 
-    if (!this.nationalIdFile) {
-      this.errorMessage = 'يرجى إرفاق صورة الهوية.';
-      this.registerForm.get('nationalIdUrl')?.markAsTouched();
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -202,17 +202,17 @@ export class CraftsmanRegisterComponent implements OnInit {
                 next: () => {
                   console.log('[Register] profile image uploaded');
                   this.isLoading = false;
-                  this.showSuccessModal = true;
+                  this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
                 },
                 error: (imgErr) => {
                   console.error('[Register] image upload error:', imgErr);
                   this.isLoading = false;
-                  this.showSuccessModal = true;
+                  this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
                 },
               });
             } else {
               this.isLoading = false;
-              this.showSuccessModal = true;
+              this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
             }
           },
           error: (err) => {
