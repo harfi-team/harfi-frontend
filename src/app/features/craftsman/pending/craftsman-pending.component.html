@@ -1,0 +1,48 @@
+<div class="cp-page" dir="rtl">
+  <div class="cp-card">
+    <div class="cp-icon-wrap">
+      <span class="cp-icon">⏳</span>
+    </div>
+
+    <h1 class="cp-title">جاري مراجعة طلبك</h1>
+    <p class="cp-subtitle">
+      شكراً لتسجيلك في منصة حرفي. سيقوم فريقنا بمراجعة بياناتك
+      وتفعيل حسابك في أقرب وقت ممكن.
+    </p>
+
+    <div class="cp-badge">
+      <span class="cp-badge-icon">⏳</span>
+      <span>قيد المراجعة</span>
+    </div>
+
+    <div class="cp-summary" *ngIf="craftsmanData">
+      <h3 class="cp-summary-title">ملخص البيانات المرسلة</h3>
+      <div class="cp-summary-row">
+        <span class="cp-summary-lbl">مجال التخصص</span>
+        <span class="cp-summary-val">{{ craftsmanData.serviceType }}</span>
+      </div>
+      <div class="cp-summary-row">
+        <span class="cp-summary-lbl">المدينة</span>
+        <span class="cp-summary-val">{{ craftsmanData.city }}</span>
+      </div>
+      <div class="cp-summary-row">
+        <span class="cp-summary-lbl">الحي</span>
+        <span class="cp-summary-val">{{ craftsmanData.neighborhood }}</span>
+      </div>
+      <div class="cp-summary-row">
+        <span class="cp-summary-lbl">سنوات الخبرة</span>
+        <span class="cp-summary-val">{{ craftsmanData.experience }} سنوات</span>
+      </div>
+      <div class="cp-summary-row">
+        <span class="cp-summary-lbl">نطاق السعر</span>
+        <span class="cp-summary-val">{{ craftsmanData.priceRangeMin }} – {{ craftsmanData.priceRangeMax }} ج.م</span>
+      </div>
+    </div>
+
+    <p class="cp-hint">سنرسل لك إشعاراً عند قبول طلبك.</p>
+
+    <button class="gradient-btn cp-btn" (click)="goHome()">
+      العودة للصفحة الرئيسية
+    </button>
+  </div>
+</div>

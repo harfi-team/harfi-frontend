@@ -1,9 +1,8 @@
-
-
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { switchMap } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,7 +10,7 @@ import { TokenService } from '../../../core/services/token.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { UserService } from '../../user/user.service';
 import { CraftsmanDto, CraftsmanReviewsResponse } from '../../../core/models/craftsman.models';
-import { CraftsmanService } from '../craftsman.service';
+import { CraftsmanService, UpdateCraftsmanProfileDto } from '../craftsman.service';
 import { CraftsmanReviewsComponent } from './craftsman-reviews/craftsman-reviews.component';
 import { JobsService } from '../../jobs/jobs.service';
 import { JobDto } from '../../../core/models/job.models';
@@ -57,7 +56,10 @@ export class CraftsmanProfileComponent implements OnInit {
 
   editForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
-    phone: new FormControl('', [Validators.pattern(/^[0-9+]{10,15}$/)]),
+    phone: new FormControl('', [Validators.required, Validators.pattern(/^[0-9+]{10,15}$/)]),
+    bio: new FormControl('', [Validators.maxLength(1000)]),
+    priceMin: new FormControl<number | null>(null, [Validators.min(0)]),
+    priceMax: new FormControl<number | null>(null, [Validators.min(0)]),
   });
 
   direction = computed(() => this.languageService.current() === 'ar' ? 'rtl' : 'ltr');
@@ -184,13 +186,35 @@ export class CraftsmanProfileComponent implements OnInit {
   // ── فتح الـ Modal ──
   openEditModal(): void {
     const user = this.tokenSvc.getUser();
+    const c = this.craftsman();
     this.editForm.patchValue({
       name: user?.name ?? '',
-      phone: user?.phone ?? '',
+      phone: c?.phone ?? '',
+      bio: c?.bio ?? '',
+      priceMin: c?.priceMin ?? null,
+      priceMax: c?.priceMax ?? null,
     });
+    
     this.editError.set('');
     this.editSuccess.set(false);
     this.showEditModal.set(true);
+
+    // 2. نكلم الباك إند نجيب البروفايل الكامل (اللي جواه رقم التليفون)
+    const userId = user?.id;
+    if (userId) {
+      this.userService.getProfile(userId).subscribe({
+        next: (profileData: any) => {
+          // 3. أول ما الداتا تيجي، نحدث الفورم برقم التليفون الحقيقي
+          this.editForm.patchValue({
+            name: profileData.name ?? this.editForm.value.name,
+            phone: profileData.phone ?? '',
+          });
+        },
+        error: (err) => {
+          console.error('فشل في جلب بيانات المستخدم:', err);
+        }
+      });
+    }
   }
 
   closeEditModal(): void {
@@ -212,7 +236,7 @@ export class CraftsmanProfileComponent implements OnInit {
         this.editUploading.set(false);
       },
       error: () => {
-        this.editError.set('فشل تحميل الصورة، حاول مرة أخرى.');
+        this.editError.set('CRAFTSMAN_PROFILE.EDIT_UPLOAD_FAILED');
         this.editUploading.set(false);
       },
     });
@@ -221,33 +245,61 @@ export class CraftsmanProfileComponent implements OnInit {
   saveEdit(): void {
     if (this.editForm.invalid || this.editSaving()) return;
     const userId = this.tokenSvc.getUser()?.id;
-    if (!userId) return;
+    const craftsmanId = this.craftsman()?.id;
+    if (!userId || !craftsmanId) return;
 
     this.editSaving.set(true);
-    this.userService
-      .updateProfile(userId, {
-        name: this.editForm.value.name!,
-        phone: this.editForm.value.phone || null,
-        profileImageUrl: this.craftsman()?.avatarUrl ?? null,
-      })
-      .subscribe({
-        next: (data) => {
-          const u = this.tokenSvc.getUser();
-          if (u) this.tokenSvc.setUser({ ...u, name: data.name });
-          const current = this.craftsman();
-          if (current) this.craftsman.set({ ...current, name: data.name });
-          this.editSaving.set(false);
-          this.editSuccess.set(true);
-          setTimeout(() => {
-            this.editSuccess.set(false);
-            this.closeEditModal();
-          }, 1500);
-        },
-        error: () => {
-          this.editError.set('فشل حفظ التغييرات، حاول مرة أخرى.');
-          this.editSaving.set(false);
-        },
-      });
+
+    const userPayload = {
+      name: this.editForm.value.name!,
+      phone: this.editForm.value.phone!,
+      profileImageUrl: this.craftsman()?.avatarUrl ?? null,
+    };
+
+    const craftsmanPayload: UpdateCraftsmanProfileDto = {
+      fullname: this.editForm.value.name!,
+      profileImageUrl: this.craftsman()?.avatarUrl ?? '',
+      city: this.craftsman()?.city ?? '',
+      neighborhood: this.craftsman()?.neighborhood ?? null,
+      priceRangeMin: this.editForm.value.priceMin ?? null,
+      priceRangeMax: this.editForm.value.priceMax ?? null,
+      experience: this.craftsman()?.experienceYears ?? 0,
+      bio: this.editForm.value.bio ?? null,
+    };
+
+    this.userService.updateProfile(userId, userPayload).pipe(
+      switchMap(() =>
+        this.craftsmanService.updateCraftsmanProfile(craftsmanId, craftsmanPayload),
+      ),
+    ).subscribe({
+      next: () => {
+        const u = this.tokenSvc.getUser();
+        const form = this.editForm.value;
+        if (u) this.tokenSvc.setUser({ ...u, name: form.name ?? u.name });
+        const current = this.craftsman();
+        if (current) {
+          this.craftsman.set({
+            ...current,
+            name: form.name ?? current.name,
+            phone: form.phone ?? '',
+            bio: form.bio ?? '',
+            priceMin: form.priceMin ?? undefined,
+            priceMax: form.priceMax ?? undefined,
+          });
+        }
+        this.editSaving.set(false);
+        this.editSuccess.set(true);
+        setTimeout(() => {
+          this.editSuccess.set(false);
+          this.closeEditModal();
+        }, 1500);
+      },
+      error: (err) => {
+        console.error('Save failed:', err);
+        this.editError.set('CRAFTSMAN_PROFILE.EDIT_FAILED');
+        this.editSaving.set(false);
+      },
+    });
   }
 
   getPriceRange(craftsman: CraftsmanDto): string {
@@ -303,7 +355,3 @@ export class CraftsmanProfileComponent implements OnInit {
   });
 }
 }
-  // ─────────────────────────────────────────────────────────
-  // تحويل نص الخطوات إلى مصفوفة سطور
-  // يدعم: \n  أو  "1. "  أو  "- "
-  // ─────────────────────────────────────────────────────────

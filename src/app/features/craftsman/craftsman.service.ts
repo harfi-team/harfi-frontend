@@ -3,12 +3,25 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  ActiveCityDto,
+  ActiveServiceDto,
   CraftsmanDto,
   CraftsmanSearchParams,
   CraftsmanServiceSlug,
   CraftsmanRegistrationDto,
   CraftsmanReviewsResponse,
 } from '../../core/models/craftsman.models';
+
+export interface UpdateCraftsmanProfileDto {
+  fullname: string;
+  profileImageUrl: string;
+  city: string;
+  neighborhood?: string | null;
+  priceRangeMin?: number | null;
+  priceRangeMax?: number | null;
+  experience: number;
+  bio?: string | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CraftsmanService {
@@ -29,10 +42,33 @@ export class CraftsmanService {
   };
 
   // ══════════════════════════════════════════════
+  //  ACTIVE SERVICES & CITIES
+  // ══════════════════════════════════════════════
+  getActiveServices(): Observable<ActiveServiceDto[]> {
+    return this.http.get<ActiveServiceDto[]>(`${this.base}/active-services`);
+  }
+
+  getActiveCities(): Observable<ActiveCityDto[]> {
+    return this.http.get<ActiveCityDto[]>(`${this.base}/active-cities`);
+  }
+
+  // ══════════════════════════════════════════════
   //  REGISTER (Craftsman registration form)
   // ══════════════════════════════════════════════
-  register(payload: CraftsmanRegistrationDto): Observable<any> {
-    return this.http.post(`${this.base}/register`, payload);
+  register(formData: FormData): Observable<any> {
+    // هنبعت الفورم داتا مباشرة للبوست
+    return this.http.post(`${this.base}/register`, formData);
+  }
+
+  
+  // ══════════════════════════════════════════════
+  //  UPLOAD PROFILE IMAGE
+  // ══════════════════════════════════════════════
+  uploadProfileImage(userId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    // Backend endpoint: [HttpPost("{userId}/profile-image")] on UsersController
+    return this.http.post(`${environment.apiBaseUrl}/users/${userId}/profile-image`, formData);
   }
 
   // ══════════════════════════════════════════════
@@ -43,6 +79,10 @@ export class CraftsmanService {
       map((response) => this.normalizeCraftsman(response)),
       catchError(() => of(null)),
     );
+  }
+
+  updateCraftsmanProfile(id: string, dto: UpdateCraftsmanProfileDto): Observable<any> {
+    return this.http.put(`${this.base}/${id}`, dto);
   }
 
   searchCraftsmen(params: CraftsmanSearchParams): Observable<CraftsmanDto[]> {
@@ -143,6 +183,7 @@ export class CraftsmanService {
       ),
       serviceNameAr: this.pickString(typed, ['serviceNameAr', 'ServiceNameAr']),
       serviceNameEn: this.pickString(typed, ['serviceNameEn', 'ServiceNameEn']),
+      phone: this.pickString(typed, ['phone', 'Phone']),
       services,
       rating,
       reviewsCount,

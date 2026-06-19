@@ -1,8 +1,10 @@
-<app-side-nav [isDrawerOpen]="mobileNavOpen()" (drawerClosed)="closeMobileNav()" />
+@if (!isRegisterPage()) {
+  <app-side-nav [isDrawerOpen]="mobileNavOpen()" (drawerClosed)="closeMobileNav()" />
+}
 @if (mobileNavOpen()) {
   <div class="drawer-backdrop" (click)="closeMobileNav()"></div>
 }
-<div class="page-content">
+<div class="page-content" [class.full-width]="isRegisterPage()">
   <!-- <header class="app-topbar">
     <div class="topbar-left">
       <button class="hamburger-btn" (click)="toggleMobileNav()" aria-label="Toggle navigation">
@@ -43,7 +45,7 @@
   </main>
 </div>
 <!-- زر المساعد الذكي يظهر فقط للعملاء -->
-@if (isCustomer()) {
+@if (isCustomer() && !isAiRoute()) {
   <button class="ai-fab" routerLink="/ai" title="المساعد الذكي">
     <svg
       class="ai-fab-icon"

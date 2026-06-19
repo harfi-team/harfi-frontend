@@ -11,7 +11,7 @@
   @if (loading()) {
     <div class="cp-state">
       <span class="cp-spinner"></span>
-      <p>جاري التحميل...</p>
+      <p>{{ 'CRAFTSMAN_PROFILE.LOADING' | translate }}</p>
     </div>
   }
 
@@ -98,7 +98,7 @@
           @if (isOwnProfile) {
             <button class="cp-btn-outline" (click)="openEditModal()">
               <span class="material-symbols-outlined">edit</span>
-              <span>تعديل البيانات</span>
+              <span>{{ 'CRAFTSMAN_PROFILE.EDIT_TITLE' | translate }}</span>
             </button>
           }
         </div>
@@ -286,7 +286,7 @@
 
       <!-- Modal Header -->
       <div class="cp-modal-header">
-        <h2 class="cp-modal-title">تعديل البيانات</h2>
+        <h2 class="cp-modal-title">{{ 'CRAFTSMAN_PROFILE.EDIT_TITLE' | translate }}</h2>
         <button class="cp-modal-close" (click)="closeEditModal()">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -309,39 +309,65 @@
           </div>
         </div>
         <input #avatarInput type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
-        <p class="cp-modal-avatar-hint">اضغط لتغيير الصورة</p>
+        <p class="cp-modal-avatar-hint">{{ 'CRAFTSMAN_PROFILE.EDIT_AVATAR_HINT' | translate }}</p>
       </div>
 
       <!-- Form -->
       <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="cp-modal-form">
         <div class="cp-modal-field-row">
           <div class="cp-modal-field">
-            <label>الاسم</label>
+            <label>{{ 'CRAFTSMAN_PROFILE.EDIT_NAME' | translate }}</label>
             <input type="text" formControlName="name" class="cp-modal-input"
               [class.cp-modal-input--invalid]="editForm.get('name')?.invalid && editForm.get('name')?.touched" />
             @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
-              <span class="cp-modal-error">الاسم مطلوب</span>
+              <span class="cp-modal-error">{{ 'CRAFTSMAN_PROFILE.EDIT_NAME_REQUIRED' | translate }}</span>
             }
           </div>
           <div class="cp-modal-field">
-            <label>رقم الهاتف</label>
+            <label>{{ 'CRAFTSMAN_PROFILE.EDIT_PHONE' | translate }}</label>
             <input type="tel" formControlName="phone" class="cp-modal-input"
               [class.cp-modal-input--invalid]="editForm.get('phone')?.invalid && editForm.get('phone')?.touched" />
-            @if (editForm.get('phone')?.invalid && editForm.get('phone')?.touched) {
-              <span class="cp-modal-error">رقم هاتف غير صحيح</span>
+            @if (editForm.get('phone')?.hasError('required') && editForm.get('phone')?.touched) {
+              <span class="cp-modal-error">{{ 'CRAFTSMAN_PROFILE.EDIT_PHONE_REQUIRED' | translate }}</span>
+            }
+            @if (editForm.get('phone')?.hasError('pattern') && editForm.get('phone')?.touched) {
+              <span class="cp-modal-error">{{ 'CRAFTSMAN_PROFILE.EDIT_PHONE_INVALID' | translate }}</span>
             }
           </div>
         </div>
 
+        <div class="cp-modal-field">
+          <label>{{ 'CRAFTSMAN_PROFILE.EDIT_BIO' | translate }}</label>
+          <textarea formControlName="bio" class="cp-modal-textarea" rows="4"
+            [class.cp-modal-input--invalid]="editForm.get('bio')?.invalid && editForm.get('bio')?.touched"
+            [placeholder]="'CRAFTSMAN_PROFILE.EDIT_BIO_PLACEHOLDER' | translate"></textarea>
+          @if (editForm.get('bio')?.invalid && editForm.get('bio')?.touched) {
+            <span class="cp-modal-error">{{ 'CRAFTSMAN_PROFILE.EDIT_BIO_MAXLENGTH' | translate }}</span>
+          }
+        </div>
+
+        <div class="cp-modal-field-row">
+          <div class="cp-modal-field">
+            <label>{{ 'CRAFTSMAN_PROFILE.EDIT_PRICE_FROM' | translate }}</label>
+            <input type="number" formControlName="priceMin" class="cp-modal-input" min="0" step="0.5"
+              [class.cp-modal-input--invalid]="editForm.get('priceMin')?.invalid && editForm.get('priceMin')?.touched" />
+          </div>
+          <div class="cp-modal-field">
+            <label>{{ 'CRAFTSMAN_PROFILE.EDIT_PRICE_TO' | translate }}</label>
+            <input type="number" formControlName="priceMax" class="cp-modal-input" min="0" step="0.5"
+              [class.cp-modal-input--invalid]="editForm.get('priceMax')?.invalid && editForm.get('priceMax')?.touched" />
+          </div>
+        </div>
+
         @if (editSuccess()) {
-          <div class="cp-modal-success">✅ تم حفظ التغييرات بنجاح</div>
+          <div class="cp-modal-success">{{ 'CRAFTSMAN_PROFILE.EDIT_SUCCESS' | translate }}</div>
         }
         @if (editError()) {
-          <div class="cp-modal-err">{{ editError() }}</div>
+          <div class="cp-modal-err">{{ editError() | translate }}</div>
         }
 
         <button type="submit" class="cp-btn-primary cp-modal-save" [disabled]="editForm.invalid || editSaving()">
-          @if (editSaving()) { جاري الحفظ... } @else { حفظ التغييرات }
+          @if (editSaving()) { {{ 'CRAFTSMAN_PROFILE.EDIT_SAVING' | translate }} } @else { {{ 'CRAFTSMAN_PROFILE.EDIT_SAVE' | translate }} }
         </button>
       </form>
     </div>

@@ -1,6 +1,14 @@
 // ─── Service Slugs ────────────────────────────────────────────────────────────
+export interface ActiveServiceDto {
+  nameAr: string;
+  nameEn: string;
+  icon: string;
+}
 
-
+export interface ActiveCityDto {
+  nameAr: string;
+  nameEn: string;
+}
 
 // ─── Search Params ─────────────────────────────────────────────────────────────
 
@@ -87,6 +95,7 @@ export interface CraftsmanDto {
   reviewsCount: number;
   experienceYears: number;
   bio: string;
+  phone?: string;
   avatarUrl?: string;
   priceMin?: number;
   priceMax?: number;

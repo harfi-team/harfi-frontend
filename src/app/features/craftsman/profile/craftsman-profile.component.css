@@ -1294,6 +1294,25 @@
   border-color: #e9405a;
 }
 
+.cp-modal-textarea {
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  background: var(--input-bg, #f9fafb);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  line-height: 1.6;
+}
+
+.cp-modal-textarea:focus {
+  border-color: #8a2387;
+}
+
 .cp-modal-error {
   font-size: 0.78rem;
   color: #e9405a;
@@ -1329,7 +1348,8 @@
   background: var(--card-bg);
 }
 
-:host-context([data-theme='dark']) .cp-modal-input {
+:host-context([data-theme='dark']) .cp-modal-input,
+:host-context([data-theme='dark']) .cp-modal-textarea {
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.1);
 }
