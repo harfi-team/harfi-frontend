@@ -6,6 +6,7 @@ import { ChatHubService } from '../hubs/chat.hub.service';
 import { NotificationsService } from '../../features/notifications/notifications.service';
 import { ErrorHandlerService } from './error-handler.service';
 import { AuthService } from './auth.service';
+import { ChatService } from '../../features/chat/chat.service';
 import { NotificationDto } from '../models/notification.models';
 import { MessageDto } from '../models/chat.models';
   
@@ -17,6 +18,7 @@ export class RealtimeNotificationOrchestratorService {
   private readonly notifHub = inject(NotificationHubService);
   private readonly chatHub = inject(ChatHubService);
   private readonly notifService = inject(NotificationsService);
+  private readonly chatService = inject(ChatService);
   private readonly errorHandler = inject(ErrorHandlerService);
   readonly jobAccepted$ = new Subject<number>();
 
@@ -30,9 +32,17 @@ export class RealtimeNotificationOrchestratorService {
     this.started = true;
     this.subscriptions = new Subscription();
 
+    // Sync unread count on every connect/reconnect
     this.subscriptions.add(
-      this.notifService.getUnreadCount().subscribe({
-        next: d => this.notifService.setUnreadCount(d.unreadCount)
+      this.notifHub.connectionState$.subscribe(state => {
+        if (state === 'connected') {
+          this.notifService.getUnreadCount().subscribe({
+            next: d => this.notifService.setUnreadCount(d.unreadCount)
+          });
+          this.chatService.getConversations().subscribe({
+            next: conversations => this.chatService.updateTotalUnread(conversations)
+          });
+        }
       })
     );
 
@@ -49,8 +59,11 @@ export class RealtimeNotificationOrchestratorService {
     }
 
     // ✅ toast - نفس المنطق القديم
-    if (notif.type === 'new_message' && this.isViewingConversation(notif.conversationId)) {
-      return;
+    if (notif.type === 'new_message') {
+      this.chatService.incrementChatUnread();
+      if (this.isViewingConversation(notif.conversationId)) {
+        return;
+      }
     }
 
     this.notifService.incrementUnread();

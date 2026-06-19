@@ -2,7 +2,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
@@ -24,6 +24,7 @@ import { JobDto } from '../../../core/models/job.models';
     TranslateModule,
     CraftsmanReviewsComponent,
     ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './craftsman-profile.component.html',
   styleUrl: './craftsman-profile.component.css',
@@ -185,7 +186,7 @@ export class CraftsmanProfileComponent implements OnInit {
     const user = this.tokenSvc.getUser();
     this.editForm.patchValue({
       name: user?.name ?? '',
-      phone: '',
+      phone: user?.phone ?? '',
     });
     this.editError.set('');
     this.editSuccess.set(false);

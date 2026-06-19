@@ -242,6 +242,7 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     try {
       await this.chatHub.joinConversation(id);
       await this.chatHub.markAsRead(id);
+      this.chatService.decrementChatUnread();
     } catch {
       this.showError('CHAT.CONNECTION_OFFLINE');
     }
