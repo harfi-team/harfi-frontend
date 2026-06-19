@@ -111,7 +111,7 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   sessions: AiSessionSummary[] = [];
   sessionsLoading = false;
 currentSessionId: string = crypto.randomUUID();
-private readonly backendBase = 'https://localhost:5108';
+private readonly backendBase = 'https://harfi.runasp.net/';
   // ── Chat state ────────────────────────────────────────
   userInput = '';
   isLoading = false;
