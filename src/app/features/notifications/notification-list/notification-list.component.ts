@@ -57,7 +57,9 @@ export class NotificationListComponent implements OnDestroy {
 
       this.notifications.update(list => {
         if (list.some(n => n.id === notif.id)) return list;
-        return [notif, ...list];
+        const updated = [notif, ...list];
+        updated.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return updated;
       });
       this.syncUnreadCount();
       this.cdr.markForCheck();
@@ -70,7 +72,12 @@ export class NotificationListComponent implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
-          this.notifications.set(data);
+          const existing = this.notifications();
+          const dataIds = new Set(data.map(n => n.id));
+          const extras = existing.filter(n => !dataIds.has(n.id));
+          const merged = [...data, ...extras];
+          merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          this.notifications.set(merged);
           this.syncUnreadCount();
           this.loading.set(false);
         },

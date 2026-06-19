@@ -4,6 +4,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { NotificationsService } from '../../../features/notifications/notifications.service';
+import { ChatService } from '../../../features/chat/chat.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -17,6 +19,11 @@ export class SideNavComponent {
   router = inject(Router);
   themeService = inject(ThemeService);
   languageService = inject(LanguageService);
+  private notifService = inject(NotificationsService);
+  private chatService = inject(ChatService);
+
+  readonly unreadCount = this.notifService.unreadCount;
+  readonly chatUnreadCount = this.chatService.totalUnreadCount;
 
   showAddButton = input<boolean>(false);
   isDrawerOpen = input<boolean>(false);

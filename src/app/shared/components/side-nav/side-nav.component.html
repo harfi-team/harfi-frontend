@@ -35,7 +35,12 @@
       </a>
 
       <a class="nav-item" routerLink="/chat" routerLinkActive="active" (click)="closeDrawer()">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">chat</span>
+          @if (chatUnreadCount() > 0) {
+            <span class="notif-badge">{{ chatUnreadCount() > 99 ? '99+' : chatUnreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NAV.CHAT' | translate }}</span>
       </a>
 
@@ -50,7 +55,12 @@
         routerLinkActive="active"
         (click)="closeDrawer()"
       >
-        <span class="material-symbols-outlined">notifications</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">notifications</span>
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
       </a>
 
@@ -81,7 +91,12 @@
       </a>
 
       <a class="nav-item" routerLink="/chat" routerLinkActive="active" (click)="closeDrawer()">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">chat</span>
+          @if (chatUnreadCount() > 0) {
+            <span class="notif-badge">{{ chatUnreadCount() > 99 ? '99+' : chatUnreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NAV.CHAT' | translate }}</span>
       </a>
 
@@ -91,7 +106,12 @@
         routerLinkActive="active"
         (click)="closeDrawer()"
       >
-        <span class="material-symbols-outlined">notifications</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">notifications</span>
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
       </a>
 
@@ -263,8 +283,23 @@
       </a>
 
       <a class="bottom-nav-item" routerLink="/chat" routerLinkActive="active">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">chat</span>
+          @if (chatUnreadCount() > 0) {
+            <span class="notif-badge">{{ chatUnreadCount() > 99 ? '99+' : chatUnreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NAV.CHAT' | translate }}</span>
+      </a>
+
+      <a class="bottom-nav-item" routerLink="/notifications" routerLinkActive="active">
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">notifications</span>
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          }
+        </span>
+        <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
       </a>
 
       <a class="bottom-nav-item" routerLink="/user" routerLinkActive="active">
@@ -293,12 +328,22 @@
       </a>
 
       <a class="bottom-nav-item" routerLink="/chat" routerLinkActive="active">
-        <span class="material-symbols-outlined">chat</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">chat</span>
+          @if (chatUnreadCount() > 0) {
+            <span class="notif-badge">{{ chatUnreadCount() > 99 ? '99+' : chatUnreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NAV.CHAT' | translate }}</span>
       </a>
 
       <a class="bottom-nav-item" routerLink="/notifications" routerLinkActive="active">
-        <span class="material-symbols-outlined">notifications</span>
+        <span class="notif-icon-wrap">
+          <span class="material-symbols-outlined">notifications</span>
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          }
+        </span>
         <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
       </a>
 

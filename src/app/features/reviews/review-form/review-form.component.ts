@@ -4,7 +4,6 @@ import {
   DestroyRef,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   inject,
 } from '@angular/core';
@@ -22,7 +21,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './review-form.component.html',
   styleUrls: ['./review-form.component.css'],
 })
-export class ReviewFormComponent implements OnInit {
+export class ReviewFormComponent {
   @Input() jobId!: number;
   @Input() job!: JobDto;
   @Input() visible = false;
@@ -40,18 +39,9 @@ export class ReviewFormComponent implements OnInit {
   isLoading = false;
   isSubmitted = false; // true → show thank you screen
   errorMessage = ''; // Arabic error from backend
-  alreadyReviewed = false; // ← frontend check
 
   hoveredStar = 0;
   starsArray = [1, 2, 3, 4, 5];
-
-  ngOnInit(): void {
-    // ✅ Frontend check من الـ localStorage
-    const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-    if (reviewedJobs.includes(this.jobId)) {
-      this.alreadyReviewed = true;
-    }
-  }
 
   selectStar(star: number): void {
     this.form.get('stars')?.setValue(star);
@@ -94,12 +84,6 @@ export class ReviewFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-          if (!reviewedJobs.includes(this.jobId)) {
-            reviewedJobs.push(this.jobId);
-            localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
-          }
-
           this.isLoading = false;
           this.isSubmitted = true;
           this.cdr.detectChanges();
@@ -107,18 +91,8 @@ export class ReviewFormComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          if (err.status === 500) {
-            const reviewedJobs = JSON.parse(localStorage.getItem('reviewedJobs') || '[]');
-            if (!reviewedJobs.includes(this.jobId)) {
-              reviewedJobs.push(this.jobId);
-              localStorage.setItem('reviewedJobs', JSON.stringify(reviewedJobs));
-            }
-            this.isSubmitted = true;
-          } else {
-            this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
-            this.form.enable();
-          }
-
+          this.errorMessage = err.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى';
+          this.form.enable();
           this.cdr.detectChanges();
         },
       });
