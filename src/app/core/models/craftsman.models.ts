@@ -95,6 +95,7 @@ export interface CraftsmanDto {
   reviewsCount: number;
   experienceYears: number;
   bio: string;
+  phone?: string;
   avatarUrl?: string;
   priceMin?: number;
   priceMax?: number;
