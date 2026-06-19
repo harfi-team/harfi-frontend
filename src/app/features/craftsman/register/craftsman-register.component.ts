@@ -202,17 +202,17 @@ export class CraftsmanRegisterComponent implements OnInit {
                 next: () => {
                   console.log('[Register] profile image uploaded');
                   this.isLoading = false;
-                  this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
+                  this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
                 },
                 error: (imgErr) => {
                   console.error('[Register] image upload error:', imgErr);
                   this.isLoading = false;
-                  this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
+                  this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
                 },
               });
             } else {
               this.isLoading = false;
-              this.router.navigate(['/craftsman/pending'], { state: { craftsmanData: v } });
+              this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
             }
           },
           error: (err) => {
