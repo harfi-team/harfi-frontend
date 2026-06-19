@@ -22,6 +22,7 @@ export class MainLayoutComponent {
   pageTitle = signal('NAV.HOME');
   isAdminRoute = signal(false);
   isAiRoute = signal(false);
+  isRegisterPage = signal(false);
   mobileNavOpen = signal(false);
   currentUrl = signal(this.router.url);
   readonly unreadCount = this.notificationsService.unreadCount;
@@ -60,10 +61,11 @@ export class MainLayoutComponent {
         }),
         takeUntilDestroyed(),
       )
-            .subscribe(({ key, admin, ai }) => {
+             .subscribe(({ key, admin, ai }) => {
         this.pageTitle.set(key);
         this.isAdminRoute.set(admin);
         this.isAiRoute.set(ai);
+        this.isRegisterPage.set(this.router.url.includes('register'));
         this.currentUrl.set(this.router.url);
         this.mobileNavOpen.set(false);
       });
