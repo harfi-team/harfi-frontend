@@ -9,6 +9,7 @@ import {
   ActiveServiceDto,
   CraftsmanRegistrationDto,
 } from '../../../core/models/craftsman.models';
+import { UserService } from '../../user/user.service';
 
 // ── Validator: priceRangeMax يجب أن يكون أكبر من priceRangeMin ──
 function priceRangeValidator(group: AbstractControl): ValidationErrors | null {
@@ -47,7 +48,8 @@ export class CraftsmanRegisterComponent implements OnInit {
     private fb: FormBuilder,
     private craftsmanService: CraftsmanService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -154,13 +156,14 @@ export class CraftsmanRegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // 1. التأكد من وجود صورة البطاقة أولاً
     if (!this.nationalIdFile) {
       this.errorMessage = 'يرجى إرفاق صورة الهوية الوطنية.';
-      this.registerForm.get('nationalIdUrl')?.markAsTouched();
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       return;
     }
 
+    // 2. التأكد من صحة باقي الفورم
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -170,66 +173,52 @@ export class CraftsmanRegisterComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // ── رفع صورة الهوية أولاً ──
-    this.craftsmanService.uploadNationalIdFile(this.nationalIdFile).subscribe({
-      next: (res) => {
-        const nationalIdUrl = res.url;
-        this.registerForm.patchValue({ nationalIdUrl });
-        this.cdr.detectChanges();
+    const v = this.registerForm.value;
+    
+    // 3. بناء الـ FormData (البيانات + صورة البطاقة فقط)
+    const formData = new FormData();
 
-        const v = this.registerForm.value;
+    formData.append('UserId', String(v.userId));
+    formData.append('ServiceType', v.serviceType);
+    formData.append('City', v.city);
+    formData.append('Neighborhood', v.neighborhood);
+    formData.append('PriceRangeMin', String(v.priceRangeMin));
+    formData.append('PriceRangeMax', String(v.priceRangeMax));
+    formData.append('Experience', String(v.experience));
+    formData.append('Bio', v.bio);
 
-        const payload: CraftsmanRegistrationDto = {
-          userId:        Number(v.userId),
-          serviceType:   v.serviceType,
-          city:          v.city,
-          neighborhood:  v.neighborhood,
-          priceRangeMin: Number(v.priceRangeMin),
-          priceRangeMax: Number(v.priceRangeMax),
-          experience:    Number(v.experience),
-          bio:           v.bio,
-          nationalIdUrl: v.nationalIdUrl,
-        };
+    // إرفاق ملف البطاقة (الاسم هنا لازم يطابق الـ Swagger بالظبط)
+    formData.append('NationalIdFile', this.nationalIdFile);
 
-        console.log('[Register] payload:', payload);
-
-        this.craftsmanService.register(payload).subscribe({
-          next: (regRes) => {
-            console.log('[Register] success:', regRes);
-            // ── NOTE: Backend currently returns only a message, not the craftsman ID.
-            //    Ideally the register endpoint should return { id, ... } so we can use
-            //    the craftsmanId for subsequent calls. For now the profile-image endpoint
-            //    accepts userId, which we already have in payload.userId.
-            if (this.profileImageFile) {
-              this.craftsmanService.uploadProfileImage(payload.userId, this.profileImageFile).subscribe({
-                next: () => {
-                  console.log('[Register] profile image uploaded');
-                  this.isLoading = false;
-                  this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
-                },
-                error: (imgErr) => {
-                  console.error('[Register] image upload error:', imgErr);
-                  this.isLoading = false;
-                  this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
-                },
-              });
-            } else {
+    // 4. إرسال الطلب للباك إند
+    this.craftsmanService.register(formData).subscribe({
+      next: (regRes) => {
+        console.log('[Register] success:', regRes);
+        
+        // 5. بعد نجاح التسجيل، نرفع الصورة الشخصية (لو موجودة) باستخدام UserService
+        if (this.profileImageFile) {
+          this.userService.uploadProfileImage(v.userId, this.profileImageFile).subscribe({
+            next: () => {
+              console.log('[Register] profile image uploaded');
               this.isLoading = false;
               this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
-            }
-          },
-          error: (err) => {
-            console.error('[Register] error:', err.status, err.error);
-            this.isLoading = false;
-            this.errorMessage = this.getErrorMessage(err);
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-          },
-        });
+            },
+            error: (imgErr) => {
+              console.error('[Register] profile image upload error:', imgErr);
+              this.isLoading = false;
+              this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
+            },
+          });
+        } else {
+          // لو مفيش صورة شخصية، نوجه اليوزر لصفحة الانتظار على طول
+          this.isLoading = false;
+          this.router.navigate(['/craftsmen/pending'], { state: { craftsmanData: v } });
+        }
       },
       error: (err) => {
-        console.error('[Register] national ID upload error:', err);
+        console.error('[Register] error:', err.status, err.error);
         this.isLoading = false;
-        this.errorMessage = 'فشل رفع صورة الهوية. يرجى المحاولة مرة أخرى.';
+        this.errorMessage = this.getErrorMessage(err);
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       },
     });

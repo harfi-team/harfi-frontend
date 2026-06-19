@@ -1,9 +1,7 @@
 <div class="cr-container" dir="rtl">
-
   <!-- ══════════════════════ BANNER ══════════════════════ -->
   <div class="cr-banner gradient-bg">
     <div class="cr-banner-content">
-
       <div class="cr-brand">
         <span class="cr-brand-icon">🔧</span>
         <span class="cr-brand-name">حرفي</span>
@@ -33,14 +31,12 @@
 
   <!-- ══════════════════════ FORM ══════════════════════ -->
   <div class="cr-form-section">
-
     <div class="cr-form-header">
       <h3>بيانات العمل</h3>
       <p>أخبرنا المزيد عن مهاراتك والخدمات التي تقدمها.</p>
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
-
       <!-- ── مجال التخصص ── -->
       <div class="cr-field">
         <label class="cr-label">
@@ -53,7 +49,8 @@
             *ngFor="let service of activeServices"
             class="harfi-chip cr-type-chip"
             [class.cr-type-chip--active]="f['serviceType'].value === service.nameAr"
-            (click)="setServiceType(service.nameAr)">
+            (click)="setServiceType(service.nameAr)"
+          >
             {{ service.nameAr }}
           </button>
         </div>
@@ -66,8 +63,11 @@
       <div class="cr-row">
         <div class="cr-field">
           <label class="cr-label">المدينة <span class="cr-star">*</span></label>
-          <select class="cr-input" formControlName="city"
-            [class.cr-input--err]="f['city'].touched && f['city'].invalid">
+          <select
+            class="cr-input"
+            formControlName="city"
+            [class.cr-input--err]="f['city'].touched && f['city'].invalid"
+          >
             <option value="" disabled selected>اختر مدينتك</option>
             <option *ngFor="let city of activeCities" [value]="city.nameAr">
               {{ city.nameAr }}
@@ -80,9 +80,13 @@
 
         <div class="cr-field">
           <label class="cr-label">الحي / المنطقة <span class="cr-star">*</span></label>
-          <input type="text" class="cr-input" formControlName="neighborhood"
+          <input
+            type="text"
+            class="cr-input"
+            formControlName="neighborhood"
             placeholder="أدخل اسم الحي أو المنطقة"
-            [class.cr-input--err]="f['neighborhood'].touched && f['neighborhood'].invalid">
+            [class.cr-input--err]="f['neighborhood'].touched && f['neighborhood'].invalid"
+          />
           <small class="cr-error" *ngIf="f['neighborhood'].touched && f['neighborhood'].invalid">
             يرجى إدخال الحي (حرفان على الأقل).
           </small>
@@ -109,9 +113,14 @@
           <div class="cr-price-group">
             <span class="cr-price-lbl">من</span>
             <div class="cr-price-input-wrap">
-              <input type="number" class="cr-input" formControlName="priceRangeMin"
-                placeholder="0" min="0"
-                [class.cr-input--err]="f['priceRangeMin'].touched && f['priceRangeMin'].invalid">
+              <input
+                type="number"
+                class="cr-input"
+                formControlName="priceRangeMin"
+                placeholder="0"
+                min="0"
+                [class.cr-input--err]="f['priceRangeMin'].touched && f['priceRangeMin'].invalid"
+              />
               <span class="cr-currency">ج.م</span>
             </div>
           </div>
@@ -119,9 +128,14 @@
           <div class="cr-price-group">
             <span class="cr-price-lbl">إلى</span>
             <div class="cr-price-input-wrap">
-              <input type="number" class="cr-input" formControlName="priceRangeMax"
-                placeholder="0" min="1"
-                [class.cr-input--err]="f['priceRangeMax'].touched && f['priceRangeMax'].invalid">
+              <input
+                type="number"
+                class="cr-input"
+                formControlName="priceRangeMax"
+                placeholder="0"
+                min="1"
+                [class.cr-input--err]="f['priceRangeMax'].touched && f['priceRangeMax'].invalid"
+              />
               <span class="cr-currency">ج.م</span>
             </div>
           </div>
@@ -140,9 +154,13 @@
       <!-- ── نبذة ── -->
       <div class="cr-field">
         <label class="cr-label">نبذة عنك وعن عملك <span class="cr-star">*</span></label>
-        <textarea class="cr-input cr-textarea" formControlName="bio" rows="4"
+        <textarea
+          class="cr-input cr-textarea"
+          formControlName="bio"
+          rows="4"
           placeholder="اكتب نبذة مختصرة تظهر للعملاء في ملفك الشخصي..."
-          [class.cr-input--err]="f['bio'].touched && f['bio'].invalid">
+          [class.cr-input--err]="f['bio'].touched && f['bio'].invalid"
+        >
         </textarea>
         <div class="cr-bio-footer">
           <div>
@@ -160,7 +178,7 @@
       </div>
 
       <!-- ── معرض الأعمال ── -->
-      <div class="cr-field">
+      <!-- <div class="cr-field">
         <label class="cr-label">
           معرض الأعمال
           <span class="cr-hint">(اختياري)</span>
@@ -178,7 +196,7 @@
         <small *ngIf="selectedFileName" class="cr-success-text">
           ✓ تم إرفاق: {{ selectedFileName }}
         </small>
-      </div>
+      </div> -->
 
       <!-- ── صورة شخصية ── -->
       <div class="cr-field">
@@ -191,7 +209,13 @@
           <div class="cr-upload-box cr-upload-add" (click)="profileImageInput.click()">
             <span class="cr-upload-icon">👤</span>
             <span>إضافة صورة</span>
-            <input type="file" #profileImageInput (change)="onProfileImageSelected($event)" accept="image/*" hidden>
+            <input
+              type="file"
+              #profileImageInput
+              (change)="onProfileImageSelected($event)"
+              accept="image/*"
+              hidden
+            />
           </div>
         </div>
         <small *ngIf="profileImageFile" class="cr-success-text">
@@ -201,15 +225,19 @@
 
       <!-- ── صورة الهوية ── -->
       <div class="cr-field">
-        <label class="cr-label">
-          صورة الهوية <span class="cr-star">*</span>
-        </label>
+        <label class="cr-label"> صورة الهوية <span class="cr-star">*</span> </label>
         <p class="cr-sub">أضف صورة لبطاقة الهوية الخاصة بك.</p>
         <div class="cr-upload-row">
           <div class="cr-upload-box cr-upload-add" (click)="nationalIdInput.click()">
             <span class="cr-upload-icon">🪪</span>
             <span>إضافة صورة</span>
-            <input type="file" #nationalIdInput (change)="onNationalIdSelected($event)" accept="image/*" hidden>
+            <input
+              type="file"
+              #nationalIdInput
+              (change)="onNationalIdSelected($event)"
+              accept="image/*"
+              hidden
+            />
           </div>
           <div class="cr-upload-box cr-upload-empty" *ngIf="!nationalIdFile"></div>
           <div class="cr-upload-box cr-upload-empty" *ngIf="!nationalIdFile"></div>
@@ -217,7 +245,10 @@
         <small *ngIf="nationalIdFile" class="cr-success-text">
           ✓ تم إرفاق: {{ nationalIdFile.name }}
         </small>
-        <small class="cr-error" *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid && !nationalIdFile">
+        <small
+          class="cr-error"
+          *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid && !nationalIdFile"
+        >
           يرجى إرفاق صورة الهوية.
         </small>
       </div>
@@ -240,7 +271,6 @@
           </ng-container>
         </button>
       </div>
-
     </form>
   </div>
 </div>
@@ -251,15 +281,12 @@
     <div class="cr-modal-icon">✅</div>
     <h3 class="cr-modal-title">تم إرسال بياناتك بنجاح!</h3>
     <p class="cr-modal-body">
-      شكراً لتسجيلك في منصة حرفي. سيقوم فريقنا بمراجعة بياناتك
-      وتفعيل حسابك في أقرب وقت ممكن.
+      شكراً لتسجيلك في منصة حرفي. سيقوم فريقنا بمراجعة بياناتك وتفعيل حسابك في أقرب وقت ممكن.
     </p>
     <div class="cr-modal-status">
       <span class="cr-badge-pending">⏳ قيد المراجعة</span>
       <p class="cr-modal-hint">ستصلك إشعار عند قبول طلبك</p>
     </div>
-    <button class="gradient-btn cr-modal-btn" (click)="goHome()">
-      العودة للصفحة الرئيسية
-    </button>
+    <button class="gradient-btn cr-modal-btn" (click)="goHome()">العودة للصفحة الرئيسية</button>
   </div>
 </div>

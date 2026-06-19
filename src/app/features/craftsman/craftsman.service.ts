@@ -44,19 +44,12 @@ export class CraftsmanService {
   // ══════════════════════════════════════════════
   //  REGISTER (Craftsman registration form)
   // ══════════════════════════════════════════════
-  register(payload: CraftsmanRegistrationDto): Observable<any> {
-    return this.http.post(`${this.base}/register`, payload);
+  register(formData: FormData): Observable<any> {
+    // هنبعت الفورم داتا مباشرة للبوست
+    return this.http.post(`${this.base}/register`, formData);
   }
 
-  // ══════════════════════════════════════════════
-  //  UPLOAD NATIONAL ID
-  // ══════════════════════════════════════════════
-  uploadNationalIdFile(file: File): Observable<{ url: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ url: string }>(`${this.base}/upload-national-id`, formData);
-  }
-
+  
   // ══════════════════════════════════════════════
   //  UPLOAD PROFILE IMAGE
   // ══════════════════════════════════════════════
