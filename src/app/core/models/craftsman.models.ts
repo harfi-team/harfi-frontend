@@ -1,6 +1,14 @@
 // ─── Service Slugs ────────────────────────────────────────────────────────────
+export interface ActiveServiceDto {
+  nameAr: string;
+  nameEn: string;
+  icon: string;
+}
 
-
+export interface ActiveCityDto {
+  nameAr: string;
+  nameEn: string;
+}
 
 // ─── Search Params ─────────────────────────────────────────────────────────────
 

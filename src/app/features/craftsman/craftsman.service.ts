@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  ActiveCityDto,
+  ActiveServiceDto,
   CraftsmanDto,
   CraftsmanSearchParams,
   CraftsmanServiceSlug,
@@ -29,10 +31,30 @@ export class CraftsmanService {
   };
 
   // ══════════════════════════════════════════════
+  //  ACTIVE SERVICES & CITIES
+  // ══════════════════════════════════════════════
+  getActiveServices(): Observable<ActiveServiceDto[]> {
+    return this.http.get<ActiveServiceDto[]>(`${this.base}/active-services`);
+  }
+
+  getActiveCities(): Observable<ActiveCityDto[]> {
+    return this.http.get<ActiveCityDto[]>(`${this.base}/active-cities`);
+  }
+
+  // ══════════════════════════════════════════════
   //  REGISTER (Craftsman registration form)
   // ══════════════════════════════════════════════
   register(payload: CraftsmanRegistrationDto): Observable<any> {
     return this.http.post(`${this.base}/register`, payload);
+  }
+
+  // ══════════════════════════════════════════════
+  //  UPLOAD PROFILE IMAGE
+  // ══════════════════════════════════════════════
+  uploadProfileImage(craftsmanId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.base}/${craftsmanId}/upload-image`, formData);
   }
 
   // ══════════════════════════════════════════════

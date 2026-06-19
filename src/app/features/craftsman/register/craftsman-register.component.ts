@@ -2,8 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder,FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors,} from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { CraftsmanService } from '../craftsman.service';
-import { CraftsmanRegistrationDto } from '../../../core/models/craftsman.models';
+import {
+  ActiveCityDto,
+  ActiveServiceDto,
+  CraftsmanRegistrationDto,
+} from '../../../core/models/craftsman.models';
 
 // ── Validator: priceRangeMax يجب أن يكون أكبر من priceRangeMin ──
 function priceRangeValidator(group: AbstractControl): ValidationErrors | null {
@@ -33,9 +38,9 @@ export class CraftsmanRegisterComponent implements OnInit {
   showSuccessModal: boolean = false;
   errorMessage: string = '';
 
-  serviceTypes: string[] = [
-    'سباكة', 'كهرباء', 'نجارة', 'دهان', 'تكييف', 'تنظيف', 'أخرى',
-  ];
+  activeServices: ActiveServiceDto[] = [];
+  activeCities: ActiveCityDto[] = [];
+  profileImageFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -62,7 +67,19 @@ export class CraftsmanRegisterComponent implements OnInit {
       { validators: priceRangeValidator }
     );
 
-    
+    // ── تحميل الخدمات والمدن المتاحة ──
+    forkJoin({
+      services: this.craftsmanService.getActiveServices(),
+      cities: this.craftsmanService.getActiveCities(),
+    }).subscribe({
+      next: ({ services, cities }) => {
+        this.activeServices = services;
+        this.activeCities = cities;
+      },
+      error: (err) => {
+        console.error('[Register] Failed to load active services/cities:', err);
+      },
+    });
   }
 
   // ── استخراج userId من أي شكل ممكن يتخزن فيه بعد اللوجين ──
@@ -106,6 +123,11 @@ export class CraftsmanRegisterComponent implements OnInit {
   onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) this.selectedFileName = file.name;
+  }
+
+  onProfileImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.profileImageFile = file ?? null;
   }
 
   setServiceType(type: string): void {
@@ -154,8 +176,24 @@ export class CraftsmanRegisterComponent implements OnInit {
     this.craftsmanService.register(payload).subscribe({
       next: (res) => {
         console.log('[Register] success:', res);
-        this.isLoading = false;
-        this.showSuccessModal = true;
+        const craftsmanId = res?.id;
+        if (this.profileImageFile && craftsmanId) {
+          this.craftsmanService.uploadProfileImage(craftsmanId, this.profileImageFile).subscribe({
+            next: () => {
+              console.log('[Register] profile image uploaded');
+              this.isLoading = false;
+              this.showSuccessModal = true;
+            },
+            error: (imgErr) => {
+              console.error('[Register] image upload error:', imgErr);
+              this.isLoading = false;
+              this.showSuccessModal = true;
+            },
+          });
+        } else {
+          this.isLoading = false;
+          this.showSuccessModal = true;
+        }
       },
       error: (err) => {
         console.error('[Register] error:', err.status, err.error);

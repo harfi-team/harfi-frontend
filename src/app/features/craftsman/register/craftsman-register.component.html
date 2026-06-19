@@ -50,11 +50,11 @@
         <div class="cr-chips-wrap">
           <button
             type="button"
-            *ngFor="let type of serviceTypes"
+            *ngFor="let service of activeServices"
             class="harfi-chip cr-type-chip"
-            [class.cr-type-chip--active]="f['serviceType'].value === type"
-            (click)="setServiceType(type)">
-            {{ type }}
+            [class.cr-type-chip--active]="f['serviceType'].value === service.nameAr"
+            (click)="setServiceType(service.nameAr)">
+            {{ service.nameAr }}
           </button>
         </div>
         <small class="cr-error" *ngIf="f['serviceType'].touched && f['serviceType'].invalid">
@@ -69,18 +69,9 @@
           <select class="cr-input" formControlName="city"
             [class.cr-input--err]="f['city'].touched && f['city'].invalid">
             <option value="" disabled selected>اختر مدينتك</option>
-            <option value="القاهرة">القاهرة</option>
-            <option value="الإسكندرية">الإسكندرية</option>
-            <option value="الجيزة">الجيزة</option>
-            <option value="المنصورة">المنصورة</option>
-            <option value="طنطا">طنطا</option>
-            <option value="المحلة الكبرى">المحلة الكبرى</option>
-            <option value="أسيوط">أسيوط</option>
-            <option value="الفيوم">الفيوم</option>
-            <option value="سوهاج">سوهاج</option>
-            <option value="بورسعيد">بورسعيد</option>
-            <option value="الزقازيق">الزقازيق</option>
-            <option value="شبرا الخيمة">شبرا الخيمة</option>
+            <option *ngFor="let city of activeCities" [value]="city.nameAr">
+              {{ city.nameAr }}
+            </option>
           </select>
           <small class="cr-error" *ngIf="f['city'].touched && f['city'].invalid">
             يرجى اختيار المدينة.
@@ -186,6 +177,25 @@
         </div>
         <small *ngIf="selectedFileName" class="cr-success-text">
           ✓ تم إرفاق: {{ selectedFileName }}
+        </small>
+      </div>
+
+      <!-- ── صورة شخصية ── -->
+      <div class="cr-field">
+        <label class="cr-label">
+          صورة شخصية
+          <span class="cr-hint">(اختياري)</span>
+        </label>
+        <p class="cr-sub">أضف صورة شخصية لتظهر في ملفك التعريفي.</p>
+        <div class="cr-upload-row">
+          <div class="cr-upload-box cr-upload-add" (click)="profileImageInput.click()">
+            <span class="cr-upload-icon">👤</span>
+            <span>إضافة صورة</span>
+            <input type="file" #profileImageInput (change)="onProfileImageSelected($event)" accept="image/*" hidden>
+          </div>
+        </div>
+        <small *ngIf="profileImageFile" class="cr-success-text">
+          ✓ تم إرفاق: {{ profileImageFile.name }}
         </small>
       </div>
 
