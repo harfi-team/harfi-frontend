@@ -122,7 +122,9 @@ export class ChatListComponent implements OnDestroy {
       .subscribe({
         next: data => {
           if (this.isDestroyed) return;
-          this.conversations.set(this.sortConversations(data));
+          const sorted = this.sortConversations(data);
+          this.conversations.set(sorted);
+          this.chatService.updateTotalUnread(sorted);
           this.lastSuccessfulRefreshAt = Date.now();
           this.loading.set(false);
           this.isLoadingConversations = false;
@@ -137,9 +139,11 @@ export class ChatListComponent implements OnDestroy {
   openChat(id: number, event?: Event): void {
     if (event) event.stopPropagation();
 
-    this.conversations.update(list =>
-      list.map(c => (c.id === id ? { ...c, unreadCount: 0 } : c))
+    const updated = this.conversations().map(c =>
+      c.id === id ? { ...c, unreadCount: 0 } : c
     );
+    this.conversations.set(updated);
+    this.chatService.updateTotalUnread(updated);
 
     this.router.navigate(['/chat', id]);
   }
@@ -207,6 +211,7 @@ export class ChatListComponent implements OnDestroy {
   private applyConversationUpdate(updatedConversation: ConversationDto): void {
     const list = this.conversations();
     const convIndex = list.findIndex(c => c.id === updatedConversation.id);
+    let updatedList: ConversationDto[];
 
     if (convIndex >= 0) {
       const current = list[convIndex];
@@ -215,15 +220,17 @@ export class ChatListComponent implements OnDestroy {
         ...updatedConversation
       };
 
-      this.conversations.set([
+      updatedList = [
         merged,
         ...list.slice(0, convIndex),
         ...list.slice(convIndex + 1)
-      ]);
-      return;
+      ];
+    } else {
+      updatedList = [updatedConversation, ...list];
     }
 
-    this.conversations.set([updatedConversation, ...list]);
+    this.conversations.set(updatedList);
+    this.chatService.updateTotalUnread(updatedList);
   }
 
   isImageLastMessage(conv: ConversationDto): boolean {

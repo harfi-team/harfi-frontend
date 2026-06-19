@@ -202,19 +202,31 @@ export class ToastComponent {
   private ngZone = inject(NgZone);
 
   readonly message = signal<ToastMessage | null>(null);
+  private readonly queue: ToastMessage[] = [];
   private timeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     this.errorHandler.toast$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((msg) => {
       this.ngZone.run(() => {
-        this.message.set(msg);
-        this.clearTimer();
-        this.timeout = setTimeout(() => this.dismiss(), 4000);
+        this.queue.push(msg);
+        if (!this.message()) {
+          this.showNext();
+        }
         this.cdr.markForCheck();
       });
     });
 
     this.destroyRef.onDestroy(() => this.clearTimer());
+  }
+
+  private showNext(): void {
+    const next = this.queue.shift();
+    if (!next) return;
+
+    this.message.set(next);
+    this.clearTimer();
+    this.timeout = setTimeout(() => this.dismiss(), 4000);
+    this.cdr.markForCheck();
   }
 
   getIcon(type: string): string {
@@ -231,6 +243,7 @@ export class ToastComponent {
 
     this.message.set(null);
     this.clearTimer();
+    this.showNext();
     this.cdr.markForCheck();
   }
 

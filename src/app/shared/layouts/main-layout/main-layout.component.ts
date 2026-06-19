@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationsService } from '../../../features/notifications/notifications.service';
+import { ChatService } from '../../../features/chat/chat.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -18,6 +19,7 @@ export class MainLayoutComponent {
   private router = inject(Router);
   private auth = inject(AuthService);
   private notificationsService = inject(NotificationsService);
+  private chatService = inject(ChatService);
 
   pageTitle = signal('NAV.HOME');
   isAdminRoute = signal(false);
@@ -98,6 +100,10 @@ export class MainLayoutComponent {
     this.notificationsService.getUnreadCount().subscribe({
       next: (res) => this.notificationsService.setUnreadCount(res.unreadCount),
       error: () => this.notificationsService.setUnreadCount(0),
+    });
+
+    this.chatService.getConversations().subscribe({
+      next: conversations => this.chatService.updateTotalUnread(conversations),
     });
   }
 }

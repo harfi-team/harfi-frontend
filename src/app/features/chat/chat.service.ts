@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -8,6 +8,21 @@ import { ConversationDto, CreateConversationDto, MessageDto } from '../../core/m
 export class ChatService {
   private http = inject(HttpClient);
   private base = `${environment.apiBaseUrl}/Conversations`;
+
+  readonly totalUnreadCount = signal(0);
+
+  updateTotalUnread(conversations: ConversationDto[]): void {
+    const total = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
+    this.totalUnreadCount.set(total);
+  }
+
+  incrementChatUnread(): void {
+    this.totalUnreadCount.update(c => c + 1);
+  }
+
+  decrementChatUnread(): void {
+    this.totalUnreadCount.update(c => Math.max(0, c - 1));
+  }
 
   createConversation(dto: CreateConversationDto): Observable<ConversationDto> {
     return this.http.post<ConversationDto>(this.base, dto);

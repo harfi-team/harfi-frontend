@@ -1,7 +1,7 @@
-<div class="chat-wrapper" dir="rtl">
+<div class="chat-wrapper">
 
   <!-- ═══ HISTORY PANEL (ثابت جنب الشات) ═══ -->
-  <aside class="history-panel">
+  <aside class="history-panel" [class.open]="sidebarOpen">
     <div class="panel-header">
       <div class="sidebar-title">💬 المحادثات</div>
     </div>
@@ -39,6 +39,11 @@
       </div>
     </div>
   </aside>
+  <!-- Mobile backdrop -->
+<div class="sidebar-backdrop"
+     *ngIf="sidebarOpen"
+     (click)="toggleSidebar()">
+</div>
 
   <!-- ═══ MAIN CHAT ═══ -->
   <div class="chat-root">
@@ -46,23 +51,22 @@
     <!-- HEADER -->
     <header class="header">
       <div class="header-brand">
-        <div class="brand-logo">🔧</div>
-        <div>
-          <div class="brand-name">حرفي</div>
-          <div class="brand-sub">مساعدك الذكي للحرفيين</div>
-        </div>
+        <button class="icon-btn sidebar-toggle" (click)="toggleSidebar()" title="السجل">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div class="brand-logo">🔧</div>
+      <div>
+        <div class="brand-name">حرفي</div>
+        <div class="brand-sub">مساعدك الذكي للحرفيين</div>
       </div>
-      <div class="header-right">
-        <span class="online-dot"></span>
-        <span class="online-txt">متصل</span>
-        <!-- <button class="icon-btn" (click)="newChat()" title="محادثة جديدة">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12l7-7 7 7"/>
-          </svg>
-          جديد
-        </button> -->
-      </div>
-    </header>
+    </div>
+    <div class="header-right">
+      <span class="online-dot"></span>
+      <span class="online-txt">متصل</span>
+    </div>
+        </header>
 
     <!-- BODY -->
     <div class="chat-body">
@@ -86,41 +90,40 @@
             <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.bot-bubble]="msg.role === 'assistant'">
               <div class="dots" *ngIf="msg.isLoading"><span></span><span></span><span></span></div>
 
-<!-- أضف الصور هنا -->
-  <div class="msg-images" *ngIf="msg.images && msg.images.length > 0">
-    <img *ngFor="let img of msg.images" [src]="img" class="msg-img" />
-  </div>
+              <!-- صور الرسالة -->
+              <div class="msg-images" *ngIf="msg.images && msg.images.length > 0">
+                <img *ngFor="let img of msg.images" [src]="img" class="msg-img" />
+              </div>
 
-  <!-- audio bubble بشكل واتساب -->
-  <div class="wa-audio" *ngIf="msg.audioUrl">
-    <button class="wa-play-btn" (click)="toggleAudio($event, msg)" [attr.aria-label]="msg._audioPlaying ? 'إيقاف' : 'تشغيل'">
-      <svg *ngIf="!msg._audioPlaying" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-        <path d="M8 5.14v14l11-7-11-7z"/>
-      </svg>
-      <svg *ngIf="msg._audioPlaying" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-      </svg>
-    </button>
-    <div class="wa-waveform">
-      <div class="wa-bars">
-        <span *ngFor="let b of waveformBars(msg.audioUrl)" [style.height]="b + 'px'"></span>
-      </div>
-      <div class="wa-progress-track">
-        <input type="range" class="wa-slider" min="0" max="100"
-               [value]="msg._audioProgress || 0"
-               (input)="seekAudio($event, msg)" />
-      </div>
-    </div>
-    <span class="wa-duration">{{ msg._audioDuration || '0:00' }}</span>
-    <audio #audioEl [src]="msg.audioUrl" style="display:none"
-           (timeupdate)="onAudioTimeUpdate($event, msg)"
-           (ended)="onAudioEnded(msg)"
-           (loadedmetadata)="onAudioMeta($event, msg)"></audio>
-  </div>
-
+              <!-- audio bubble بشكل واتساب -->
+              <div class="wa-audio" *ngIf="msg.audioUrl">
+                <button class="wa-play-btn" (click)="toggleAudio($event, msg)" [attr.aria-label]="msg._audioPlaying ? 'إيقاف' : 'تشغيل'">
+                  <svg *ngIf="!msg._audioPlaying" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M8 5.14v14l11-7-11-7z"/>
+                  </svg>
+                  <svg *ngIf="msg._audioPlaying" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                </button>
+                <div class="wa-waveform">
+                  <div class="wa-bars">
+                    <span *ngFor="let b of waveformBars(msg.audioUrl)" [style.height]="b + 'px'"></span>
+                  </div>
+                  <div class="wa-progress-track">
+                    <input type="range" class="wa-slider" min="0" max="100"
+                           [value]="msg._audioProgress || 0"
+                           (input)="seekAudio($event, msg)" />
+                  </div>
+                </div>
+                <span class="wa-duration">{{ msg._audioDuration || '0:00' }}</span>
+                <audio #audioEl [src]="msg.audioUrl" style="display:none"
+                       (timeupdate)="onAudioTimeUpdate($event, msg)"
+                       (ended)="onAudioEnded(msg)"
+                       (loadedmetadata)="onAudioMeta($event, msg)"></audio>
+              </div>
 
               <div class="msg-text" *ngIf="!msg.isLoading && msg.content">{{ msg.content }}</div>
-<div class="msg-time" *ngIf="!msg.isLoading && (msg.content || (msg.images && msg.images.length > 0))">{{ msg.timestamp | date:'hh:mm a' }}</div>
+              <div class="msg-time" *ngIf="!msg.isLoading && (msg.content || (msg.images && msg.images.length > 0))">{{ msg.timestamp | date:'hh:mm a' }}</div>
             </div>
             <div class="avatar user-av" *ngIf="msg.role === 'user'">👤</div>
           </div>
@@ -152,10 +155,7 @@
                   <div class="step-text">{{ step }}</div>
                 </div>
               </div>
-              <!-- <button class="find-craftsman-btn" (click)="findCraftsman()" [disabled]="isLoading"> -->
-<!-- <button class="find-craftsman-btn" *ngIf="msg.detectedService" (click)="findCraftsman()" [disabled]="isLoading"> -->
-    <button class="find-craftsman-btn" *ngIf="msg.detectedService" (click)="findCraftsman()" [disabled]="isLoading">
-
+              <button class="find-craftsman-btn" *ngIf="msg.detectedService" (click)="findCraftsman()" [disabled]="isLoading">
                 لو المشكلة لسا متحلتش يمكنك البحث عن حرفي متخصص يساعدك 👷
               </button>
               <div class="msg-time">{{ msg.timestamp | date:'hh:mm a' }}</div>
@@ -219,20 +219,19 @@
                 <div class="strip-title"><span>🏆</span><span>أفضل {{ msg.craftsmen?.length }} حرفيين</span></div>
                 <div class="strip-tags">
                   <span class="tag tag-service" *ngIf="msg.detectedService">{{ msg.detectedService }}</span>
-                  <span class="tag tag-city" *ngIf="msg.detectedCity">📍 {{ msg.detectedCity }}</span>
+                  <span class="tag tag-city"    *ngIf="msg.detectedCity">📍 {{ msg.detectedCity }}</span>
                 </div>
               </div>
               <div class="mini-scroll">
-<a class="mini-card"
-   *ngFor="let c of msg.craftsmen; let i = index"
-   [class.mini-card-nearby]="c.isNearby"
-   [routerLink]="['/craftsmen', c.id]">                  <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
+                <a class="mini-card"
+                   *ngFor="let c of msg.craftsmen; let i = index"
+                   [class.mini-card-nearby]="c.isNearby"
+                   [routerLink]="['/craftsmen', c.id]">
+                  <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
                   <div class="mini-av" [class.mini-av-nearby]="c.isNearby">{{ c.name.charAt(0) }}</div>
-<!-- <div class="mini-av" [class.mini-av-nearby]="c.isNearby">🔧</div> -->
                   <div class="mini-info">
                     <div class="mini-name">{{ c.name }}</div>
-                    <!-- <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}</div> -->
-<div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}{{ c.neighborhood ? ' · ' + c.neighborhood : '' }}</div>
+                    <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}{{ c.neighborhood ? ' · ' + c.neighborhood : '' }}</div>
                     <div class="nearby-badge" *ngIf="c.isNearby">📍 أقرب محافظة</div>
                   </div>
                   <div class="mini-score" [style.color]="scoreColor(c.similarityScore)">{{ (c.similarityScore * 100).toFixed(0) }}%</div>
@@ -286,18 +285,19 @@
       <div class="input-hint" *ngIf="!isRecording">Enter للإرسال &nbsp;·&nbsp; Shift+Enter لسطر جديد</div>
     </div>
 
-
+  </div>
 
   <!-- Confirm Delete Dialog -->
-<div class="confirm-overlay" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
-  <div class="confirm-box" (click)="$event.stopPropagation()">
-    <div class="confirm-icon">🗑️</div>
-    <div class="confirm-title">حذف المحادثة</div>
-    <div class="confirm-msg">هل أنت متأكد إنك عاوز تحذف المحادثة دي؟</div>
-    <div class="confirm-btns">
-      <button class="confirm-cancel" (click)="cancelDelete()">إلغاء</button>
-      <button class="confirm-delete" (click)="confirmDelete()">حذف</button>
+  <div class="confirm-overlay" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+    <div class="confirm-box" (click)="$event.stopPropagation()">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">حذف المحادثة</div>
+      <div class="confirm-msg">هل أنت متأكد إنك عاوز تحذف المحادثة دي؟</div>
+      <div class="confirm-btns">
+        <button class="confirm-cancel" (click)="cancelDelete()">إلغاء</button>
+        <button class="confirm-delete" (click)="confirmDelete()">حذف</button>
+      </div>
     </div>
   </div>
-</div>
+
 </div>

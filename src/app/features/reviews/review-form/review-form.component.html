@@ -6,17 +6,8 @@
           <span class="material-symbols-outlined">close</span>
         </button>
 
-        <!-- ══ Already Reviewed ══ -->
-        @if (alreadyReviewed) {
-          <div class="done-screen">
-            <div class="done-icon">✅</div>
-            <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
-            <div class="done-subtitle">{{ 'REVIEWS.SUCCESS.SUBTITLE' | translate }}</div>
-          </div>
-        }
-
         <!-- ══ Thank You after submit ══ -->
-        @if (!alreadyReviewed && isSubmitted) {
+        @if (isSubmitted) {
           <div class="done-screen">
             <div class="done-icon">✅</div>
             <div class="done-title">{{ 'REVIEWS.SUCCESS.TITLE' | translate }}</div>
@@ -25,7 +16,7 @@
         }
 
         <!-- ══ Form ══ -->
-        @if (!alreadyReviewed && !isSubmitted) {
+        @if (!isSubmitted) {
           <!-- ── Craftsman Info Section ── -->
           @if (job) {
             <div class="craftsman-preview">
