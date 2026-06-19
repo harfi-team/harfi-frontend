@@ -181,15 +181,36 @@ export class CraftsmanProfileComponent implements OnInit {
   }
 
   // ── فتح الـ Modal ──
+  // ── فتح الـ Modal ──
   openEditModal(): void {
     const user = this.tokenSvc.getUser();
+    const userId = user?.id;
+
+    // 1. نفتح المودال فوراً ونحط الاسم المتاح حالياً عشان اليوزر ميحسش ببطء
     this.editForm.patchValue({
-      name: user?.name ?? '',
-      phone: '',
+      name: user?.name ?? this.craftsman()?.name ?? '',
+      phone: '', 
     });
+    
     this.editError.set('');
     this.editSuccess.set(false);
     this.showEditModal.set(true);
+
+    // 2. نكلم الباك إند نجيب البروفايل الكامل (اللي جواه رقم التليفون)
+    if (userId) {
+      this.userService.getProfile(userId).subscribe({
+        next: (profileData: any) => {
+          // 3. أول ما الداتا تيجي، نحدث الفورم برقم التليفون الحقيقي
+          this.editForm.patchValue({
+            name: profileData.name ?? this.editForm.value.name,
+            phone: profileData.phone ?? '',
+          });
+        },
+        error: (err) => {
+          console.error('فشل في جلب بيانات المستخدم:', err);
+        }
+      });
+    }
   }
 
   closeEditModal(): void {
@@ -218,36 +239,46 @@ export class CraftsmanProfileComponent implements OnInit {
   }
 
   saveEdit(): void {
-    if (this.editForm.invalid || this.editSaving()) return;
-    const userId = this.tokenSvc.getUser()?.id;
-    if (!userId) return;
+  if (this.editForm.invalid || this.editSaving()) return;
+  const userId = this.tokenSvc.getUser()?.id;
+  if (!userId) return;
 
-    this.editSaving.set(true);
-    this.userService
-      .updateProfile(userId, {
-        name: this.editForm.value.name!,
-        phone: this.editForm.value.phone || null,
-        profileImageUrl: this.craftsman()?.avatarUrl ?? null,
-      })
-      .subscribe({
-        next: (data) => {
-          const u = this.tokenSvc.getUser();
-          if (u) this.tokenSvc.setUser({ ...u, name: data.name });
-          const current = this.craftsman();
-          if (current) this.craftsman.set({ ...current, name: data.name });
-          this.editSaving.set(false);
-          this.editSuccess.set(true);
-          setTimeout(() => {
-            this.editSuccess.set(false);
-            this.closeEditModal();
-          }, 1500);
-        },
-        error: () => {
-          this.editError.set('فشل حفظ التغييرات، حاول مرة أخرى.');
-          this.editSaving.set(false);
-        },
-      });
-  }
+  // 1. خزن الاسم الجديد في متغير قبل ما تبعت الطلب
+  const updatedName = this.editForm.value.name!;
+  const updatedPhone = this.editForm.value.phone || null;
+
+  this.editSaving.set(true);
+  this.userService
+    .updateProfile(userId, {
+      name: updatedName,
+      phone: updatedPhone,
+      profileImageUrl: this.craftsman()?.avatarUrl ?? null,
+    })
+    .subscribe({
+      next: (data) => {
+        // 2. استخدم updatedName مباشرة هنا عشان تضمن إن الاسم ما يختفيش أبداً
+        const u = this.tokenSvc.getUser();
+        if (u) this.tokenSvc.setUser({ ...u, name: updatedName });
+
+        const current = this.craftsman();
+        if (current) {
+          // تحديث الـ Signal بالاسم الجديد فوراً لتحديث الواجهة تلقائياً
+          this.craftsman.set({ ...current, name: updatedName });
+        }
+
+        this.editSaving.set(false);
+        this.editSuccess.set(true);
+        setTimeout(() => {
+          this.editSuccess.set(false);
+          this.closeEditModal();
+        }, 1500);
+      },
+      error: () => {
+        this.editError.set('فشل حفظ التغييرات، حاول مرة أخرى.');
+        this.editSaving.set(false);
+      },
+    });
+}
 
   getPriceRange(craftsman: CraftsmanDto): string {
     return this.craftsmanService.getPriceRange(craftsman);
