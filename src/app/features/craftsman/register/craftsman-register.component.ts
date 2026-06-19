@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {FormBuilder,FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors,} from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -41,11 +41,13 @@ export class CraftsmanRegisterComponent implements OnInit {
   activeServices: ActiveServiceDto[] = [];
   activeCities: ActiveCityDto[] = [];
   profileImageFile: File | null = null;
+  nationalIdFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private craftsmanService: CraftsmanService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class CraftsmanRegisterComponent implements OnInit {
         priceRangeMax: [null, [Validators.required, Validators.min(1)]],
         experience: [1, [Validators.required, Validators.min(0), Validators.max(50)]],
         bio: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(300)]],
-        nationalIdUrl: ['', [Validators.required, Validators.pattern('https?://.+')]],
+        nationalIdUrl: ['', Validators.required],
       },
       { validators: priceRangeValidator }
     );
@@ -75,6 +77,7 @@ export class CraftsmanRegisterComponent implements OnInit {
       next: ({ services, cities }) => {
         this.activeServices = services;
         this.activeCities = cities;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('[Register] Failed to load active services/cities:', err);
@@ -130,6 +133,11 @@ export class CraftsmanRegisterComponent implements OnInit {
     this.profileImageFile = file ?? null;
   }
 
+  onNationalIdSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.nationalIdFile = file ?? null;
+  }
+
   setServiceType(type: string): void {
     this.registerForm.get('serviceType')?.setValue(type);
     this.registerForm.get('serviceType')?.markAsTouched();
@@ -152,53 +160,73 @@ export class CraftsmanRegisterComponent implements OnInit {
       return;
     }
 
+    if (!this.nationalIdFile) {
+      this.errorMessage = 'يرجى إرفاق صورة الهوية.';
+      this.registerForm.get('nationalIdUrl')?.markAsTouched();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
-    const v = this.registerForm.value;
-
-    // ── payload يطابق بالظبط شكل API: POST /api/Craftsmen/register ──
-    const payload: CraftsmanRegistrationDto = {
-      userId:        Number(v.userId),
-      serviceType:   v.serviceType,
-      city:          v.city,
-      neighborhood:  v.neighborhood,
-      priceRangeMin: Number(v.priceRangeMin),
-      priceRangeMax: Number(v.priceRangeMax),
-      experience:    Number(v.experience),
-      bio:           v.bio,
-      nationalIdUrl: v.nationalIdUrl,
-    };
-
-    // ── DEBUG: اطبع الـ payload في الكونسول قبل الإرسال ──
-    console.log('[Register] payload:', payload);
-
-    this.craftsmanService.register(payload).subscribe({
+    // ── رفع صورة الهوية أولاً ──
+    this.craftsmanService.uploadNationalIdFile(this.nationalIdFile).subscribe({
       next: (res) => {
-        console.log('[Register] success:', res);
-        const craftsmanId = res?.id;
-        if (this.profileImageFile && craftsmanId) {
-          this.craftsmanService.uploadProfileImage(craftsmanId, this.profileImageFile).subscribe({
-            next: () => {
-              console.log('[Register] profile image uploaded');
+        const nationalIdUrl = res.url;
+        this.registerForm.patchValue({ nationalIdUrl });
+        this.cdr.detectChanges();
+
+        const v = this.registerForm.value;
+
+        const payload: CraftsmanRegistrationDto = {
+          userId:        Number(v.userId),
+          serviceType:   v.serviceType,
+          city:          v.city,
+          neighborhood:  v.neighborhood,
+          priceRangeMin: Number(v.priceRangeMin),
+          priceRangeMax: Number(v.priceRangeMax),
+          experience:    Number(v.experience),
+          bio:           v.bio,
+          nationalIdUrl: v.nationalIdUrl,
+        };
+
+        console.log('[Register] payload:', payload);
+
+        this.craftsmanService.register(payload).subscribe({
+          next: (regRes) => {
+            console.log('[Register] success:', regRes);
+            const craftsmanId = regRes?.id;
+            if (this.profileImageFile && craftsmanId) {
+              this.craftsmanService.uploadProfileImage(craftsmanId, this.profileImageFile).subscribe({
+                next: () => {
+                  console.log('[Register] profile image uploaded');
+                  this.isLoading = false;
+                  this.showSuccessModal = true;
+                },
+                error: (imgErr) => {
+                  console.error('[Register] image upload error:', imgErr);
+                  this.isLoading = false;
+                  this.showSuccessModal = true;
+                },
+              });
+            } else {
               this.isLoading = false;
               this.showSuccessModal = true;
-            },
-            error: (imgErr) => {
-              console.error('[Register] image upload error:', imgErr);
-              this.isLoading = false;
-              this.showSuccessModal = true;
-            },
-          });
-        } else {
-          this.isLoading = false;
-          this.showSuccessModal = true;
-        }
+            }
+          },
+          error: (err) => {
+            console.error('[Register] error:', err.status, err.error);
+            this.isLoading = false;
+            this.errorMessage = this.getErrorMessage(err);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          },
+        });
       },
       error: (err) => {
-        console.error('[Register] error:', err.status, err.error);
+        console.error('[Register] national ID upload error:', err);
         this.isLoading = false;
-        this.errorMessage = this.getErrorMessage(err);
+        this.errorMessage = 'فشل رفع صورة الهوية. يرجى المحاولة مرة أخرى.';
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       },
     });

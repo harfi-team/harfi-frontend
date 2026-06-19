@@ -199,17 +199,26 @@
         </small>
       </div>
 
-      <!-- ── رابط الهوية ── -->
+      <!-- ── صورة الهوية ── -->
       <div class="cr-field">
         <label class="cr-label">
-          رابط صورة الهوية <span class="cr-star">*</span>
+          صورة الهوية <span class="cr-star">*</span>
         </label>
-        <p class="cr-sub">يرجى إدخال الرابط المباشر لصورة بطاقة الهوية الخاصة بك.</p>
-        <input type="url" class="cr-input" formControlName="nationalIdUrl"
-          placeholder="https://example.com/my-id-image.jpg" dir="ltr"
-          [class.cr-input--err]="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
-        <small class="cr-error" *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid">
-          يرجى إدخال رابط صحيح يبدأ بـ https://
+        <p class="cr-sub">أضف صورة لبطاقة الهوية الخاصة بك.</p>
+        <div class="cr-upload-row">
+          <div class="cr-upload-box cr-upload-add" (click)="nationalIdInput.click()">
+            <span class="cr-upload-icon">🪪</span>
+            <span>إضافة صورة</span>
+            <input type="file" #nationalIdInput (change)="onNationalIdSelected($event)" accept="image/*" hidden>
+          </div>
+          <div class="cr-upload-box cr-upload-empty" *ngIf="!nationalIdFile"></div>
+          <div class="cr-upload-box cr-upload-empty" *ngIf="!nationalIdFile"></div>
+        </div>
+        <small *ngIf="nationalIdFile" class="cr-success-text">
+          ✓ تم إرفاق: {{ nationalIdFile.name }}
+        </small>
+        <small class="cr-error" *ngIf="f['nationalIdUrl'].touched && f['nationalIdUrl'].invalid && !nationalIdFile">
+          يرجى إرفاق صورة الهوية.
         </small>
       </div>
 

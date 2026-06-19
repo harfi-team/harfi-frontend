@@ -49,6 +49,15 @@ export class CraftsmanService {
   }
 
   // ══════════════════════════════════════════════
+  //  UPLOAD NATIONAL ID
+  // ══════════════════════════════════════════════
+  uploadNationalIdFile(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ url: string }>(`${this.base}/upload-national-id`, formData);
+  }
+
+  // ══════════════════════════════════════════════
   //  UPLOAD PROFILE IMAGE
   // ══════════════════════════════════════════════
   uploadProfileImage(craftsmanId: number, file: File): Observable<any> {
