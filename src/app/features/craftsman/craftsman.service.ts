@@ -60,10 +60,11 @@ export class CraftsmanService {
   // ══════════════════════════════════════════════
   //  UPLOAD PROFILE IMAGE
   // ══════════════════════════════════════════════
-  uploadProfileImage(craftsmanId: number, file: File): Observable<any> {
+  uploadProfileImage(userId: number, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.base}/${craftsmanId}/upload-image`, formData);
+    // Backend endpoint: [HttpPost("{userId}/profile-image")] on UsersController
+    return this.http.post(`${environment.apiBaseUrl}/users/${userId}/profile-image`, formData);
   }
 
   // ══════════════════════════════════════════════

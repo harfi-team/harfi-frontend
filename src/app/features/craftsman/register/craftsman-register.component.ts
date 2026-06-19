@@ -196,9 +196,12 @@ export class CraftsmanRegisterComponent implements OnInit {
         this.craftsmanService.register(payload).subscribe({
           next: (regRes) => {
             console.log('[Register] success:', regRes);
-            const craftsmanId = regRes?.id;
-            if (this.profileImageFile && craftsmanId) {
-              this.craftsmanService.uploadProfileImage(craftsmanId, this.profileImageFile).subscribe({
+            // ── NOTE: Backend currently returns only a message, not the craftsman ID.
+            //    Ideally the register endpoint should return { id, ... } so we can use
+            //    the craftsmanId for subsequent calls. For now the profile-image endpoint
+            //    accepts userId, which we already have in payload.userId.
+            if (this.profileImageFile) {
+              this.craftsmanService.uploadProfileImage(payload.userId, this.profileImageFile).subscribe({
                 next: () => {
                   console.log('[Register] profile image uploaded');
                   this.isLoading = false;
