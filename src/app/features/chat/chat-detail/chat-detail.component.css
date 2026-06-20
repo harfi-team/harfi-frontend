@@ -1,7 +1,24 @@
 .chat-detail-container {
+  position: fixed;
+  top: 20px;                      /* مسافة مناسبة لارتفاع الـ Navbar العلوي */
+  bottom: 16px;                   /* مسافة جمالية من الأسفل بدلاً من الالتصاق بالحافة */
+  inset-inline-start: 280px;      /* عرض الـ Sidebar (260px) + مسافة أمان (20px) */
+  inset-inline-end: 20px;         /* مسافة أمان من الجهة المقابلة */
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  overflow: hidden;
+  z-index: 10;
+  border-radius: 20px;            /* إعطاء الشات مظهر عصري بحدود دائرية */
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-color);
+}
+
+@media (max-width: 767px) {
+  .chat-detail-container {
+    inset-inline-start: 0;
+    bottom: calc(60px + env(safe-area-inset-bottom));
+  }
 }
 
 .chat-header {
@@ -341,6 +358,7 @@
   padding: 10px 12px;
   border-top: 1px solid var(--border-color);
   background: var(--nav-bg);
+  min-height: 76px;
 }
 
 .pending-image-item {
