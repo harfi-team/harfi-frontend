@@ -156,7 +156,7 @@ export class CraftsmanSearchComponent implements OnInit {
   loadServices(): void {
     this.loading.set(true);
 
-    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-services').subscribe({
+    this.http.get<any[]>('https://harfi.runasp.net/api/Craftsmen/active-services').subscribe({
       next: (data) => {
         this.rawServices.set(data);
         this.loading.set(false);
@@ -171,7 +171,7 @@ export class CraftsmanSearchComponent implements OnInit {
   }
 
   loadCities(): void {
-    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-cities').subscribe({
+    this.http.get<any[]>('https://harfi.runasp.net/api/Craftsmen/active-cities').subscribe({
       next: (data) => {
         this.rawCities.set(data);
       },
@@ -383,7 +383,7 @@ export class CraftsmanSearchComponent implements OnInit {
       params = params.set('minExperience', raw.minExperience.toString());
 
     this.http
-      .get<SearchCraftsmanDto[]>('http://localhost:5108/api/craftsmen/search', { params })
+      .get<SearchCraftsmanDto[]>('https://harfi.runasp.net/api/craftsmen/search', { params })
       .subscribe({
         next: (items) => {
           const localSearch = raw.search?.trim().toLowerCase() || '';

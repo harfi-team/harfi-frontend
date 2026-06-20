@@ -1,9 +1,9 @@
-/* ════════════════════════════════════════════════════════════════
+/*════════════════════════════════════════════════════════════════
    AI Chat — matches Harfi's clean visual language
    Restrained use of brand gradient (like the auth pages),
    project tokens, Cairo font, light/dark theme support.
    ════════════════════════════════════════════════════════════════ */
-:host {
+/* :host {
   display: flex;
   justify-content: center; 
   align-items: stretch;
@@ -42,9 +42,77 @@
     border: none;
     box-shadow: none;
   }
+} */
+
+/*════════════════════════════════════════════════════════════════
+   AI Chat — matches Harfi's clean visual language
+   Restrained use of brand gradient (like the auth pages),
+   project tokens, Cairo font, light/dark theme support.
+   ════════════════════════════════════════════════════════════════ */
+/*════════════════════════════════════════════════════════════════
+   AI Chat — matches Harfi's clean visual language
+   Restrained use of brand gradient (like the auth pages),
+   project tokens, Cairo font, light/dark theme support.
+   ════════════════════════════════════════════════════════════════ */
+:host {
+  position: fixed;              /* ← ثابت */
+  left: 200px;                 /* ← قللت المسافة من 290 → 250 */
+  right: 350px;                /* ← قللت المسافة من 300 → 200 */
+  bottom: 0;                   /* ← يلتصق بالأسفل */
+  overflow: hidden;            /* ← منع التمرير الزائد */
+  background: var(--bg-color); /* ← لون الخلفية حسب الثيم */
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  /* إلغاء الخصائص القديمة المتعارضة */
+  width: auto;
+  height: auto;
+  margin: 0;
+  top: 20px;
 }
 
+.chat-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;           /* ← زودتها من 1000 → 1200 عشان توسع أكتر */
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--bg-color);
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
 
+@media (max-width: 767px) {
+  :host {
+    /* على الموبايل نلغي التثبيت ونرجع للوضع الطبيعي */
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    height: calc(100vh - 60px - env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 0;
+    top: auto;
+  }
+  
+  .chat-root {
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* باقي الكود (من .header لحد الآخر) يبقى كما هو من غير أي تغيير */
+/* باقي الكود كما هو دون أي تغيير … */
+/* (كل الأنماط من .header إلى آخر الكود تبقى كما هي) */
 /* ═══ HEADER ═══ */
 .header {
   flex-shrink: 0;
@@ -1260,4 +1328,83 @@ a.mini-card {
   min-width: 28px;
   text-align: left;
   opacity: .8;
+}
+
+
+
+/* ✅ عداد المحادثات اللي بيظهر جنب الأيقونة */
+.badge-count {
+  background: var(--brand-gradient, linear-gradient(135deg, #E94057, #8A2387));
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  margin-inline-start: 2px;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(233, 64, 87, 0.3);
+}
+
+
+ /* .chat-wrapper {
+  position: fixed;
+  top: 80px;
+  left: 200px;
+  right: 300px;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-color);
+  z-index: 200;
+} */
+
+
+
+
+.mini-avatar-wrap {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--brand-gradient);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border-color);  /* إطار خفيف */
+}
+
+.mini-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;  /* عشان ميحصلش فراغات */
+}
+
+/* لو الصورة مش موجودة، الأيقونة تفضل زي ما هي */
+.mini-av {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+
+.card-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }

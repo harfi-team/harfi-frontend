@@ -1,3 +1,4 @@
+
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -93,11 +94,20 @@ export class CraftsmanDetailComponent {
     if (path.startsWith('http')) return path;
     return `${environment.apiBaseUrl.replace('/api', '')}${path}`;
   }
+viewNationalId(): void {
+  const rawUrl = this.craftsman()?.nationalIdUrl;
+  if (!rawUrl) return;
 
-  viewNationalId(): void {
-    const url = this.craftsman()?.nationalIdUrl;
-    if (url) window.open(url, '_blank');
-  }
+  const fullUrl = rawUrl.startsWith('http')
+    ? rawUrl
+    : `${environment.apiBaseUrl.replace('/api', '')}${rawUrl}`;
+
+  window.open(fullUrl, '_blank');
+}
+  // viewNationalId(): void {
+  //   const url = this.craftsman()?.nationalIdUrl;
+  //   if (url) window.open(url, '_blank');
+  // }
 
   openAction(type: string): void {
     const c = this.craftsman();

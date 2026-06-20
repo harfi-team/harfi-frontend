@@ -65,6 +65,14 @@ export class SideNavComponent {
     // Removed - no backend endpoint exists
   }
 
+
+
+get isAiChatPage(): boolean {
+    return this.router.url.includes('/ai');
+  }
+
+
+  
   get craftsmanId(): number | null {
   return this.auth.getCraftsmanId(); // 👈 اسم الدالة اللي بتجيب آيدي الحرفي من السيرفيس
   }

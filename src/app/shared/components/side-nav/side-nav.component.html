@@ -243,10 +243,12 @@
       <span>{{ (isDark ? 'NAV.LIGHT_MODE' : 'NAV.DARK_MODE') | translate }}</span>
     </button>
 
-    <button class="nav-footer-item" (click)="toggleLanguage()">
-      <span class="material-symbols-outlined">translate</span>
-      <span>{{ isArabic ? 'English' : 'العربية' }}</span>
-    </button>
+    @if (!isAiChatPage) {
+  <button class="nav-footer-item" (click)="toggleLanguage()">
+    <span class="material-symbols-outlined">translate</span>
+    <span>{{ isArabic ? 'English' : 'العربية' }}</span>
+  </button>
+}
 
     <button class="nav-footer-item danger" (click)="auth.logout()">
       <span class="material-symbols-outlined">logout</span>

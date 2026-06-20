@@ -19,6 +19,10 @@ export interface RetrievedCraftsman {
   isNearby: boolean;
   nearbyFromCity: string | null;
     neighborhood: string | null;  // ← ضيف السطر ده
+      profilePicture?: string | null;   // ← أضف السطر ده
+        profileImageUrl?: string | null;  // ← أضف هذا السطر (مهم)
+
+
 
 }
 
