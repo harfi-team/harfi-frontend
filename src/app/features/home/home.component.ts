@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit {
   loadActiveServices(): void {
     this.loadingServices.set(true);
 
-    this.http.get<any[]>('http://localhost:5108/api/Craftsmen/active-services').subscribe({
+    this.http.get<any[]>('https://harfi.runasp.net/api/Craftsmen/active-services').subscribe({
       next: (data) => {
         this.rawServices.set(data);
         this.loadingServices.set(false);
