@@ -1,0 +1,191 @@
+<div class="detail-page">
+  <button class="back-btn" (click)="goBack()">
+    <span class="material-symbols-outlined">arrow_back</span>
+    {{ 'JOBS.BACK_TO_JOBS' | translate }}
+  </button>
+
+  @if (loading()) {
+    <div class="skeleton-detail">
+      <div
+        class="skeleton"
+        style="height: 200px; border-radius: var(--radius-lg); margin-bottom: 16px"
+      ></div>
+    </div>
+  } @else if (job(); as j) {
+    <div class="detail-grid">
+      <div class="harfi-card info-card">
+        <div class="section-title">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+            >info</span
+          >
+          {{ 'JOBS.DETAIL_TITLE' | translate }}
+        </div>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="field-label">{{ 'ORDER_ID' | translate }}</span>
+            <span class="field-value order-id">#{{ j.id }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'STATUS' | translate }}</span>
+            <span class="status-badge {{ getStatusClass(j.status) }}">{{
+              getStatusLabelKey(j.status) | translate
+            }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.SERVICE' | translate }}</span>
+            <span class="field-value">{{ j.service }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.CUSTOMER_NAME' | translate }}</span>
+            <div class="person-cell">
+              <div class="avatar-sm">{{ (j.customerName || '?').charAt(0) }}</div>
+              <span>{{ j.customerName || ('JOBS.NOT_SET' | translate) }}</span>
+            </div>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.CRAFTSMAN_NAME' | translate }}</span>
+            <div class="person-cell">
+              <div class="avatar-sm">{{ (j.craftsmanName || '?').charAt(0) }}</div>
+              <span>{{ j.craftsmanName || ('JOBS.NOT_SET' | translate) }}</span>
+            </div>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.ADDRESS' | translate }}</span>
+            <span class="field-value">{{ j.address || ('JOBS.NOT_SET' | translate) }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.SCHEDULED_AT' | translate }}</span>
+            <span class="field-value">{{
+              (j.preferredDate | date: 'd MMM, y h:mm a') || ('JOBS.NOT_SET' | translate)
+            }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'JOBS.CREATED_AT' | translate }}</span>
+            <span class="field-value">{{
+              (j.createdAt | date: 'd MMM, y h:mm a') || ('JOBS.NOT_SET' | translate)
+            }}</span>
+          </div>
+          @if (j.completedAt) {
+            <div class="info-field">
+              <span class="field-label">{{ 'JOBS.COMPLETED_AT' | translate }}</span>
+              <span class="field-value">{{ j.completedAt | date: 'd MMM, y h:mm a' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="harfi-card desc-card">
+        <div class="section-title">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+            >description</span
+          >
+          {{ 'JOBS.PROBLEM_DESCRIPTION' | translate }}
+        </div>
+        <div class="desc-section">
+          <p class="desc-text">
+            {{ j.problemDescription || j.description || ('JOBS.NOT_SET' | translate) }}
+          </p>
+        </div>
+
+        @if (j.problemImageUrl) {
+          <div class="image-section">
+            <span class="field-label">{{ 'JOBS.PROBLEM_IMAGE' | translate }}</span>
+            <a [href]="getImageUrl(j.problemImageUrl)" target="_blank" class="link-btn">
+              <span class="material-symbols-outlined" style="font-size: 16px; line-height: 1"
+                >image</span
+              >
+              {{ 'JOBS.VIEW_IMAGE' | translate }}
+            </a>
+          </div>
+        }
+
+        @if (j.solutionDescription) {
+          <div class="desc-section" style="margin-top: 16px">
+            <div class="section-title" style="border: none; padding: 0; margin: 0 0 8px 0">
+              <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+                >check_circle</span
+              >
+              {{ 'JOBS.SOLUTION_DESCRIPTION' | translate }}
+            </div>
+            <p class="desc-text">{{ j.solutionDescription }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (isCraftsman() && (canAccept() || canReject() || canComplete())) {
+      <div class="action-section">
+        @if (canAccept()) {
+          <button class="btn-action btn-accept" (click)="performAction('accept')">
+            <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+              >check_circle</span
+            >
+            {{ 'JOBS.ACTION_ACCEPT' | translate }}
+          </button>
+        }
+        @if (canReject()) {
+          <button class="btn-action btn-reject" (click)="performAction('reject')">
+            <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+              >cancel</span
+            >
+            {{ 'JOBS.ACTION_REJECT' | translate }}
+          </button>
+        }
+        @if (canComplete()) {
+          <button class="btn-action btn-complete" (click)="performAction('complete')">
+            <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1"
+              >task_alt</span
+            >
+            {{ 'JOBS.ACTION_COMPLETE' | translate }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="action-section">
+      <button
+        type="button"
+        class="btn-action btn-chat"
+        [disabled]="!canOpenChat()"
+        (click)="openChat()"
+        [title]="
+          !canOpenChat() ? ('JOBS.CHAT_PENDING' | translate) : ('JOBS.OPEN_CHAT' | translate)
+        "
+      >
+        <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">chat</span>
+        {{ 'JOBS.OPEN_CHAT' | translate }}
+      </button>
+
+      @if (canReview()) {
+        <button class="btn-action btn-review" (click)="openReviewModal()">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">star</span>
+          {{ 'REVIEWS.FORM.SUBMIT_BTN' | translate }}
+        </button>
+      }
+      <!-- ← أضف الكود ده بعده -->
+@if (canSubmitSolution()) {
+  <button class="btn-action btn-solution" (click)="openSolutionModal()">
+    <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">task_alt</span>
+    إرسال خطوات الحل
+  </button>
+}
+    </div>
+
+    @if (showReviewModal()) {
+      <app-review-form [jobId]="jobId()" [job]="job()!" [visible]="true" (close)="onReviewClose()">
+      </app-review-form>
+    }
+
+<!-- ← أضف الكود ده بعده -->
+@if (showSolutionModal()) {
+  <app-solution-form
+    [jobId]="jobId()"
+    [job]="job()!"
+    [visible]="true"
+    (close)="onSolutionClose()"
+    (submitted)="onSolutionSubmitted()"
+  >
+  </app-solution-form>
+}
+  }
+</div>

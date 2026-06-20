@@ -1,0 +1,370 @@
+<div class="chat-detail-container">
+  <div class="chat-header" role="banner">
+    <button
+      class="back-btn"
+      type="button"
+      (click)="goBack()"
+      [attr.aria-label]="'CHAT.BACK' | translate"
+    >
+      <span class="back-btn-icon" aria-hidden="true">←</span>
+    </button>
+    <div class="header-info">
+      <div class="header-name-row">
+        <span class="header-name">
+          {{ conversationName() ?? ('CHAT.CONVERSATION' | translate) }}
+        </span>
+
+        <span
+          class="header-presence"
+          [class.online]="otherUserOnline()"
+          [class.offline]="!otherUserOnline()"
+          [attr.aria-label]="
+            (otherUserOnline() ? 'CHAT.CONNECTION_ONLINE' : 'CHAT.CONNECTION_OFFLINE') | translate
+          "
+        >
+          <span class="header-presence-dot" aria-hidden="true"></span>
+          <span class="header-status-text">
+            {{
+              (otherUserOnline() ? 'CHAT.CONNECTION_ONLINE' : 'CHAT.CONNECTION_OFFLINE') | translate
+            }}
+          </span>
+        </span>
+      </div>
+      <span class="typing-indicator" *ngIf="isTyping()" aria-live="polite">
+        {{ 'CHAT.TYPING' | translate }}
+      </span>
+    </div>
+  </div>
+
+  <div
+    class="messages-area"
+    #messagesArea
+    (scroll)="onScroll()"
+    role="log"
+    aria-live="polite"
+    aria-atomic="false"
+    [attr.aria-busy]="loading()"
+  >
+    <app-spinner *ngIf="loading()" />
+
+    <ng-container *ngIf="!loading()">
+      <div class="loading-older" *ngIf="loadingMore()">
+        <app-spinner />
+      </div>
+
+      <div class="no-more-msg" *ngIf="!hasMore() && allMessages().length > 0">
+        {{ 'CHAT.NO_MORE_MESSAGES' | translate }}
+      </div>
+
+      <div *ngIf="allMessages().length === 0" class="chat-empty-state">
+        <span class="chat-empty-icon" aria-hidden="true">💬</span>
+        <p>{{ 'CHAT.NO_MESSAGES' | translate }}</p>
+      </div>
+
+      <div class="messages-list" *ngIf="allMessages().length > 0">
+        <div
+          *ngFor="let msg of allMessages(); trackBy: trackById"
+          class="message-wrapper"
+          [class.mine]="isMine(msg)"
+          [class.theirs]="!isMine(msg) && msg.messageType !== 'system'"
+          [class.system]="msg.messageType === 'system'"
+        >
+          <ng-container *ngIf="msg.messageType === 'system'">
+            <div class="system-message" role="status">
+              {{ msg.content }}
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="msg.messageType !== 'system'">
+            <div class="theirs-avatar" *ngIf="!isMine(msg)">
+              <div class="msg-avatar-initials" aria-hidden="true">
+                {{ initials(msg.senderName) }}
+              </div>
+            </div>
+
+            <div class="message-bubble">
+              <p class="message-content" *ngIf="msg.messageType === 'text'">
+                {{ msg.content }}
+              </p>
+
+              <img
+                *ngIf="msg.messageType === 'image'"
+                class="message-image"
+                [src]="resolveImageUrl(msg.content)"
+                [alt]="'CHAT.IMAGE' | translate"
+                loading="lazy"
+                (click)="openImagePreview(resolveImageUrl(msg.content))"
+                (load)="onMessageImageLoad()"
+                (error)="imgError($event)"
+              />
+
+              <div *ngIf="msg.messageType === 'voice'" class="voice-message-block">
+                <audio
+                  #voiceAudio
+                  class="voice-native-audio"
+                  preload="metadata"
+                  [src]="resolveImageUrl(msg.content)"
+                  (loadedmetadata)="onVoiceLoadedMetadata(msg.id, voiceAudio)"
+                  (timeupdate)="onVoiceTimeUpdate(msg.id, voiceAudio)"
+                  (ended)="onVoiceEnded(msg.id)"
+                ></audio>
+
+                <button
+                  type="button"
+                  class="voice-play-btn"
+                  (click)="toggleVoicePlayback(msg.id, voiceAudio)"
+                  [attr.aria-label]="
+                    (isVoicePlaying(msg.id) ? 'CHAT.PAUSE_VOICE' : 'CHAT.PLAY_VOICE') | translate
+                  "
+                  [attr.title]="
+                    (isVoicePlaying(msg.id) ? 'CHAT.PAUSE_VOICE' : 'CHAT.PLAY_VOICE') | translate
+                  "
+                >
+                  <span aria-hidden="true">{{ isVoicePlaying(msg.id) ? '❚❚' : '▶' }}</span>
+                </button>
+
+                <div class="voice-track-wrap">
+                  <div class="voice-waveform" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span><span></span
+                    ><span></span>
+                  </div>
+
+                  <input
+                    class="voice-progress"
+                    type="range"
+                    min="0"
+                    [max]="getVoiceDuration(msg.id) || 1"
+                    step="0.1"
+                    [value]="getVoiceCurrentTime(msg.id)"
+                    (input)="seekVoice(msg.id, voiceAudio, $event)"
+                    [style.--voice-progress]="getVoiceProgressPercent(msg.id) + '%'"
+                  />
+
+                  <div class="voice-time-row">
+                    <span class="voice-time">{{
+                      formatAudioTime(getVoiceCurrentTime(msg.id))
+                    }}</span>
+                    <span class="voice-time-separator">/</span>
+                    <span class="voice-time">{{ formatAudioTime(getVoiceDuration(msg.id)) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <a
+                *ngIf="msg.messageType === 'location'"
+                class="message-location"
+                [href]="getLocationUrl(msg.content)"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📍 {{ 'CHAT.OPEN_LOCATION' | translate }}
+              </a>
+
+              <div class="message-meta">
+                <button
+                  *ngIf="isMine(msg)"
+                  type="button"
+                  class="message-delete-btn"
+                  [disabled]="isDeletingMessage(msg.id)"
+                  (click)="requestDeleteMessage(msg.id)"
+                  [attr.aria-label]="'CHAT.DELETE_MESSAGE' | translate"
+                  [attr.title]="'CHAT.DELETE_MESSAGE' | translate"
+                >
+                  <span class="delete-icon" aria-hidden="true">🗑</span>
+                  <span class="delete-label">{{
+                    isDeletingMessage(msg.id) ? '...' : ('CHAT.DELETE_SHORT' | translate)
+                  }}</span>
+                </button>
+                <span class="message-time">
+                  {{ msg.sentAt | relativeTime }}
+                </span>
+                <span class="read-indicator" *ngIf="isMine(msg)" aria-hidden="true">
+                  {{ msg.isRead ? '✓✓' : '✓' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="message-wrapper theirs" *ngIf="isTyping()" aria-live="polite">
+          <div class="theirs-avatar">
+            <div class="msg-avatar-initials" aria-hidden="true">
+              {{ initials(conversationName()) }}
+            </div>
+          </div>
+          <div class="message-bubble typing-bubble" [attr.aria-label]="'CHAT.TYPING' | translate">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="error-msg" *ngIf="sendError() as err" role="alert" aria-live="assertive">
+    {{ err | translate }}
+  </div>
+
+  <div
+    *ngIf="confirmDeleteMessageId()"
+    class="delete-confirm-overlay"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'CHAT.DELETE_CONFIRM_TITLE' | translate"
+    (click)="cancelDeleteMessage()"
+  >
+    <div class="delete-confirm-card" (click)="$event.stopPropagation()">
+      <div class="delete-confirm-icon" aria-hidden="true">🗑</div>
+      <h3 class="delete-confirm-title">{{ 'CHAT.DELETE_CONFIRM_TITLE' | translate }}</h3>
+      <p class="delete-confirm-text">{{ 'CHAT.DELETE_CONFIRM_TEXT' | translate }}</p>
+
+      <div class="delete-confirm-actions">
+        <button
+          type="button"
+          class="delete-confirm-cancel"
+          [disabled]="deletingFromConfirm()"
+          (click)="cancelDeleteMessage()"
+        >
+          {{ 'CANCEL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="delete-confirm-delete"
+          [disabled]="deletingFromConfirm()"
+          (click)="confirmDeleteMessage()"
+        >
+          {{ deletingFromConfirm() ? '...' : ('CHAT.DELETE_SHORT' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="imagePreviewUrl() as preview"
+    class="image-preview-overlay"
+    role="dialog"
+    aria-modal="true"
+    (click)="closeImagePreview()"
+  >
+    <button
+      type="button"
+      class="image-preview-close"
+      (click)="closeImagePreview(); $event.stopPropagation()"
+      [attr.aria-label]="'CHAT.CLOSE_IMAGE' | translate"
+    >
+      ✕
+    </button>
+    <img
+      class="image-preview-content"
+      [src]="preview"
+      [alt]="'CHAT.IMAGE' | translate"
+      (click)="$event.stopPropagation()"
+    />
+  </div>
+
+  <div class="pending-images-strip" *ngIf="pendingImages().length > 0">
+    <div
+      class="pending-image-item"
+      *ngFor="let image of pendingImages(); trackBy: trackByPendingImageId"
+    >
+      <img [src]="image.previewUrl" [alt]="'CHAT.IMAGE' | translate" />
+      <button
+        type="button"
+        class="pending-image-remove"
+        (click)="removePendingImage(image.id)"
+        [attr.aria-label]="'CHAT.REMOVE_SELECTED_IMAGE' | translate"
+        [attr.title]="'CHAT.REMOVE_SELECTED_IMAGE' | translate"
+      >
+        ✕
+      </button>
+    </div>
+
+    <button type="button" class="pending-images-clear" (click)="clearPendingImages()">
+      {{ 'CHAT.CLEAR_SELECTED_IMAGES' | translate }}
+    </button>
+  </div>
+
+  <form class="chat-input-area" (submit)="send($event)">
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      multiple
+      hidden
+      (change)="onFileSelected($event)"
+    />
+
+    <div class="attach-wrap">
+      <button
+        type="button"
+        class="attach-btn clip-btn"
+        (click)="toggleAttachMenu()"
+        [attr.aria-label]="'CHAT.ATTACH_IMAGE' | translate"
+        [attr.title]="'CHAT.ATTACH_IMAGE' | translate"
+      >
+        <span aria-hidden="true">📎</span>
+      </button>
+
+      <div class="attach-menu" *ngIf="showAttachMenu()">
+        <button
+          type="button"
+          class="attach-btn location-btn"
+          (click)="sendLocation()"
+          [attr.aria-label]="'CHAT.SEND_LOCATION' | translate"
+          [attr.title]="'CHAT.SEND_LOCATION' | translate"
+        >
+          <span aria-hidden="true">📍</span>
+        </button>
+
+        <button
+          type="button"
+          class="attach-btn image-btn"
+          (click)="triggerImageUpload()"
+          [disabled]="uploadingImage()"
+          [attr.aria-label]="'CHAT.ATTACH_IMAGE' | translate"
+          [attr.title]="'CHAT.ATTACH_IMAGE' | translate"
+        >
+          <span aria-hidden="true" *ngIf="!uploadingImage()">📷</span>
+          <app-spinner *ngIf="uploadingImage()" />
+        </button>
+      </div>
+    </div>
+
+    <div class="message-composer">
+      <input
+        class="message-input"
+        type="text"
+        autocomplete="off"
+        [placeholder]="'CHAT.TYPE_MESSAGE' | translate"
+        [attr.aria-label]="'CHAT.TYPE_MESSAGE' | translate"
+        [formControl]="messageControl"
+        (input)="onTyping()"
+      />
+
+      <button
+        class="send-btn"
+        type="submit"
+        [disabled]="!canSend() || sending()"
+        [attr.aria-label]="'CHAT.SEND' | translate"
+      >
+        <span class="send-icon" aria-hidden="true">➤</span>
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="attach-btn voice-btn"
+      [class.recording]="isRecording()"
+      (click)="toggleRecording()"
+      [disabled]="uploadingVoice()"
+      [attr.aria-label]="
+        isRecording() ? ('CHAT.STOP_RECORDING' | translate) : ('CHAT.START_RECORDING' | translate)
+      "
+      [attr.title]="
+        isRecording() ? ('CHAT.STOP_RECORDING' | translate) : ('CHAT.START_RECORDING' | translate)
+      "
+    >
+      <span aria-hidden="true" *ngIf="!isRecording()">🎤</span>
+      <span aria-hidden="true" *ngIf="isRecording()">⏹</span>
+    </button>
+  </form>
+</div>

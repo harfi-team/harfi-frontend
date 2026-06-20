@@ -1,0 +1,58 @@
+<div class="settings-page">
+  <div class="page-header">
+    <h2 class="page-title">{{ 'ADMIN.SETTINGS' | translate }}</h2>
+  </div>
+
+  <div class="harfi-card table-card">
+    <div class="table-toolbar">
+      <span class="toolbar-title">{{ 'ADMIN.FEATURE_FLAGS' | translate }}</span>
+    </div>
+
+    @if (loadingFlags()) {
+      <div class="skeleton-table">
+        @for (_ of [1,2,3,4]; track _) {
+          <div class="skeleton" style="height:48px;margin-bottom:8px;border-radius:8px"></div>
+        }
+      </div>
+    } @else if (featureFlags().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'NO_DATA' | translate }}</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'ADMIN.FLAG_KEY' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+              <th>{{ 'LAST_UPDATED' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (flag of featureFlags(); track flag.key) {
+              <tr>
+                <td>
+                  <span class="flag-key">{{ flag.key }}</span>
+                </td>
+                <td>
+                  <label class="toggle-switch" [class.toggling]="togglingFlags().has(flag.key)">
+                    <input
+                      type="checkbox"
+                      [checked]="flag.isEnabled"
+                      [disabled]="togglingFlags().has(flag.key)"
+                      (change)="toggleFeature(flag.key, flag.isEnabled)"
+                    />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </td>
+                <td>
+                  <span class="text-muted">{{ flag.updatedAt }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

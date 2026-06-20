@@ -1,0 +1,236 @@
+<div class="booking-page">
+  <!-- Right Column: Form Cards -->
+  <main class="booking-forms">
+    <!-- Problem Details Card -->
+    <div class="form-card">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined card-icon">description</span>
+        {{ 'JOBS.DESCRIPTION' | translate }}
+      </h2>
+
+      <form [formGroup]="form">
+        <!-- Service Selection -->
+        <div class="service-chips">
+          {{ 'JOBS.SERVICE' | translate }}: {{ selectedServiceLabel | translate }}
+        </div>
+
+        <!-- Problem Description -->
+        <div class="field-group">
+          <textarea
+            formControlName="description"
+            rows="4"
+            class="input-field textarea-field"
+            [placeholder]="'JOBS.CREATE_GUIDE_1' | translate"
+          >
+          </textarea>
+          @if (form.controls.description.touched && form.controls.description.invalid) {
+            <small class="field-error">{{ 'JOBS.VALIDATION_DESCRIPTION' | translate }}</small>
+          }
+        </div>
+
+        <!-- Image Upload -->
+        <div class="upload-zone" (drop)="onImageDrop($event)" (dragover)="onDragOver($event)">
+          @if (imagePreview()) {
+            <div class="image-preview-container">
+              <img [src]="imagePreview()" alt="Problem" class="image-preview" />
+              <button type="button" class="remove-image-btn" (click)="removeImage()">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+          } @else {
+            <label class="upload-label">
+              <span class="material-symbols-outlined upload-icon">add_photo_alternate</span>
+              <span class="upload-text">{{ 'JOBS.PROBLEM_IMAGE' | translate }}</span>
+              <span class="upload-hint">{{ 'JOBS.UPLOAD_HINT' | translate }}</span>
+              <input type="file" accept="image/*" hidden (change)="onFileSelect($event)" />
+            </label>
+          }
+        </div>
+      </form>
+    </div>
+
+    <!-- Appointment Card -->
+    <div class="form-card">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined card-icon">calendar_month</span>
+        {{ 'JOBS.SCHEDULED_AT' | translate }}
+      </h2>
+
+      <!-- Day Picker -->
+      <div class="day-picker">
+        @for (day of days; track day.iso) {
+          <button
+            type="button"
+            class="day-card"
+            [class.active]="selectedDay() === day.iso"
+            (click)="selectDay(day)"
+          >
+            <span class="day-name">{{ day.dayName }}</span>
+            <span class="day-number">{{ day.dayNumber }}</span>
+            <span class="day-month">{{ day.monthName }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Time Picker -->
+      <div class="time-picker">
+        @for (time of timeSlots; track time) {
+          <button
+            type="button"
+            class="time-pill"
+            [class.active]="selectedTime() === time"
+            (click)="selectTime(time)"
+          >
+            {{ time }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Service Address Card -->
+    <div class="form-card">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined card-icon">location_on</span>
+        {{ 'JOBS.ADDRESS' | translate }}
+      </h2>
+
+      <form [formGroup]="form">
+        <div class="address-grid">
+          <div class="field-group">
+            <label class="field-label">{{ 'JOBS.CITY' | translate }}</label>
+            <input
+              type="text"
+              formControlName="city"
+              class="input-field"
+              [placeholder]="isArabic ? 'مثل: القاهرة' : 'e.g. Cairo'"
+            />
+            @if (form.controls.city.touched && form.controls.city.invalid) {
+              <small class="field-error">{{ 'JOBS.VALIDATION_REQUIRED' | translate }}</small>
+            }
+          </div>
+          <div class="field-group">
+            <label class="field-label">{{ 'JOBS.ADDRESS' | translate }}</label>
+            <input
+              type="text"
+              formControlName="address"
+              class="input-field"
+              [placeholder]="isArabic ? 'الحي أو المنطقة' : 'Neighborhood or area'"
+            />
+            @if (form.controls.address.touched && form.controls.address.invalid) {
+              <small class="field-error">{{ 'JOBS.VALIDATION_REQUIRED' | translate }}</small>
+            }
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label"
+            >{{ 'JOBS.STREET_DETAIL' | translate }}
+            <span class="optional-tag">{{ 'OPTIONAL' | translate }}</span></label
+          >
+          <input
+            type="text"
+            formControlName="street"
+            class="input-field"
+            [placeholder]="
+              isArabic ? 'رقم الشارع والمبنى (اختياري)' : 'Street number and building (optional)'
+            "
+          />
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Left Column: Booking Summary Sidebar -->
+  <aside class="booking-sidebar">
+    <div class="summary-card">
+      <!-- Craftsman Info -->
+      @if (craftsman()) {
+        <div class="craftsman-card">
+          <div class="craftsman-avatar">
+            @if (craftsman()!.avatarUrl) {
+              <img [src]="getImageUrl(craftsman()!.avatarUrl)" [alt]="craftsman()!.name" />
+            } @else {
+              <span class="material-symbols-outlined avatar-placeholder">person</span>
+            }
+          </div>
+          <div class="craftsman-info">
+            <h3 class="craftsman-name">{{ craftsman()!.name }}</h3>
+            <p class="craftsman-specialty">{{ getServiceName(craftsman()!) }}</p>
+            <div class="craftsman-rating">
+              <span class="material-symbols-outlined star-icon">star</span>
+              <span class="rating-value">{{ craftsman()!.rating | number: '1.1-1' }}</span>
+              <span class="rating-count">({{ craftsman()!.reviewsCount }})</span>
+            </div>
+          </div>
+          <!-- <button type="button" class="remove-craftsman" (click)="clearCraftsman()">
+            <span class="material-symbols-outlined">close</span>
+          </button> -->
+        </div>
+      } @else if (craftsmanLoading()) {
+        <div class="craftsman-card loading-state">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-60"></div>
+            <div class="skeleton-line w-40"></div>
+          </div>
+        </div>
+      } @else {
+        <div class="craftsman-card empty-state">
+          <span class="material-symbols-outlined empty-icon">engineering</span>
+          <p>{{ 'JOBS.NO_CRAFTSMAN_SELECTED' | translate }}</p>
+        </div>
+      }
+
+      <!-- Booking Details -->
+      <div class="summary-details">
+        <div class="detail-row">
+          <span class="detail-label">{{ 'JOBS.SERVICE' | translate }}</span>
+          <span class="detail-value">{{ selectedServiceLabel | translate }}</span>
+        </div>
+        @if (selectedDay()) {
+          <div class="detail-row">
+            <span class="detail-label">{{ 'JOBS.SCHEDULED_AT' | translate }}</span>
+            <span class="detail-value"
+              >{{ selectedDay() }}{{ selectedTime() ? ' - ' + selectedTime() : '' }}</span
+            >
+          </div>
+        }
+        <div class="detail-row">
+          <span class="detail-label">{{ 'JOBS.VISIT_FEE' | translate }}</span>
+          <span class="detail-value">{{ visitFee }} {{ 'HOME.CURRENCY' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Estimated Total -->
+      <div class="estimated-total">
+        <span class="total-label">{{ 'JOBS.ESTIMATED_TOTAL' | translate }}</span>
+        <div class="total-amount">
+          <span class="amount-number">{{ visitFee }}</span>
+          <span class="amount-currency">{{ 'HOME.CURRENCY' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Confirm Button -->
+      <button class="confirm-btn" [disabled]="loading || form.invalid" (click)="submit()">
+        @if (loading) {
+          <span class="material-symbols-outlined spinning">progress_activity</span>
+          {{ 'LOADING' | translate }}
+        } @else {
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ 'JOBS.CONFIRM_BOOKING' | translate }}
+        }
+      </button>
+
+      <!-- Trust Signal -->
+      <div class="trust-signal">
+        <span class="material-symbols-outlined">lock</span>
+        <span>{{ 'JOBS.SECURE_INFO' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Back Link -->
+    <a class="back-link" routerLink="/jobs">
+      <span class="material-symbols-outlined">arrow_back</span>
+      {{ 'JOBS.BACK_TO_JOBS' | translate }}
+    </a>
+  </aside>
+</div>

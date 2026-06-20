@@ -1,0 +1,184 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <p class="dashboard-welcome">{{ 'ADMIN.WELCOME' | translate }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-grid">
+      @for (_ of [1,2,3,4]; track _) {
+        <div class="skeleton harfi-card" style="height:140px"></div>
+      }
+    </div>
+  } @else {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <div class="stat-card__icon stat-card__icon--purple">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">person</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.totalCraftsmen || 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CRAFTSMEN' | translate }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <div class="stat-card__icon stat-card__icon--blue">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">group</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.totalUsers || 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.TOTAL_CUSTOMERS' | translate }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__header">
+          <div class="stat-card__icon stat-card__icon--orange">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">shopping_bag</span>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ (stats()?.completedJobs || 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.COMPLETED_JOBS' | translate }}</div>
+      </div>
+
+      <div class="stat-card stat-card--urgent">
+        <div class="stat-card__header">
+          <span class="urgent-badge">{{ 'ADMIN.URGENT' | translate }}</span>
+          <div class="stat-card__icon stat-card__icon--red">
+            <span class="material-symbols-outlined" style="font-size:20px;line-height:1">pending</span>
+          </div>
+        </div>
+        <div class="stat-card__value stat-card__value--red">{{ (stats()?.pendingCraftsmen || 0) | number }}</div>
+        <div class="stat-card__label">{{ 'ADMIN.PENDING_APPROVAL' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">{{ 'ADMIN.LAST_30_DAYS' | translate }}</h3>
+        </div>
+        <svg viewBox="0 0 400 150" class="area-chart" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E94057" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#E94057" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,120 C40,110 80,100 120,80 C160,60 200,70 240,50 C280,30 320,40 360,20 L400,10 L400,150 L0,150 Z"
+                fill="url(#areaGrad)"/>
+          <path d="M0,120 C40,110 80,100 120,80 C160,60 200,70 240,50 C280,30 320,40 360,20 L400,10"
+                fill="none" stroke="#E94057" stroke-width="2"/>
+        </svg>
+        <div class="chart-xaxis">
+          <span>30 مايو</span>
+          <span>22 مايو</span>
+          <span>15 مايو</span>
+          <span>8 مايو</span>
+          <span>1 مايو</span>
+        </div>
+        <p class="chart-placeholder">{{ 'ADMIN.PLACEHOLDER_DATA' | translate }}</p>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">{{ 'ADMIN.SERVICE_DISTRIBUTION' | translate }}</h3>
+        </div>
+        @let dist = getServiceDistribution(jobsAnalytics());
+        @if (dist.length > 0) {
+          <div class="donut-wrapper">
+            <svg viewBox="0 0 120 120" class="donut-chart">
+              <circle cx="60" cy="60" r="45" fill="none" stroke="var(--border-color)" stroke-width="18"/>
+              @for (item of dist; track item.label; let i = $index) {
+                @let dash = (item.pct / 100) * 283;
+                <circle cx="60" cy="60" r="45" fill="none" [attr.stroke]="item.color" stroke-width="18"
+                        [attr.stroke-dasharray]="dash + ' ' + (283 - dash)"
+                        stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+              }
+              <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)">{{ (jobsAnalytics()?.totalJobs || 0) | number }}</text>
+              <text x="60" y="70" text-anchor="middle" font-size="8" fill="var(--text-secondary)">{{ 'ADMIN.TOTAL_ORDERS' | translate }}</text>
+            </svg>
+          </div>
+          <div class="donut-legend">
+            @for (item of dist; track item.label) {
+              <div class="legend-item">
+                <span class="legend-dot" [style.background]="item.color"></span>
+                <span>{{ item.label }}</span>
+                <span class="legend-pct">{{ item.pct }}%</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="tables-grid">
+      <div class="table-card">
+        <div class="table-card__header">
+          <h3 class="table-card__title"><span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">person</span> {{ 'ADMIN.LATEST_CRAFTSMEN' | translate }}</h3>
+          <a class="view-all-link" routerLink="/admin/craftsmen">{{ 'ADMIN.VIEW_ALL' | translate }}</a>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'CRAFTSMAN' | translate }}</th>
+              <th>{{ 'PROFESSION' | translate }}</th>
+              <th>{{ 'STATUS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of stats()?.recentCraftsmen; track c.id) {
+              <tr>
+                <td>
+                  <div class="craftsman-cell">
+                    @if (c.profileImageUrl) {
+                      <img [src]="getImageUrl(c.profileImageUrl)" [alt]="c.fullName" class="avatar-img" />
+                    } @else {
+                      <div class="avatar-sm">{{ c.fullName.charAt(0) }}</div>
+                    }
+                    <div>
+                      <div class="craftsman-name">{{ c.fullName }}</div>
+                      <div class="craftsman-city text-muted">{{ c.city }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="harfi-chip">{{ c.serviceType }}</span></td>
+                <td><span class="status-badge rejected">{{ c.status }}</span></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3" class="text-muted" style="text-align:center">{{ 'NO_DATA' | translate }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card__header">
+          <h3 class="table-card__title"><span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">shopping_bag</span> {{ 'ADMIN.LATEST_ORDERS' | translate }}</h3>
+          <a class="view-all-link" routerLink="/admin/jobs">{{ 'ADMIN.VIEW_ALL' | translate }}</a>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ 'ORDER_ID' | translate }}</th>
+              <th>{{ 'SERVICE' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (job of stats()?.recentOrders; track job.id) {
+              <tr>
+                <td>
+                  <span class="order-id">{{ job.id | jobId }}</span>
+                  <br><small class="text-muted">{{ job.status }}</small>
+                </td>
+                <td><span class="harfi-chip">{{ job.serviceType }}</span></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="2" class="text-muted" style="text-align:center">{{ 'NO_DATA' | translate }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

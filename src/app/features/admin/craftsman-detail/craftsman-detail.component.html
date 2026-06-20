@@ -1,0 +1,172 @@
+<div class="detail-page">
+  <button class="back-btn" (click)="goBack()">
+    <span class="material-symbols-outlined">arrow_back</span>
+    {{ 'BACK' | translate }}
+  </button>
+
+  @if (loading()) {
+    <div class="skeleton-detail">
+      <div class="skeleton" style="height:200px;border-radius:var(--radius-lg);margin-bottom:16px"></div>
+      <div class="skeleton" style="height:120px;border-radius:var(--radius-lg)"></div>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <span class="material-symbols-outlined empty-icon">error_outline</span>
+      <p>{{ 'ERROR_LOADING' | translate }}</p>
+      <button class="btn btn-primary" (click)="goBack()">{{ 'BACK' | translate }}</button>
+    </div>
+  } @else if (craftsman(); as c) {
+    <div class="detail-grid">
+      <div class="harfi-card profile-card">
+        <div class="profile-header">
+          @if (c.profileImageUrl) {
+            <img [src]="getImageUrl(c.profileImageUrl)" [alt]="c.fullName" class="profile-img" />
+          } @else {
+            <div class="avatar-large">{{ c.fullName.charAt(0) || '?' }}</div>
+          }
+          <div class="profile-name-section">
+            <h2 class="profile-name">{{ c.fullName }}</h2>
+            <span class="status-badge {{ getStatusClass() }}">{{ getStatusLabel() | translate }}</span>
+          </div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-item">
+            <span class="material-symbols-outlined info-icon">phone</span>
+            <span>{{ c.phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="material-symbols-outlined info-icon">mail</span>
+            <span>{{ c.email }}</span>
+          </div>
+          <div class="info-item">
+            <div class="stars-row">
+              @for (star of [1,2,3,4,5]; track star) {
+                <span class="material-symbols-outlined star {{ c.rating >= star ? 'star-filled' : 'star-empty' }}">
+                  {{ c.rating >= star ? 'star' : 'star_border' }}
+                </span>
+              }
+              <span class="rating-value">{{ c.rating }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="availability-row">
+          <span class="availability-label">{{ 'ADMIN.AVAILABILITY' | translate }}</span>
+          <span class="availability-indicator" [class.available]="c.isAvailable" [class.unavailable]="!c.isAvailable">
+            <span class="material-symbols-outlined" style="font-size:14px;line-height:1">
+              {{ c.isAvailable ? 'check_circle' : 'cancel' }}
+            </span>
+            {{ (c.isAvailable ? 'ADMIN.AVAILABLE' : 'ADMIN.UNAVAILABLE') | translate }}
+          </span>
+        </div>
+      </div>
+
+      <div class="harfi-card info-card">
+        <h3 class="section-title">{{ 'ADMIN.CRAFTSMAN_INFO' | translate }}</h3>
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="field-label">{{ 'SPECIALTY' | translate }}</span>
+            <span class="field-value harfi-chip">{{ c.serviceType }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'CITY' | translate }}</span>
+            <span class="field-value">{{ c.city }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.NEIGHBORHOOD' | translate }}</span>
+            <span class="field-value">{{ c.neighborhood || '—' }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.PRICE_RANGE' | translate }}</span>
+            <span class="field-value">{{ c.priceRangeMin | number }} - {{ c.priceRangeMax | number }} {{ 'ADMIN.CURRENCY' | translate }}</span>
+          </div>
+          <div class="info-field">
+            <span class="field-label">{{ 'ADMIN.EXPERIENCE' | translate }}</span>
+            <span class="field-value">{{ c.experience }} {{ 'ADMIN.YEARS' | translate }}</span>
+          </div>
+        </div>
+        @if (c.bio) {
+          <div class="bio-section">
+            <span class="field-label">{{ 'BIO' | translate }}</span>
+            <p class="bio-text">{{ c.bio }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (c.nationalIdUrl) {
+      <div class="harfi-card national-id-card">
+        <div class="national-id-row">
+          <span class="material-symbols-outlined national-id-icon">badge</span>
+          <span class="national-id-text">{{ 'ADMIN.NATIONAL_ID' | translate }}</span>
+          <button class="link-btn" (click)="viewNationalId()">
+            <span class="material-symbols-outlined" style="font-size:16px;line-height:1">visibility</span>
+            {{ 'ADMIN.VIEW_NATIONAL_ID' | translate }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">work_history</span>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">{{ c.completedJobsCount | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.COMPLETED_JOBS' | translate }}</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">reviews</span>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">{{ c.totalReviews | number }}</div>
+          <div class="stat-card__label">{{ 'ADMIN.TOTAL_REVIEWS' | translate }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-section">
+      @if (status() === 'pending') {
+        <button class="btn btn-action btn-approve" (click)="openAction('approve')">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">check_circle</span>
+          {{ 'APPROVE' | translate }}
+        </button>
+        <button class="btn btn-action btn-reject" (click)="openAction('reject')">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">cancel</span>
+          {{ 'REJECT' | translate }}
+        </button>
+      }
+      @if (status() === 'approved') {
+        <button class="btn btn-action btn-suspend" (click)="openAction('suspend')">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">pause_circle</span>
+          {{ 'ADMIN.SUSPEND' | translate }}
+        </button>
+        <button class="btn btn-action btn-delete" (click)="openAction('delete')">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+          {{ 'DELETE' | translate }}
+        </button>
+      }
+      @if (status() === 'suspended' || status() === 'rejected') {
+        <button class="btn btn-action btn-delete" (click)="openAction('delete')">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1">delete</span>
+          {{ 'DELETE' | translate }}
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<app-confirm-dialog
+  [visible]="dialogVisible()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [requireReason]="dialogRequireReason()"
+  [reasonLabel]="dialogReasonLabel()"
+  (confirmed)="onDialogConfirmed($event)"
+  (dismissed)="dialogVisible.set(false)"
+/>

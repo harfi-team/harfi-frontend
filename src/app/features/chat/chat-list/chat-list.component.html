@@ -1,0 +1,118 @@
+<div class="chat-list-container">
+
+  <div class="chat-list-header">
+    <h2 class="gradient-text">{{ 'CHAT.TITLE' | translate }}</h2>
+  </div>
+
+  <app-spinner *ngIf="loading()" />
+
+  <div
+    *ngIf="!loading() && conversations().length === 0"
+    class="empty-state"
+    role="status">
+    <span class="empty-icon" aria-hidden="true">💬</span>
+    <p>{{ 'CHAT.NO_CONVERSATIONS' | translate }}</p>
+  </div>
+
+  <div class="conversations-list" *ngIf="!loading()">
+    <button
+      type="button"
+      class="conversation-card harfi-card"
+      *ngFor="let conv of conversations(); trackBy: trackById"
+      (click)="openChat(conv.id)"
+      (keydown)="onCardKeydown($event, conv.id)"
+      [attr.aria-label]="conv.otherUserName">
+
+      <div class="conv-avatar">
+        <img *ngIf="conv.otherUserAvatar" [src]="getImageUrl(conv.otherUserAvatar)" [alt]="conv.otherUserName" />
+        <div *ngIf="!conv.otherUserAvatar" class="conv-avatar-initials" aria-hidden="true">
+          {{ initials(conv.otherUserName) }}
+        </div>
+        <span class="online-dot" *ngIf="conv.isOnline" [attr.aria-label]="'CHAT.CONNECTION_ONLINE' | translate"></span>
+        <span
+          class="unread-badge"
+          *ngIf="conv.unreadCount > 0"
+          [attr.aria-label]="conv.unreadCount + ' unread'">
+          {{ conv.unreadCount }}
+        </span>
+      </div>
+
+      <div class="conv-info">
+        <div class="conv-top">
+          <span class="conv-name">{{ conv.otherUserName }}</span>
+          <span class="conv-time" *ngIf="conv.lastMessageAt">
+            {{ conv.lastMessageAt | relativeTime }}
+          </span>
+        </div>
+        <p class="conv-last-msg">
+          <ng-container *ngIf="isImageLastMessage(conv); else checkVoicePreview">
+            📷 {{ 'CHAT.IMAGE' | translate }}
+          </ng-container>
+          <ng-template #checkVoicePreview>
+            <ng-container *ngIf="isVoiceLastMessage(conv); else checkLocationPreview">
+              🎤 {{ 'CHAT.VOICE' | translate }}
+            </ng-container>
+          </ng-template>
+          <ng-template #checkLocationPreview>
+            <ng-container *ngIf="isLocationLastMessage(conv); else textPreview">
+              📍 {{ 'CHAT.LOCATION' | translate }}
+            </ng-container>
+          </ng-template>
+          <ng-template #textPreview>
+            {{ getConversationPreview(conv) || ('CHAT.NO_MESSAGES' | translate) }}
+          </ng-template>
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="conv-delete-btn"
+        [title]="'CHAT.DELETE_CONVERSATION' | translate"
+        [attr.aria-label]="'CHAT.DELETE_CONVERSATION' | translate"
+        (click)="requestDeleteConv(conv.id, $event)"
+      >
+        🗑
+      </button>
+
+      <div *ngIf="confirmDeleteConvId() === conv.id && deletingConv()" class="conv-deleting-overlay">
+        <div class="conv-deleting-spinner"></div>
+      </div>
+
+    </button>
+  </div>
+
+  <div
+    *ngIf="confirmDeleteConvId()"
+    class="delete-confirm-overlay"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'CHAT.DELETE_CONV_CONFIRM_TITLE' | translate"
+    (click)="cancelDeleteConv()"
+  >
+    <div class="delete-confirm-card" (click)="$event.stopPropagation()">
+      <div class="delete-confirm-icon" aria-hidden="true">🗑</div>
+      <h3 class="delete-confirm-title">{{ 'CHAT.DELETE_CONV_CONFIRM_TITLE' | translate }}</h3>
+      <p class="delete-confirm-text">{{ 'CHAT.DELETE_CONV_CONFIRM_TEXT' | translate }}</p>
+
+      <div class="delete-confirm-actions">
+        <button
+          type="button"
+          class="delete-confirm-cancel"
+          [disabled]="deletingConv()"
+          (click)="cancelDeleteConv()"
+        >
+          {{ 'CANCEL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="delete-confirm-delete"
+          [disabled]="deletingConv()"
+          (click)="confirmDeleteConv()"
+        >
+          {{ deletingConv() ? '...' : ('CHAT.DELETE_SHORT' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

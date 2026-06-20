@@ -1,0 +1,27 @@
+<nav class="navbar" dir="auto">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">
+      <img src="assets/images/harfi_logo.png" height="36" alt="حرفي" />
+      <span class="brand-text">{{ 'APP_NAME' | translate }}</span>
+    </a>
+
+    <div class="nav-actions">
+      <button
+        class="nav-icon-btn"
+        (click)="theme.toggle()"
+        [attr.aria-label]="(theme.current() === 'dark' ? 'THEME_LIGHT' : 'THEME_DARK') | translate"
+      >
+        @if (theme.current() === 'dark') {
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">light_mode</span>
+        } @else {
+          <span class="material-symbols-outlined" style="font-size:20px;line-height:1">dark_mode</span>
+        }
+      </button>
+
+      <button class="nav-icon-btn" (click)="language.toggle()">
+        <span class="material-symbols-outlined" style="font-size:20px;line-height:1">translate</span>
+        <span class="lang-label">{{ language.current() === 'ar' ? 'EN' : 'AR' }}</span>
+      </button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,420 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap');
+
+/* CSS Custom Properties */
+:root[data-theme='light'] {
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --nav-bg: #ffffff;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme='dark'] {
+  --bg-color: #0f0f1a;
+  --card-bg: #1a1a2e;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #2d2d3d;
+  --nav-bg: #1a1a2e;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+:root {
+  --brand-purple: #8a2387;
+  --brand-red: #e94057;
+  --brand-orange: #f27121;
+  --brand-gradient: linear-gradient(135deg, #8a2387, #e94057, #f27121);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* Base Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  overflow-x: hidden;
+}
+
+[dir='rtl'] {
+  text-align: right;
+}
+[dir='ltr'] {
+  text-align: left;
+}
+
+/* Utility Classes */
+.gradient-bg {
+  background: var(--brand-gradient);
+}
+
+.gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.gradient-btn {
+  background: var(--brand-gradient);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(233, 64, 87, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gradient-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(233, 64, 87, 0.45);
+}
+
+.harfi-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.3s ease;
+}
+
+.harfi-card:hover {
+  transform: translateY(-2px);
+}
+
+.harfi-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    var(--brand-gradient) border-box;
+  font-size: 14px;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-badge.open {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+}
+.status-badge.in-progress {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+.status-badge.done {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+.status-badge.rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+.status-badge.cancelled {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--text-secondary);
+}
+.status-badge.disputed {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+/* Job Status Classes (from JobStatusPipe) */
+.status-open {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+}
+.status-in-progress {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+.status-completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+.status-cancelled {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--text-secondary);
+}
+.status-disputed {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+/* Layouts */
+.sidebar-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--nav-bg);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--nav-bg);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+}
+
+.page-content {
+  padding-bottom: 80px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade {
+  animation: fadeIn 0.5s ease forwards;
+}
+.animate-slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--brand-gradient);
+  border-radius: 10px;
+}
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border-color) 25%,
+    var(--bg-color) 50%,
+    var(--border-color) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ADMIN GLOBAL RESPONSIVE — applied across all admin pages
+═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  /* ── Stats grids: stack 2 columns then 1 on very small ── */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .stats-grid--9,
+  .stats-grid--6,
+  .stats-grid--4,
+  .stats-grid--3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* ── Charts & tables grids: single column ── */
+  .charts-row,
+  .tables-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Filter rows: stack vertically ── */
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .filter-row .search-input-wrapper,
+  .filter-row .filter-select,
+  .filter-row .filter-group,
+  .filter-row .filter-search {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Tables: ensure horizontal scroll on mobile ── */
+  .admin-table {
+    min-width: 600px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Grid forms (detail pages) ── */
+  .detail-grid,
+  .info-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Tab pills: scrollable ── */
+  .tab-pills,
+  .tabs-group {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .tab-pill,
+  .filter-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Stat cards: compact padding ── */
+  .stat-card {
+    padding: 14px !important;
+  }
+
+  .stat-card__value {
+    font-size: 22px !important;
+  }
+
+  /* ── Pagination: stack vertically ── */
+  .pagination,
+  .pagination-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .pagination-info {
+    text-align: center;
+  }
+
+  /* ── Headers: stack ── */
+  .page-header,
+  .dashboard-header,
+  .analytics-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* ── Action buttons: allow wrap ── */
+  .action-btns {
+    flex-wrap: wrap;
+  }
+
+  /* ── Cards with flex rows ── */
+  .chart-card__header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .stats-grid--9,
+  .stats-grid--6,
+  .stats-grid--4,
+  .stats-grid--3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stat-card__value {
+    font-size: 20px !important;
+  }
+
+  .chart-container {
+    max-width: 100% !important;
+  }
+}
+
+/* ── Detail page image grid ── */
+@media (max-width: 767px) {
+  .images-grid,
+  .media-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
