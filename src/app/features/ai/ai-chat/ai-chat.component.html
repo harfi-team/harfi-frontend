@@ -1,3 +1,4 @@
+  
   <!-- ═══ HISTORY PANEL (ثابت جنب الشات) ═══ -->
   <aside class="history-panel" [class.open]="sidebarOpen">
     <div class="panel-header">
@@ -49,11 +50,19 @@
     <!-- HEADER -->
     <header class="header">
       <div class="header-brand">
+<!--         
         <button class="icon-btn sidebar-toggle" (click)="toggleSidebar()" title="السجل">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
           <path d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
-      </button>
+      </button> -->
+      <button class="icon-btn sidebar-toggle" (click)="toggleSidebar()" title="السجل">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+  <!-- ✅ أضف السطر ده بالضبط -->
+  <span class="badge-count" *ngIf="sessions.length > 0">{{ sessions.length }}</span>
+</button>
       <div class="brand-logo">🔧</div>
       <div>
         <div class="brand-name">حرفي</div>
@@ -209,35 +218,52 @@
               </div>
             </div>
           </div>
+<div *ngIf="msg.optionsType === 'craftsmen'" class="options-row bot-row">
+  <div class="avatar">🤖</div>
+  <div class="results-card">
+    <div class="strip-header">
+      <div class="strip-title">
+        <span>🏆</span>
+        <span>أفضل {{ msg.craftsmen?.length }} حرفيين</span>
+      </div>
+      <div class="strip-tags">
+        <span class="tag tag-service" *ngIf="msg.detectedService">{{ msg.detectedService }}</span>
+        <span class="tag tag-city" *ngIf="msg.detectedCity">📍 {{ msg.detectedCity }}</span>
+      </div>
+    </div>
 
-          <div *ngIf="msg.optionsType === 'craftsmen'" class="options-row bot-row">
-            <div class="avatar">🤖</div>
-            <div class="results-card">
-              <div class="strip-header">
-                <div class="strip-title"><span>🏆</span><span>أفضل {{ msg.craftsmen?.length }} حرفيين</span></div>
-                <div class="strip-tags">
-                  <span class="tag tag-service" *ngIf="msg.detectedService">{{ msg.detectedService }}</span>
-                  <span class="tag tag-city"    *ngIf="msg.detectedCity">📍 {{ msg.detectedCity }}</span>
-                </div>
-              </div>
-              <div class="mini-scroll">
-                <a class="mini-card"
-                   *ngFor="let c of msg.craftsmen; let i = index"
-                   [class.mini-card-nearby]="c.isNearby"
-                   [routerLink]="['/craftsmen', c.id]">
-                  <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
-                  <div class="mini-av" [class.mini-av-nearby]="c.isNearby">{{ c.name.charAt(0) }}</div>
-                  <div class="mini-info">
-                    <div class="mini-name">{{ c.name }}</div>
-                    <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}{{ c.neighborhood ? ' · ' + c.neighborhood : '' }}</div>
-                    <div class="nearby-badge" *ngIf="c.isNearby">📍 أقرب محافظة</div>
-                  </div>
-                  <div class="mini-score" [style.color]="scoreColor(c.similarityScore)">{{ (c.similarityScore * 100).toFixed(0) }}%</div>
-                </a>
-              </div>
-            </div>
+    <div class="mini-scroll">
+      <a class="mini-card"
+         *ngFor="let c of msg.craftsmen; let i = index"
+         [class.mini-card-nearby]="c.isNearby"
+         [routerLink]="['/craftsmen/profile', c.id]">
+        <div class="mini-rank">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}</div>
+
+        <!-- ✅ صورة الحرفي (نفس صفحة البحث) -->
+        <div class="mini-avatar-wrap">
+          <img *ngIf="c.profileImageUrl" 
+               [src]="getImageUrl(c.profileImageUrl)" 
+               alt="{{ c.name }}" 
+               class="card-avatar-img" />
+          <div class="mini-av" 
+               *ngIf="!c.profileImageUrl" 
+               [class.mini-av-nearby]="c.isNearby">
+            {{ c.name.charAt(0) }}
           </div>
+        </div>
 
+        <div class="mini-info">
+          <div class="mini-name">{{ c.name }}</div>
+          <div class="mini-meta">⭐ {{ c.rating }} &nbsp; 🏙️ {{ c.city }}{{ c.neighborhood ? ' · ' + c.neighborhood : '' }}</div>
+          <div class="nearby-badge" *ngIf="c.isNearby">📍 أقرب محافظة</div>
+        </div>
+        <div class="mini-score" [style.color]="scoreColor(c.similarityScore)">
+          {{ (c.similarityScore * 100).toFixed(0) }}%
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
         </ng-container>
 
         <div #msgEnd></div>
