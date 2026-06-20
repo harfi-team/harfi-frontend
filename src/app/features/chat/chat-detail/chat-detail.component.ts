@@ -141,7 +141,9 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
       if (this.seenMessageIds.has(msg.id)) return;
       this.seenMessageIds.add(msg.id);
       this.allMessages.update((list) => this.limitMessages([...list, msg]));
-      this.scrollTrigger.next();
+      if (this.isNearBottom()) {
+        this.scrollTrigger.next();
+      }
       if (msg.senderId !== this.currentUserId) {
         this.scheduleMarkAsRead();
       }
@@ -771,11 +773,6 @@ export class ChatDetailComponent implements OnInit, OnDestroy {
     this.scrollToBottomRafId = requestAnimationFrame(() => {
       if (this.isDestroyed) return;
       this.scrollToBottom();
-
-      this.scrollToBottomTimer = setTimeout(() => {
-        if (this.isDestroyed) return;
-        this.scrollToBottom();
-      }, 120);
     });
   }
 
