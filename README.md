@@ -1,628 +1,468 @@
-# حرفي — Harfi Frontend
-
-> **Arabic-first platform connecting Egyptian customers with verified craftsmen.**  
-> Built with Angular 21 · Standalone Components · Bootstrap 5 · RTL · i18n
+<div align="center">
+  <img src="public/harfi%20logo.png" alt="حرفي Logo" width="80" height="80" />
+  <h1 align="center">حرفي — Harfi</h1>
+  <p align="center">
+    <strong>Arabic-first platform connecting Egyptian customers with trusted, verified craftsmen</strong>
+  </p>
+  <p>
+    <a href="https://angular.dev/" target="_blank"><img src="https://img.shields.io/badge/Angular-21.2-%23DD0031?logo=angular" alt="Angular 21.2" /></a>
+    <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-5.9-%233178C6?logo=typescript" alt="TypeScript 5.9" /></a>
+    <a href="https://getbootstrap.com/" target="_blank"><img src="https://img.shields.io/badge/Bootstrap-5.3-%237952B3?logo=bootstrap" alt="Bootstrap 5.3" /></a>
+    <img src="https://img.shields.io/badge/RTL-Arabic--first-%231a6b4a" alt="RTL Arabic-first" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+    <a href="https://harfii.runasp.net/" target="_blank"><img src="https://img.shields.io/badge/demo-live-%2310b981" alt="Live Demo" /></a>
+  </p>
+</div>
 
 ---
 
 ## Table of Contents
 
-1. [Project Overview](#1-project-overview)
-2. [Tech Stack](#2-tech-stack)
-3. [Architecture Overview](#3-architecture-overview)
-4. [Folder Structure](#4-folder-structure)
-5. [Team — Who Works Where](#5-team--who-works-where)
-6. [Getting Started](#6-getting-started)
-7. [Key Conventions](#7-key-conventions)
-8. [API & Backend Integration](#8-api--backend-integration)
-9. [Git Workflow](#9-git-workflow)
+1. [Overview](#1-overview)
+2. [Key Features](#2-key-features)
+3. [User Journeys](#3-user-journeys)
+4. [Architecture](#4-architecture)
+5. [State Management & API Communication](#5-state-management--api-communication)
+6. [Real-Time & AI-Streaming Features](#6-real-time--ai-streaming-features)
+7. [RTL & Internationalization](#7-rtl--internationalization)
+8. [Project Structure](#8-project-structure)
+9. [Tech Stack](#9-tech-stack)
+10. [Getting Started](#10-getting-started)
+11. [Live Demo & Deployment](#11-live-demo--deployment)
+12. [Team](#12-team)
+13. [License](#13-license)
 
 ---
 
-## 1. Project Overview
+## 1. Overview
 
-**Harfi (حرفي)** is a web platform that connects Egyptian customers with trusted, verified craftsmen. The frontend is an Angular 21 standalone application with:
+**Harfi (حرفي)** is a full-stack web platform connecting Egyptian customers with verified craftsmen. The frontend is an **Angular 21** single-page application using **standalone components** (no NgModules), **Bootstrap 5 RTL**, and **@ngx-translate** for Arabic-first bilingual i18n.
 
-- 🌍 **Two languages** — Arabic (default, RTL) and English (LTR)
-- 🌙 **Two themes** — Light and Dark mode via CSS custom properties
-- ⚡ **Real-time** — Chat and notifications powered by SignalR
-- 🤖 **AI assistant** — Groq-powered RAG chatbot for smart craftsman discovery
-- 🔐 **JWT auth** — Access token + refresh token with silent retry
+The frontend communicates with a **.NET Core Web API** backend over HTTP (REST) and **SignalR** WebSocket connections for real-time chat and notifications.
 
----
-
-## 2. Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Framework | Angular 21 — Standalone Components (no NgModules) |
-| Styling | CSS + Bootstrap 5 RTL |
-| i18n | `@ngx-translate/core` v17 — Arabic default, English fallback (`fallbackLang`) |
-| Real-time | `@microsoft/signalr` — Chat Hub + Notification Hub |
-| HTTP | Angular `HttpClient` with functional interceptors |
-| Auth | JWT stored in `localStorage`, auto-refresh on 401, 30s expiry buffer |
-| Routing | Angular Router — all feature modules **lazy loaded** |
-| Path Aliases | `@core`, `@shared`, `@features`, `@env` via `tsconfig.json` paths |
+> **Live App:** [https://harfii.runasp.net/](https://harfii.runasp.net/)  
+> **API (Swagger):** [https://harfi.runasp.net/index.html](https://harfi.runasp.net/index.html)
 
 ---
 
-## 3. Architecture Overview
+## 2. Key Features
 
-The app follows a **three-layer frontend architecture**:
+| Feature | Implementation | Status |
+|---------|---------------|--------|
+| **Authentication** | JWT access/refresh tokens, email & phone OTP verification, password reset, role-based routing | ✅ Complete |
+| **Craftsman Search** | Filter by service, city, rating, experience; debounced text search; sortable results; URL-shareable query params | ✅ Complete |
+| **Craftsman Registration** | Role selection during sign-up, multi-field reactive form with file upload (national ID, profile photo), AI-assisted approval workflow | ✅ Complete |
+| **Job Lifecycle** | Create → Open → Accept/Reject → Complete with status transitions, image upload, date/time scheduling | ✅ Complete |
+| **Real-Time Chat** | SignalR-powered messaging with text, image, voice recording, location sharing; typing indicators, read receipts, online presence | ✅ Complete |
+| **Notifications** | SignalR push + REST polling; unread badge counts; clickable notifications per type (new message, job accepted, review) | ✅ Complete |
+| **AI Assistant** | RAG-based conversational search for craftsmen; image upload with vision analysis; session history; RAG feedback ("helped" / "need craftsman") | ✅ Complete |
+| **Job Summary (AI)** | Craftsman submits problem/solution; backend AI validates and stores in ChromaDB vector store | ✅ Complete |
+| **Reviews** | Star rating (1–5) + comment per completed job; reusable star display component | ✅ Complete |
+| **Admin Panel** | Dashboard with charts, craftsman approval workflow, user management, job management, reviews moderation, reports, audit logs, AI sync, feature flags, analytics | ✅ Complete |
+| **User Profile** | Editable name, phone, avatar image upload | ✅ Complete |
+| **Dark / Light Mode** | CSS custom properties with `data-theme` attribute on `<html>` | ✅ Complete |
+| **RTL / Arabic-first** | Default Arabic, English fallback; `dir` attribute toggling; separate font families per language | ✅ Complete |
+| **Responsive Design** | Desktop sidebar layout, mobile bottom nav, responsive admin grid | ✅ Complete |
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                         CORE LAYER                               │
-│  Lives once for the entire app lifetime                          │
-│                                                                  │
-│  Interceptors ── Guards ── Services ── Models ── SignalR Hubs    │
-│  (JWT attach)   (auth/role) (token,     (DTOs    (chat hub,      │
-│  (401 refresh)  (guest)      theme,      matching  notif hub)    │
-│                              language)   backend)                │
-└───────────────────────────────┬──────────────────────────────────┘
-                                │ provides to
-┌───────────────────────────────▼──────────────────────────────────┐
-│                        SHARED LAYER                              │
-│  Reusable UI pieces used across multiple features                │
-│                                                                  │
-│  Components ── Layouts ── Directives ── Pipes                    │
-│  (navbar,       (main-     (rtl-form    (translate,              │
-│   footer,        layout,    directive)   relative-time)          │
-│   spinner,       auth-                                           │
-│   toast,         layout)                                         │
-│   star-rating,                                                   │
-│   confirm-dialog)                                                │
-└───────────────────────────────┬──────────────────────────────────┘
-                                │ used by
-┌───────────────────────────────▼──────────────────────────────────┐
-│                       FEATURES LAYER                             │
-│  9 modules — each maps to one backend controller                 │
-│  Each module is LAZY LOADED (loads only when user navigates)     │
-│                                                                  │
-│  auth ── craftsman ── user ── admin ── jobs                      │
-│  reviews ── chat ── notifications ── ai                          │
-└──────────────────────────────────────────────────────────────────┘
+---
+
+## 3. User Journeys
+
+### Customer Flow
+
+```mermaid
+flowchart LR
+  Splash["/ (Splash/Onboarding)"] --> Auth
+  subgraph Auth["/auth"]
+    Login["/auth/login"] -->|guestGuard| Home
+    Register["/auth/register"] -->|guestGuard| VerifyEmail["/auth/verify-email"]
+    VerifyEmail --> VerifyPhone["/auth/verify-phone"]
+    VerifyPhone --> Home
+  end
+  
+  subgraph Authenticated
+    Home["/home"] --> Search["/craftsmen (search)"]
+    Search --> Profile["/craftsmen/profile/:id"]
+    Profile --> Book["/jobs/create?craftsmanId=..."]
+    Book --> Jobs["/jobs (list)"]
+    Jobs --> JobDetail["/jobs/:id"]
+    JobDetail -->|if in-progress| Chat["/chat/:conversationId"]
+    JobDetail -->|if done| Review["Review Modal"]
+    Home --> AI["/ai (AI Assistant)"]
+  end
 ```
 
-### How Lazy Loading Works
+### Craftsman Flow
 
-Every feature folder has its own `*.routes.ts`. The root `app.routes.ts` points to them like this:
-
-```typescript
-// app.routes.ts (simplified)
-{
-  path: 'auth',
-  loadChildren: () => import('./features/auth/auth.routes')
-}
+```mermaid
+flowchart LR
+  Register["/auth/register (role=craftsman)"] --> VerifyEmail
+  VerifyEmail --> VerifyPhone
+  VerifyPhone --> CRegister["/craftsmen/register"]
+  CRegister --> Pending["/craftsmen/pending"]
+  Pending -->|Admin approves| Dashboard["/home (craftsman view)"]
+  Dashboard --> Jobs["/jobs"]
+  Jobs -->|accept| InProgress["Job → in-progress"]
+  InProgress -->|complete| Solution["Solution Form (AI summary)"]
+  InProgress --> Chat["/chat/:conversationId"]
+  Dashboard --> Profile["/craftsmen/profile/:id"]
 ```
 
-The browser **only downloads** a feature's code when the user navigates to that route — keeping the initial bundle small.
+### Admin Flow
 
-### How RTL / LTR Works
-
-`language.service.ts` sets two attributes on the `<html>` tag at runtime:
-- `document.documentElement.dir = 'rtl'` or `'ltr'`
-- `document.documentElement.lang = 'ar'` or `'en'`
-
-CSS then responds to these attributes to flip layouts and switch fonts automatically.
-
-### How Light / Dark Mode Works
-
-`theme.service.ts` sets `data-theme="dark"` on `<html>` when dark mode is active. All colors are CSS custom properties in `styles.css` that change based on that attribute — no component needs to know about the theme.
+```mermaid
+flowchart LR
+  Login["/auth/login (role=admin)"] --> Admin["/admin/dashboard"]
+  Admin --> Craftsmen["/admin/craftsmen"]
+  Craftsmen --> Detail["/admin/craftsmen/:id"]
+  Detail -->|approve/reject/suspend| Action["PUT /admin/craftsmen/:id/approve|reject|suspend"]
+  Admin --> Jobs["/admin/jobs"]
+  Admin --> Customers["/admin/customers"]
+  Admin --> Reviews["/admin/reviews"]
+  Admin --> Reports["/admin/reports"]
+  Admin --> Analytics["/admin/analytics"]
+  Admin --> AiLogs["/admin/ai-logs"]
+  Admin --> AuditLogs["/admin/audit-logs"]
+  Admin --> Settings["/admin/settings"]
+```
 
 ---
 
-## 4. Folder Structure
+## 4. Architecture
+
+### Module Structure
+
+The app follows a **three-layer architecture** with lazy-loaded feature modules:
+
+```mermaid
+graph TD
+  App["App (bootstrapApplication)"] --> AppConfig["app.config.ts<br/>providers: router, http, translate"]
+  AppConfig --> Interceptors
+  
+  subgraph Core["Core Layer (singletons)"]
+    Interceptors["auth.interceptor<br/>refresh.interceptor"]
+    Guards["authGuard<br/>guestGuard<br/>roleGuard"]
+    Services["auth.service<br/>token.service<br/>language.service<br/>theme.service<br/>error-handler.service<br/>realtime-orchestrator.service"]
+    Hubs["chat.hub.service<br/>notification.hub.service"]
+    Models["auth.models • craftsman.models<br/>job.models • review.models<br/>chat.models • notification.models<br/>admin.models • ai.models<br/>user.models • api-error.models"]
+  end
+
+  subgraph Shared["Shared Layer (reusable)"]
+    Layouts["auth-layout • main-layout"]
+    Components["navbar • side-nav • toast<br/>spinner • confirm-dialog<br/>connection-status"]
+    Pipes["translate • relative-time<br/>job-status • job-id"]
+    Directives["rtl-form.directive"]
+  end
+
+  subgraph Features["Feature Modules (lazy loaded)"]
+    Auth["/auth → login, register,<br/>verify-email, verify-phone,<br/>forgot/reset-password"]
+    Home["/home → customer/craftsman dashboard"]
+    Craftsman["/craftsmen → search, profile,<br/>register, pending"]
+    Jobs["/jobs → list, create, detail,<br/>solution-form"]
+    AI["/ai → AI chat assistant"]
+    Chat["/chat → list, detail<br/>(SignalR)"]
+    Notifications["/notifications → list<br/>(SignalR)"]
+    Reviews["review-form<br/>(modal)"]
+    User["/user → profile"]
+    Admin["/admin → dashboard, craftsmen,<br/>customers, jobs, reviews,<br/>reports, analytics, settings,<br/>audit-logs, ai-logs"]
+  end
+
+  Core -->|provides| Shared
+  Shared -->|used by| Features
+  App -->|navigates to| Features
+```
+
+### Key Architectural Decisions
+
+- **Standalone Components:** Zero NgModules; every component declares `standalone: true` and imports its dependencies directly.
+- **Angular Signals** for reactive state (language, theme, notification counts, unread badges) over RxJS `BehaviorSubject` in most cases.
+- **Functional Guards & Interceptors:** All guards and interceptors are plain functions (`CanActivateFn`, `HttpInterceptorFn`) using `inject()` for DI.
+- **`inject()`-based DI** throughout — no constructor injection.
+- **Lazy Loading:** All feature routes use `loadComponent()` or `loadChildren()` with dynamic `import()`.
+- **OnPush Change Detection** on chat and notification components for performance.
+- **No state management library** — services with signals and `localStorage` persistence suffice.
+
+---
+
+## 5. State Management & API Communication
+
+### HTTP Interceptor Chain (in order)
+
+| Order | Interceptor | Purpose |
+|-------|------------|---------|
+| 1 | `auth.interceptor.ts` | Attaches `Authorization: Bearer <token>` header to every outgoing request |
+| 2 | `refresh.interceptor.ts` | On 403 (expired token): queues concurrent requests, calls `/auth/refresh`, retries with new token. On 429 (rate limit): shows Arabic toast. On refresh failure: clears session, redirects to `/auth/login`. |
+
+### Route Guards
+
+| Guard | Type | Logic | Redirect |
+|-------|------|-------|----------|
+| `authGuard` | `CanActivateFn` | `tokenService.isLoggedIn()` + `authService.loadCurrentUser()` (server-side validation) | `/auth/login` |
+| `guestGuard` | `CanActivateFn` | Blocks authenticated users from login/register | `/home` |
+| `roleGuard(['admin'])` | Factory → `CanActivateFn` | Checks `tokenService.getUser().role` | `/` |
+
+### Core Services
+
+| Service | File | Key Methods | Backend Endpoints |
+|---------|------|-------------|-------------------|
+| `AuthService` | `core/services/auth.service.ts` | `login()`, `register()`, `logout()`, `refreshToken()`, `verifyEmail()`, `verifyPhone()`, `forgotPassword()`, `resetPassword()`, `loadCurrentUser()` | `/api/auth/*` |
+| `TokenService` | `core/services/token.service.ts` | `getAccessToken()`, `setUser()`, `isLoggedIn()`, `clearAll()` | localStorage management |
+| `ErrorHandlerService` | `core/services/error-handler.service.ts` | `success()`, `error()`, `info()`, `handle(httpError)` | Toast event bus |
+| `LanguageService` | `core/services/language.service.ts` | `switchTo()`, `toggle()`, `current` (signal) | Sets `<html dir/lang>` |
+| `ThemeService` | `core/services/theme.service.ts` | `toggle()`, `current` (signal) | Sets `<html data-theme>` |
+
+### Feature Services
+
+| Service | Module | Key Methods | Backend Endpoints |
+|---------|--------|-------------|-------------------|
+| `CraftsmanService` | craftsman | `searchCraftsmen()`, `register()`, `getCraftsman()`, `updateCraftsmanProfile()`, `getActiveServices()`, `getActiveCities()` | `/api/craftsmen/*`, `/api/reviews/*` |
+| `JobsService` | jobs | `createJob()`, `getCustomerJobs()`, `getCraftsmanJobs()`, `getJobById()`, `acceptJob()`, `rejectJob()`, `completeJob()`, `uploadJobImage()` | `/api/jobs/*` |
+| `ChatService` | chat | `getConversations()`, `getMessages()`, `createConversation()`, `deleteConversation()`, `uploadImage()`, `uploadVoice()`, `deleteMessage()` | `/api/Conversations/*` |
+| `NotificationsService` | notifications | `getAll()`, `getUnreadCount()`, `markAsRead()`, `markAllAsRead()`, `delete()`, `deleteAll()` | `/api/Notifications/*` |
+| `ReviewsService` | reviews | `submitReview()`, `getCraftsmanReviews()`, `submitRagFeedback()` | `/api/reviews/*` |
+| `AiService` | ai | `sendChat3()`, `analyzeMedia()`, `getSessions()`, `getSessionDetail()`, `deleteSession()` | `/api/AI/*` |
+| `AdminService` | admin | 30+ methods for craftsman/user/job/review/report/analytics management | `/api/v1/admin/*` |
+| `UserService` | user | `getProfile()`, `updateProfile()`, `uploadProfileImage()` | `/api/Users/*` |
+
+---
+
+## 6. Real-Time & AI-Streaming Features
+
+### SignalR Hubs
+
+| Hub | File | Hub URL | Events | Methods |
+|-----|------|---------|--------|---------|
+| `ChatHubService` | `core/hubs/chat.hub.service.ts` | `/hubs/chat` | `ReceiveMessage`, `UserTyping`, `MessagesRead`, `MessageDeleted`, `ConversationUpdated` | `sendMessage()`, `typing()`, `markAsRead()`, `deleteMessage()`, `joinConversation()`, `leaveConversation()` |
+| `NotificationHubService` | `core/hubs/notification.hub.service.ts` | `/hubs/notifications` | `ReceiveNotification` | `connect()`, `disconnect()` |
+
+Both hubs use `TokenService.getAccessToken()` as `accessTokenFactory` for authenticated connections and support automatic reconnection with exponential backoff.
+
+### AI Chat (RAG Assistant)
+
+The AI chat component (`features/ai/ai-chat`) provides:
+- **Text chat** via `POST /api/AI/chat3` — sends user message, receives answer + retrieved craftsmen from vector store
+- **Image analysis** via `POST /api/AI/analyze-media` — multipart upload (image + audio + text) to a vision endpoint
+- **Session management** — history sidebar, session detail loading, delete
+- **Conversation state machine** — intent selection, service/city extraction, follow-up steps
+- **RAG feedback** — "ساعدني" / "محتاج حرفي" via `reviews.service.submitRagFeedback()`
+- **Audio recording** — WhatsApp-style audio player with playback/seek
+
+### Job Summary with AI Validation
+
+After a craftsman marks a job as complete, they submit a problem solution description via `SolutionFormComponent`. This sends to `POST /api/AI/craftsman/check-and-submit-solution` which:
+- Validates the summary content
+- Rejects low-quality submissions with an error message
+- Accepts and stores in ChromaDB on success
+
+### Real-Time Notification Orchestration
+
+`RealtimeNotificationOrchestratorService` (`core/services/realtime-notification-orchestrator.service.ts`) coordinates both SignalR hubs:
+- Starts on `authGuard` activation (and in `App.ngOnInit` for pre-auth)
+- On `ReceiveNotification`: deduplicates toasts via timestamp map, plays audio chime (Web Audio API), updates unread counts
+- Emits `jobAccepted$` subject for real-time job list updates
+- Stops on logout
+
+---
+
+## 7. RTL & Internationalization
+
+### Approach
+
+- **Default language:** Arabic (`'ar'`) with RTL layout
+- **Library:** `@ngx-translate/core` v17 with `@ngx-translate/http-loader`
+- **Translation files:** `src/assets/i18n/ar.json` (~870 keys) and `en.json` (~875 keys)
+- **Configuration:** `provideTranslateService({ lang: 'ar', fallbackLang: 'en' })` in `app.config.ts`
+
+### RTL Implementation
+
+| Layer | Mechanism |
+|-------|-----------|
+| HTML element | `LanguageService` sets `dir="rtl"` / `dir="ltr"` and `lang="ar"` / `lang="en"` on `<html>` |
+| Bootstrap | `angular.json` loads `bootstrap.rtl.min.css` (Bootstrap's official RTL build) |
+| CSS selectors | `html[dir="rtl"]` and `html[dir="ltr"]` prefixes for layout overrides |
+| Fonts | `Cairo` + `Tajawal` for Arabic, `Inter` for English |
+| Forms | `RtlFormDirective` uses Angular `effect()` to set `textAlign`/`dir` on inputs based on language |
+| Components | `:host-context([lang='en'])` and `:host-context([data-theme='dark'])` for scoped overrides |
+
+### Theming
+
+- **26 CSS custom properties** define the design token palette (`--brand-gradient`, `--bg-color`, `--text-primary`, etc.)
+- Light theme: `:root[data-theme='light']` (default)
+- Dark theme: `:root[data-theme='dark']` — overrides ~7 tokens
+- Brand gradient: `linear-gradient(135deg, #8a2387, #e94057, #f27121)` (purple → red → orange)
+
+---
+
+## 8. Project Structure
 
 ```
 harfi-frontend/
+├── .env.development              # Local/remote API URL config
+├── .env.production               # Production API URL config
+├── angular.json                  # Angular CLI config (build: Vite/esbuild)
+├── package.json                  # Dependencies & scripts
+├── tsconfig.json                 # TypeScript config with path aliases
 │
-├── src/
-│   ├── assets/
-│   │   ├── i18n/
-│   │   │   ├── ar.json          ← Arabic strings (all user-facing text)
-│   │   │   └── en.json          ← English strings
-│   │   ├── images/
-│   │   └── fonts/
-│   │
-│   ├── environments/
-│   │   ├── environment.ts       ← Dev: API URL, SignalR hub URLs
-│   │   └── environment.prod.ts  ← Prod: deployed API URL
-│   │
-│   ├── styles.css               ← Global styles, CSS variables, RTL overrides
-│   ├── main.ts                  ← App bootstrap
-│   ├── app.config.ts            ← All global providers (router, http, translate)
-│   ├── app.routes.ts            ← Root routes — all lazy
-│   └── app/
-│       │
-│       ├── core/                ─────────────────────────────────────────────
-│       │   ├── interceptors/    ← Run on EVERY HTTP request automatically
-│       │   │   ├── auth.interceptor.ts      (attaches Bearer token)
-│       │   │   └── refresh.interceptor.ts   (retries on 401)
-│       │   │
-│       │   ├── guards/          ← Protect routes
-│       │   │   ├── auth.guard.ts            (must be logged in)
-│       │   │   ├── role.guard.ts            (admin / craftsman / customer)
-│       │   │   └── guest.guard.ts           (redirect if already logged in)
-│       │   │
-│       │   ├── services/        ← App-wide singleton services
-│       │   │   ├── auth.service.ts          (login, register, logout, refresh)
-│       │   │   ├── token.service.ts         (localStorage read/write/clear)
-│       │   │   ├── theme.service.ts         (light/dark toggle)
-│       │   │   ├── language.service.ts      (ar/en switch + dir/lang on <html>)
-│       │   │   └── error-handler.service.ts (global HTTP error toasts)
-│       │   │
-│       │   ├── models/          ← TypeScript interfaces matching backend DTOs
-│       │   │   ├── auth.models.ts
-│       │   │   ├── craftsman.models.ts
-│       │   │   ├── job.models.ts
-│       │   │   ├── review.models.ts
-│       │   │   ├── chat.models.ts
-│       │   │   ├── notification.models.ts
-│       │   │   └── api-error.models.ts      ({ status, message, timestamp })
-│       │   │
-│       │   └── hubs/            ← SignalR real-time connections
-│       │       ├── chat.hub.service.ts          (/hubs/chat)
-│       │       └── notification.hub.service.ts  (/hubs/notifications)
-│       │
-│       ├── shared/              ─────────────────────────────────────────────
-│       │   ├── components/      ← Reusable UI components
-│       │   │   ├── navbar/              (lang toggle, theme toggle, auth links)
-│       │   │   ├── footer/
-│       │   │   ├── spinner/             (loading indicator)
-│       │   │   ├── toast/               (success/error notifications in Arabic)
-│       │   │   ├── star-rating/         (used in reviews + craftsman profile)
-│       │   │   └── confirm-dialog/      (confirmation popups)
-│       │   │
-│       │   ├── layouts/         ← Page wrapper components
-│       │   │   ├── main-layout/ (navbar + router-outlet + footer)
-│       │   │   └── auth-layout/ (centered card — for login/register screens)
-│       │   │
-│       │   ├── directives/
-│       │   │   └── rtl-form.directive.ts    (auto text-align on inputs)
-│       │   │
-│       │   └── pipes/
-│       │       ├── translate.pipe.ts        (wraps ngx-translate)
-│       │       └── relative-time.pipe.ts    ("منذ ٣ دقائق")
-│       │
-│       └── features/            ─────────────────────────────────────────────
-│           │                    9 modules, each = one backend controller
-│           │
-│           ├── auth/            → POST /api/auth/*
-│           │   ├── login/
-│           │   ├── register/
-│           │   ├── verify-email/
-│           │   └── verify-phone/
-│           │
-│           ├── craftsman/       → GET|POST /api/Craftsmen/*
-│           │   ├── search/
-│           │   ├── profile/
-│           │   └── register/
-│           │
-│           ├── user/            → GET|PUT /api/Users/profile/*
-│           │   └── profile/
-│           │
-│           ├── admin/           → /api/Admin/* (role: admin only)
-│           │   └── pending-craftsmen/
-│           │
-│           ├── jobs/            → /api/jobs/*
-│           │   ├── job-list/
-│           │   └── job-create/
-│           │
-│           ├── reviews/         → /api/reviews/*
-│           │   └── review-form/
-│           │
-│           ├── chat/            → /api/Conversations/* + SignalR
-│           │   ├── chat-list/
-│           │   └── chat-detail/
-│           │
-│           ├── notifications/   → /api/Notifications/* + SignalR
-│           │   └── notification-list/
-│           │
-│           └── ai/              → /api/AI/*
-│               └── ai-chat/
-│
-├── .env.development             ← Local API base URL
-├── .env.production              ← Production API base URL
-├── angular.json
-├── package.json
-└── tsconfig.json
+└── src/
+    ├── index.html                # Root HTML (dir="rtl", Google Fonts, Material Icons)
+    ├── main.ts                   # App bootstrap (bootstrapApplication)
+    ├── styles.css                # Global CSS: custom properties, themes, utilities
+    │
+    ├── assets/
+    │   ├── i18n/ar.json          # Arabic translations (870+ keys)
+    │   ├── i18n/en.json          # English translations (875+ keys)
+    │   └── images/               # Logo, icons, assets
+    │
+    ├── environments/
+    │   ├── environment.ts        # Dev config (apiBaseUrl, hub URLs)
+    │   └── environment.prod.ts   # Production config
+    │
+    └── app/
+        ├── app.config.ts         # Global providers
+        ├── app.routes.ts         # Root route definitions (all lazy)
+        ├── app.ts                # Root component
+        │
+        ├── core/                 # ─── Singleton services, interceptors, guards, models
+        │   ├── guards/           # auth.guard, guest.guard, role.guard
+        │   ├── hubs/             # chat.hub.service, notification.hub.service (SignalR)
+        │   ├── interceptors/      # auth.interceptor, refresh.interceptor
+        │   ├── models/           # 10 model files (auth, user, craftsman, job, review,
+        │   │                      #   chat, notification, api-error, ai, admin)
+        │   └── services/         # auth, token, language, theme, error-handler,
+        │                          #   realtime-notification-orchestrator
+        │
+        ├── shared/               # ─── Reusable UI
+        │   ├── components/       # navbar, side-nav, toast, spinner, confirm-dialog,
+        │   │                      #   connection-status
+        │   ├── layouts/          # auth-layout (split-screen), main-layout (sidebar)
+        │   ├── directives/       # rtl-form.directive
+        │   └── pipes/            # translate (re-export), relative-time, job-status, job-id
+        │
+        └── features/             # ─── Lazy-loaded feature modules
+            ├── auth/             # login, register, verify-email, verify-phone,
+            │                      #   forgot-password, reset-password, splash
+            ├── home/             # Customer/craftsman dashboard
+            ├── craftsman/        # search, profile, register, pending, reviews
+            ├── jobs/             # job-list, job-create, job-detail, solution-form
+            ├── ai/               # AI chat assistant (vision, RAG, audio)
+            ├── chat/             # chat-list, chat-detail (SignalR)
+            ├── notifications/    # notification-list (SignalR)
+            ├── reviews/          # review-form (modal)
+            ├── user/             # user profile
+            └── admin/            # dashboard, craftsmen, customers, jobs, reviews,
+                                  #   reports, analytics, settings, audit-logs, ai-logs
 ```
 
 ---
 
-## 5. Team — Who Works Where
+## 9. Tech Stack
 
-> Each person works **inside their assigned folders only**.  
-> Never touch another person's feature folder directly — use a PR.
-
-### 👥 Team & Assignments
-
-| Name | Role | Assignment |
-|------|------|------------|
-| Esraa | Frontend Lead | Project Structure + Foundation + Auth |
-| Hadeer | Frontend | Craftsman Discovery, Search & Profiles |
-| Habiba | Frontend | Booking System & Job Lifecycle |
-| Mazen | Frontend | AI Assistant & Reviews |
-| Ibrahim | Frontend | Real-time Chat & Notifications |
-
----
-
-### 🟢 Esraa — Project Structure + Foundation + Auth ✅
-
-```
-src/
-├── app.ts
-├── app.config.ts
-├── app.routes.ts
-├── styles.css
-├── assets/i18n/
-│   ├── ar.json
-│   └── en.json
-├── environments/
-│   ├── environment.ts
-│   └── environment.prod.ts
-└── app/
-    ├── core/
-    │   ├── interceptors/
-    │   │   ├── auth.interceptor.ts
-    │   │   └── refresh.interceptor.ts
-    │   ├── guards/
-    │   │   ├── auth.guard.ts
-    │   │   ├── role.guard.ts
-    │   │   └── guest.guard.ts
-    │   ├── services/
-    │   │   ├── auth.service.ts
-    │   │   ├── token.service.ts
-    │   │   ├── theme.service.ts
-    │   │   ├── language.service.ts
-    │   │   └── error-handler.service.ts
-    │   └── models/
-    │       ├── auth.models.ts
-    │       └── api-error.models.ts
-    ├── shared/
-    │   ├── components/
-    │   │   ├── navbar/
-    │   │   ├── spinner/
-    │   │   └── toast/
-    │   ├── layouts/
-    │   │   ├── auth-layout/
-    │   │   └── main-layout/
-    │   ├── directives/
-    │   │   └── rtl-form.directive.ts
-    │   └── pipes/
-    │       ├── translate.pipe.ts
-    │       └── relative-time.pipe.ts
-    └── features/auth/
-        ├── auth.routes.ts
-        ├── auth.service.ts
-        ├── login/
-        ├── register/
-        ├── verify-email/
-        └── verify-phone/
-```
+| Layer | Technology | Version | Purpose |
+|-------|-----------|---------|---------|
+| **Framework** | Angular | ^21.2.0 | SPA framework with standalone components |
+| **Language** | TypeScript | ~5.9.2 | Type-safe JavaScript |
+| **Build** | @angular/build (Vite/esbuild) | ^21.2.8 | Application builder |
+| **Styling** | Bootstrap 5 RTL | ^5.3.8 | Responsive grid, utilities, components |
+| **Icons** | Material Symbols (Google Fonts) | — | UI icon set |
+| **i18n** | @ngx-translate/core | ^17.0.0 | Arabic/English translation |
+| **i18n HTTP** | @ngx-translate/http-loader | ^17.0.0 | Fetches JSON translation files |
+| **Real-time** | @microsoft/signalr | ^10.0.0 | WebSocket chat & notifications |
+| **HTTP** | @angular/common/http | ^21.2.0 | HttpClient + functional interceptors |
+| **Forms** | @angular/forms | ^21.2.0 | Reactive Forms + template-driven |
+| **Charts** | chart.js | ^4.5.1 | Admin analytics charts |
+| **Reactive** | rxjs | ~7.8.0 | Observables, operators |
+| **CLI** | @angular/cli | ^21.2.8 | `ng serve`, `ng build` |
+| **Formatter** | prettier | ^3.8.1 | Code formatting |
 
 ---
 
-### 🔵 Hadeer — Craftsman Discovery, Search & Profiles
-
-```
-src/app/features/craftsman/
-├── craftsman.routes.ts
-├── craftsman.service.ts
-├── search/
-│   └── craftsman-search.component.*
-├── profile/
-│   └── craftsman-profile.component.*
-└── register/
-    └── craftsman-register.component.*
-
-src/app/core/models/
-└── craftsman.models.ts
-```
-
-Backend endpoints:
-```
-POST /api/Craftsmen/register
-GET  /api/Craftsmen/{id}
-PUT  /api/Craftsmen/{id}
-GET  /api/Craftsmen/search?ServiceType=&City=&MinRating=&MinExperience=
-GET  /api/Admin/pending-craftsmen
-PUT  /api/Admin/approve/{id}
-DELETE /api/Admin/reject/{id}
-```
-
----
-
-### 🟡 Habiba — Booking System & Job Lifecycle
-
-```
-src/app/features/jobs/
-├── jobs.routes.ts
-├── jobs.service.ts
-├── job-list/
-│   └── job-list.component.*
-└── job-create/
-    └── job-create.component.*
-
-src/app/core/models/
-└── job.models.ts
-```
-
-Backend endpoints:
-```
-POST /api/jobs
-PUT  /api/jobs/{id}/accept
-PUT  /api/jobs/{id}/reject
-PUT  /api/jobs/{id}/complete
-GET  /api/jobs/customer/{id}
-GET  /api/jobs/craftsman/{id}
-```
-
----
-
-### 🟠 Mazen — AI Assistant & Reviews
-
-```
-src/app/features/ai/
-├── ai.routes.ts
-├── ai.service.ts
-└── ai-chat/
-    └── ai-chat.component.*
-
-src/app/features/reviews/
-├── reviews.routes.ts
-├── reviews.service.ts
-└── review-form/
-    └── review-form.component.*
-
-src/app/core/models/
-└── review.models.ts
-```
-
-Backend endpoints:
-```
-GET  /api/AI/welcome
-POST /api/AI/chat3
-POST /api/reviews
-GET  /api/reviews/craftsman/{craftsmanId}
-POST /api/reviews/rag-feedback
-```
-
----
-
-### 🔴 Ibrahim — Real-time Chat & Notifications
-
-```
-src/app/features/chat/
-├── chat.routes.ts
-├── chat.service.ts
-├── chat-list/
-│   └── chat-list.component.*
-└── chat-detail/
-    └── chat-detail.component.*
-
-src/app/features/notifications/
-├── notifications.routes.ts
-├── notifications.service.ts
-└── notification-list/
-    └── notification-list.component.*
-
-src/app/features/user/
-├── user.routes.ts
-├── user.service.ts
-└── profile/
-    └── user-profile.component.*
-
-src/app/core/
-├── models/
-│   ├── chat.models.ts
-│   └── notification.models.ts
-└── hubs/
-    ├── chat.hub.service.ts
-    └── notification.hub.service.ts
-```
-
-Backend endpoints:
-```
-POST /api/Conversations
-GET  /api/Conversations
-GET  /api/Conversations/{id}
-GET  /api/Conversations/{id}/messages
-PUT  /api/Conversations/{id}/read
-GET  /api/Notifications
-GET  /api/Notifications/unread-count
-PUT  /api/Notifications/{id}/read
-PUT  /api/Notifications/read-all
-GET  /api/Users/profile/{id}
-PUT  /api/Users/profile/{id}
-
-SignalR /hubs/chat
-  → SendMessage(conversationId, content)
-  ← ReceiveMessage(MessageDto)
-
-SignalR /hubs/notifications
-  ← ReceiveNotification(NotificationDto)
-```
-
----
-
-## 6. Getting Started
+## 10. Getting Started
 
 ### Prerequisites
 
 ```bash
-node -v   # must be >= 18
-npm -v    # must be >= 9
-ng version --skip-confirmation  # must be Angular CLI 21+
+node -v          # >= 18.0
+npm -v           # >= 9.0
+ng version       # Angular CLI 21.2+
 ```
 
-### Installation
+### Local Setup
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/harfi-team/harfi-frontend.git
+# 1. Clone the repository
+git clone <repo-url>
 cd harfi-frontend
 
 # 2. Install dependencies
 npm install
 
-# 3. Start the dev server
+# 3. Configure the backend URL
+#    Edit src/environments/environment.ts (or use the .env files):
+#    export const environment = {
+#      production: false,
+#      apiBaseUrl: 'http://localhost:5108/api',
+#      chatHubUrl: 'http://localhost:5108/hubs/chat',
+#      notificationHubUrl: 'http://localhost:5108/hubs/notifications',
+#    };
+
+# 4. Start the dev server
 ng serve
 
-# Open: http://localhost:4200
+# 5. Open in browser
+#    http://localhost:4200
 ```
 
-> Make sure the backend is running on `http://localhost:5108` before testing API calls.
+> ⚠️ The backend must be running for API calls to work. By default `environment.ts` points to the production backend (`https://harfi.runasp.net/api`). For local development, change it to your local backend URL.
 
-### Environment files
+### Production Build
 
-| File | Purpose |
-|---|---|
-| `src/environments/environment.ts` | Dev — points to `localhost:5108` |
-| `src/environments/environment.prod.ts` | Prod — points to deployed API |
+```bash
+ng build --configuration production
+# Output: dist/harfi-frontend/browser/
+```
+
+### Environment Configuration
+
+The app uses two environment files with identical shape but different values:
+
+| Property | Prod (`environment.prod.ts`) | Dev (`environment.ts`) |
+|----------|---------------------------|----------------------|
+| `apiBaseUrl` | `https://harfi.runasp.net/api` | `https://harfi.runasp.net/api` |
+| `chatHubUrl` | `https://harfi.runasp.net/hubs/chat` | `https://harfi.runasp.net/hubs/chat` |
+| `notificationHubUrl` | `https://harfi.runasp.net/hubs/notifications` | `https://harfi.runasp.net/hubs/notifications` |
+
+`.env.development` and `.env.production` files are also present but **not consumed by the build** — they serve as documentation for CI/CD pipeline values.
+
+### Docker / Azure
+
+The project does not include a `Dockerfile` in this repository. It is deployed on **runasp.net** (a free ASP.NET hosting platform) via direct upload of the `dist/` output.
 
 ---
 
-## 7. Key Conventions
+## 11. Live Demo & Deployment
 
-### Every component must be standalone
-
-```typescript
-@Component({ standalone: true, imports: [...] })
-export class LoginComponent {
-  private auth = inject(AuthService);  // ✅ inject() not constructor
-}
-```
-
-### All forms use Reactive Forms (no Template-driven)
-
-```typescript
-form = new FormGroup({
-  email:    new FormControl('', [Validators.required, Validators.email]),
-  password: new FormControl('', [Validators.required, Validators.minLength(8)])
-});
-```
-
-### All user-facing text must come from i18n files
-
-```html
-<!-- ✅ Correct -->
-<button>{{ 'LOGIN' | translate }}</button>
-
-<!-- ❌ Wrong — hardcoded text -->
-<button>تسجيل الدخول</button>
-```
-
-### Error messages come from the API, not the frontend
-
-```typescript
-// The API always returns { status, message, timestamp }
-// error-handler.service.ts reads error.message and shows it in a toast
-// Components just call the service and let the interceptor handle errors
-```
-
-### CSS custom properties for all colors
-
-```css
-/* ✅ Correct — works in both light and dark mode */
-color: var(--text-primary);
-background: var(--bg-secondary);
-
-/* ❌ Wrong — breaks dark mode */
-color: #212529;
-```
-
-### Use path aliases for imports
-
-```typescript
-// ✅ Correct
-import { AuthService } from '@core/services/auth.service';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-
-// ❌ Wrong — brittle relative paths
-import { AuthService } from '../../../core/services/auth.service';
-```
+| Service | URL | Status |
+|---------|-----|--------|
+| **Frontend App** | [https://harfii.runasp.net/](https://harfii.runasp.net/) | ✅ Live |
+| **Backend API (Swagger)** | [https://harfi.runasp.net/index.html](https://harfi.runasp.net/index.html) | ✅ Live |
+| **Backend Repository** | [harfi-backend](https://github.com/harfi-team/harfi-backend) | Companion .NET Core API |
 
 ---
 
-## 8. API & Backend Integration
+## 12. Team
 
-### Base URL
+| Name | Role | Responsibility |
+|------|------|---------------|
+| Esraa | Frontend Lead | Project structure, auth, routing, i18n, theme, core services |
+| Hadeer | Frontend | Craftsman search, discovery & profiles |
+| Habiba | Frontend | Booking system & job lifecycle |
+| Mazen | Frontend | AI assistant & reviews |
+| Ibrahim | Frontend | Real-time chat & notifications |
 
-All HTTP calls go through `environment.apiBaseUrl`. Never hardcode a URL in a service.
-
-```typescript
-// ✅ Correct
-constructor(private http: HttpClient) {}
-getProfile() {
-  return this.http.get(`${environment.apiBaseUrl}/Users/profile`);
-}
-```
-
-### Standard error shape
-
-Every failed API response returns:
-```json
-{
-  "status": 400,
-  "message": "Arabic error message here",
-  "timestamp": "2026-06-01T10:30:00Z"
-}
-```
-
-The global error handler in `core/services/error-handler.service.ts` catches this and shows a toast with `message`.
-
-### User journey — call order
-
-```
-Register → Verify Email → (if craftsman) Register Craftsman Profile
-         → Verify Phone → Logged in
-
-Login → Store token → Redirect to home
-
-Search → View craftsman profile → Create job → Accept → Complete → Review
-```
-
-### SignalR hubs
-
-| Hub | URL | Used by |
-|---|---|---|
-| Chat | `/hubs/chat` | `core/hubs/chat.hub.service.ts` |
-| Notifications | `/hubs/notifications` | `core/hubs/notification.hub.service.ts` |
-
-Both hubs require a valid JWT. Pass it via `accessTokenFactory` in `HubConnectionBuilder`.
+> This is an **ITI (Information Technology Institute)** graduation project — June 2026.
 
 ---
 
-## 9. Git Workflow
+## 13. License
 
-```
-main          ← production-ready only
-  └── dev     ← integration branch — all features merge here first
-        ├── esraa-ProjStructure     (Phase 1 — Foundation)
-        ├── hadeer-discovery        (Phase 2 — Craftsman discovery)
-        ├── habiba-lifecycle        (Phase 3 — Booking & jobs)
-        ├── mazen-ai-reviews        (Phase 4 — AI & reviews)
-        └── ibrahim-realtime        (Phase 5 — Chat & uploads)
-```
-
-### Branch rules
-
-- ✅ Work only on your own branch
-- ✅ Branch off from `dev`, merge back to `dev`
-- ✅ One PR per feature — add a clear description
-- ❌ Never push directly to `main` or `dev`
-- ❌ Never modify another person's feature folder without a PR
-
-### Commit message format
-
-```
-feat(auth): add login form with JWT storage
-fix(craftsman): correct search query params
-style(navbar): fix RTL padding on mobile
-```
-
----
-
-*Harfi Frontend — ITI Graduation Project · June 2026*
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
