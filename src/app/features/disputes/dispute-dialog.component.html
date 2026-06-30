@@ -1,0 +1,222 @@
+@if (visible()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="dialog-card">
+        <button type="button" class="modal-close-btn" (click)="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        @if (mode() === 'create') {
+          <!-- ══ Create Mode ══ -->
+          <div class="form-title">فتح نزاع</div>
+          <div class="form-subtitle">تقديم شكوى أو نزاع على هذا الطلب</div>
+
+          @if (errorMessage) {
+            <div class="alert-error">{{ errorMessage }}</div>
+          }
+
+          <form (ngSubmit)="onCreateSubmit()">
+            <div class="mb-4">
+              <label class="form-label">
+                سبب النزاع
+                <span class="required">*</span>
+              </label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="reason"
+                name="reason"
+                rows="3"
+                placeholder="اذكر سبب النزاع (10 أحرف على الأقل)"
+                [disabled]="submitting()"
+              ></textarea>
+              <div class="char-row">
+                <span class="char-count" [style.color]="reason.length > 450 ? 'var(--warning)' : 'var(--text-secondary)'">
+                  {{ reason.length }} / 500
+                </span>
+              </div>
+              @if (showValidation && !reason.trim()) {
+                <div class="error-text">من فضلك أدخل سبب النزاع</div>
+              }
+              @if (showValidation && reason.trim() && reason.trim().length < 10) {
+                <div class="error-text">سبب النزاع يجب أن يكون 10 أحرف على الأقل</div>
+              }
+              @if (showValidation && reason.length > 500) {
+                <div class="error-text">سبب النزاع يجب أن يكون أقل من 500 حرف</div>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">وصف إضافي</label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="description"
+                name="description"
+                rows="4"
+                placeholder="تفاصيل إضافية عن النزاع (اختياري)"
+                [disabled]="submitting()"
+              ></textarea>
+              <div class="char-row">
+                <span class="char-count">{{ description.length }} / 2000</span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">إرفاق صور</label>
+              <div class="upload-zone">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  (change)="onFileSelect($event)"
+                  class="file-input"
+                  id="dispute-files"
+                  [disabled]="submitting()"
+                />
+                <label for="dispute-files" class="upload-label">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  اختر صوراً
+                </label>
+              </div>
+              @if (uploadPreviews.length > 0) {
+                <div class="preview-strip">
+                  @for (preview of uploadPreviews; track $index) {
+                    <div class="preview-item">
+                      <img [src]="preview" alt="مرفق" />
+                      <button type="button" class="remove-btn" (click)="removeFile($index)">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="submitting() || uploading()">
+              @if (submitting() || uploading()) {
+                <span class="spinner"></span>
+                جاري الإرسال...
+              } @else {
+                فتح النزاع
+              }
+            </button>
+          </form>
+        } @else {
+          <!-- ══ View Mode ══ -->
+          @if (loading()) {
+            <div class="loading-state">جاري تحميل بيانات النزاع...</div>
+          } @else if (dispute(); as d) {
+            <div class="form-title">تفاصيل النزاع</div>
+
+            @if (errorMessage) {
+              <div class="alert-error">{{ errorMessage }}</div>
+            }
+
+            <div class="detail-section">
+              <div class="detail-row">
+                <span class="detail-label">الحالة</span>
+                <span class="status-chip" [class.pending]="d.status === 'قيد المراجعة'" [class.investigating]="d.status === 'قيد التحقيق'" [class.resolved]="d.status === 'تم الحل'" [class.rejected]="d.status === 'مرفوض'">
+                  {{ d.status }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">مقدم النزاع</span>
+                <span class="detail-value">{{ d.raisedByUserName }} ({{ d.raisedByRole === 'customer' ? 'عميل' : 'صنايعي' }})</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">السبب</span>
+                <span class="detail-value">{{ d.reason }}</span>
+              </div>
+              @if (d.description) {
+                <div class="detail-row">
+                  <span class="detail-label">الوصف</span>
+                  <span class="detail-value">{{ d.description }}</span>
+                </div>
+              }
+              @if (parseAttachments(d.attachments); as imgs) {
+                @if (imgs.length > 0) {
+                  <div class="detail-row">
+                    <span class="detail-label">المرفقات</span>
+                    <div class="attachment-strip">
+                      @for (img of imgs; track $index) {
+                        <a [href]="serverBase + img" target="_blank" class="attachment-link">
+                          <img [src]="serverBase + img" alt="مرفق" class="attachment-thumb" />
+                        </a>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+              <div class="detail-row">
+                <span class="detail-label">تاريخ الفتح</span>
+                <span class="detail-value">{{ d.createdAt | date: 'd MMM, y h:mm a' }}</span>
+              </div>
+            </div>
+
+            @if (d.responseMessage) {
+              <div class="divider"></div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span class="detail-label">رد الطرف الآخر</span>
+                  <span class="detail-value">{{ d.responseMessage }}</span>
+                </div>
+                @if (parseAttachments(d.responseAttachments); as respImgs) {
+                  @if (respImgs.length > 0) {
+                    <div class="detail-row">
+                      <span class="detail-label">مرفقات الرد</span>
+                      <div class="attachment-strip">
+                        @for (img of respImgs; track $index) {
+                          <a [href]="serverBase + img" target="_blank" class="attachment-link">
+                            <img [src]="serverBase + img" alt="مرفق رد" class="attachment-thumb" />
+                          </a>
+                        }
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            }
+
+            @if (d.resolution) {
+              <div class="divider"></div>
+              <div class="detail-section">
+                <div class="detail-row">
+                  <span class="detail-label">قرار المشرف</span>
+                  <span class="detail-value">{{ d.resolution }}</span>
+                </div>
+                @if (d.favoredParty) {
+                  <div class="detail-row">
+                    <span class="detail-label">لصالح</span>
+                    <span class="detail-value">{{ d.favoredParty === 'customer' ? 'العميل' : 'الصنايعي' }}</span>
+                  </div>
+                }
+                @if (d.resolvedByAdminName) {
+                  <div class="detail-row">
+                    <span class="detail-label">تم الحل بواسطة</span>
+                    <span class="detail-value">{{ d.resolvedByAdminName }}</span>
+                  </div>
+                }
+                @if (d.resolvedAt) {
+                  <div class="detail-row">
+                    <span class="detail-label">تاريخ الحل</span>
+                    <span class="detail-value">{{ d.resolvedAt | date: 'd MMM, y h:mm a' }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="modal-footer">
+              @if (canRespond) {
+                <button type="button" class="btn btn-respond" (click)="onRespond()">
+                  رد على النزاع
+                </button>
+              }
+              <button type="button" class="btn btn-secondary" (click)="closeModal()">إغلاق</button>
+            </div>
+          } @else {
+            <div class="loading-state">لا توجد بيانات النزاع</div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}

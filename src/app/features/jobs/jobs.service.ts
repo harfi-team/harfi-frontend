@@ -113,6 +113,8 @@ export class JobsService {
       createdAt: raw.createdAt,
       completedAt: raw.completedAt || null,
       updatedAt: raw.updatedAt,
+      hasOpenDispute: raw.hasOpenDispute ?? false,
+      disputeStatus: raw.disputeStatus ?? null,
     };
   }
 

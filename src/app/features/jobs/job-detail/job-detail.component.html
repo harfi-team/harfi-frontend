@@ -27,9 +27,16 @@
           </div>
           <div class="info-field">
             <span class="field-label">{{ 'STATUS' | translate }}</span>
-            <span class="status-badge {{ getStatusClass(j.status) }}">{{
-              getStatusLabelKey(j.status) | translate
-            }}</span>
+            <div class="status-row">
+              <span class="status-badge {{ getStatusClass(j.status) }}">{{
+                getStatusLabelKey(j.status) | translate
+              }}</span>
+              @if (j.hasOpenDispute && j.disputeStatus) {
+                <span class="status-badge dispute {{ getDisputeStatusClass(j.disputeStatus) }}">{{
+                  getDisputeStatusLabel(j.disputeStatus)
+                }}</span>
+              }
+            </div>
           </div>
           <div class="info-field">
             <span class="field-label">{{ 'JOBS.SERVICE' | translate }}</span>
@@ -162,13 +169,25 @@
           {{ 'REVIEWS.FORM.SUBMIT_BTN' | translate }}
         </button>
       }
-      <!-- ← أضف الكود ده بعده -->
 @if (canSubmitSolution()) {
   <button class="btn-action btn-solution" (click)="openSolutionModal()">
     <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">task_alt</span>
     إرسال خطوات الحل
   </button>
 }
+
+      @if (canOpenDispute()) {
+        <button class="btn-action btn-dispute" (click)="openCreateDispute()">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">gavel</span>
+          فتح نزاع
+        </button>
+      }
+      @if (j.hasOpenDispute) {
+        <button class="btn-action btn-dispute-view" (click)="openViewDispute()">
+          <span class="material-symbols-outlined" style="font-size: 18px; line-height: 1">visibility</span>
+          تفاصيل النزاع
+        </button>
+      }
     </div>
 
     @if (showReviewModal()) {
@@ -176,7 +195,6 @@
       </app-review-form>
     }
 
-<!-- ← أضف الكود ده بعده -->
 @if (showSolutionModal()) {
   <app-solution-form
     [jobId]="jobId()"
@@ -187,5 +205,21 @@
   >
   </app-solution-form>
 }
+
+<app-dispute-dialog
+  [visible]="showDisputeDialog()"
+  [jobId]="job()?.id ?? ''"
+  [mode]="disputeMode()"
+  (close)="onDisputeDialogClose()"
+  (disputeCreated)="onDisputeCreated()"
+  (respondRequested)="onRespondRequested($event)"
+></app-dispute-dialog>
+
+<app-respond-dialog
+  [visible]="showRespondDialog()"
+  [disputeId]="respondDisputeId()"
+  (close)="onRespondDialogClose()"
+  (responded)="onResponded()"
+></app-respond-dialog>
   }
 </div>

@@ -24,6 +24,8 @@ export interface JobDto {
   createdAt?: string;
   completedAt?: string | null;
   updatedAt?: string;
+  hasOpenDispute?: boolean;
+  disputeStatus?: string | null;
 }
 
 export interface CreateJobDto {

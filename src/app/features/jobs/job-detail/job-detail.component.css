@@ -124,10 +124,20 @@
   width: fit-content;
 }
 
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .status-badge.open {
   background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
+.status-badge.dispute.pending { background: rgba(245,158,11,0.1); color: var(--warning); }
+.status-badge.dispute.investigating { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.status-badge.dispute.resolved { background: rgba(16,185,129,0.1); color: var(--success); }
+.status-badge.dispute.rejected { background: rgba(239,68,68,0.1); color: var(--error); }
 .status-badge.in-progress {
   background: rgba(245, 158, 11, 0.1);
   color: var(--warning);
@@ -257,6 +267,20 @@
 
 .btn-complete:hover {
   background: rgba(59, 130, 246, 0.2);
+}
+.btn-dispute {
+  background: rgba(233, 64, 87, 0.1);
+  color: var(--brand-red);
+}
+.btn-dispute:hover {
+  background: rgba(233, 64, 87, 0.2);
+}
+.btn-dispute-view {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+.btn-dispute-view:hover {
+  background: rgba(139, 92, 246, 0.2);
 }
 
 

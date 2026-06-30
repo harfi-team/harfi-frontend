@@ -9,6 +9,8 @@ import { JobAction, JobDto } from '../../../core/models/job.models';
 import { JobsService } from '../jobs.service';
 import { environment } from '../../../../environments/environment';
 import { SolutionFormComponent } from '../solution-form/solution-form.component';
+import { DisputeDialogComponent } from '../../disputes/dispute-dialog.component';
+import { RespondDialogComponent } from '../../disputes/respond-dialog.component';
 
 import { ReviewFormComponent } from '../../reviews/review-form/review-form.component';
 
@@ -22,8 +24,9 @@ import { ReviewFormComponent } from '../../reviews/review-form/review-form.compo
     TranslateModule,
     DatePipe,
     ReviewFormComponent,
-      SolutionFormComponent,   // ← أضف السطر ده
-
+    SolutionFormComponent,
+    DisputeDialogComponent,
+    RespondDialogComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.css',
@@ -39,7 +42,11 @@ export class JobDetailComponent implements OnInit {
   job = signal<JobDto | null>(null);
   loading = signal(true);
   showReviewModal = signal(false);
-showSolutionModal = signal(false);   // ← أضف السطر ده
+  showSolutionModal = signal(false);
+  showDisputeDialog = signal(false);
+  showRespondDialog = signal(false);
+  disputeMode = signal<'create' | 'view'>('create');
+  respondDisputeId = signal<number>(0);
 
   readonly isCustomer = computed(() => this.authService.getRole() === 'customer');
   readonly isCraftsman = computed(() => this.authService.getRole() === 'craftsman');
@@ -125,7 +132,6 @@ showSolutionModal = signal(false);   // ← أضف السطر ده
 
 
 
-// ← أضف الدوال الثلاثة دي بعدها
 readonly canSubmitSolution = computed(() => {
   const j = this.job();
   return this.isCraftsman() && j?.status === 'done';
@@ -140,6 +146,49 @@ onSolutionClose(): void {
 }
 
 onSolutionSubmitted(): void {
+  const j = this.job();
+  if (j) this.loadJob(j.id);
+}
+
+readonly canOpenDispute = computed(() => {
+  const j = this.job();
+  if (!j) return false;
+  if (j.hasOpenDispute) return false;
+  return j.status === 'open' || j.status === 'in-progress' || j.status === 'done';
+});
+
+openCreateDispute(): void {
+  this.disputeMode.set('create');
+  this.showDisputeDialog.set(true);
+}
+
+openViewDispute(): void {
+  this.disputeMode.set('view');
+  this.showDisputeDialog.set(true);
+}
+
+onDisputeDialogClose(): void {
+  this.showDisputeDialog.set(false);
+}
+
+onDisputeCreated(): void {
+  this.showDisputeDialog.set(false);
+  const j = this.job();
+  if (j) this.loadJob(j.id);
+}
+
+onRespondRequested(disputeId: number): void {
+  this.showDisputeDialog.set(false);
+  this.respondDisputeId.set(disputeId);
+  this.showRespondDialog.set(true);
+}
+
+onRespondDialogClose(): void {
+  this.showRespondDialog.set(false);
+}
+
+onResponded(): void {
+  this.showRespondDialog.set(false);
   const j = this.job();
   if (j) this.loadJob(j.id);
 }
@@ -173,6 +222,20 @@ onSolutionSubmitted(): void {
       default:
         return '';
     }
+  }
+
+  getDisputeStatusClass(status: string | null | undefined): string {
+    const map: Record<string, string> = {
+      'قيد المراجعة': 'pending',
+      'قيد التحقيق': 'investigating',
+      'تم الحل': 'resolved',
+      مرفوض: 'rejected',
+    };
+    return map[status || ''] || '';
+  }
+
+  getDisputeStatusLabel(status: string | null | undefined): string {
+    return status || '';
   }
 
   getServiceIcon(service: string): string {
